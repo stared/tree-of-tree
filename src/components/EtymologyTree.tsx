@@ -25,11 +25,6 @@ function radius(node: LaidNode): number {
   }
 }
 
-function showGloss(node: LaidNode): boolean {
-  const k = node.data.kind;
-  return !node.hasChildren || k === "root" || k === "modern";
-}
-
 export function EtymologyTree({
   focusIds,
   showDisputed,
@@ -318,7 +313,12 @@ export function EtymologyTree({
                         <tspan className="form" x={radius(n) + 5}>
                           {n.data.form}
                         </tspan>
-                        {detail && showGloss(n) && (
+                        {n.data.translit && (
+                          <tspan className="translit" x={radius(n) + 5} dy={11}>
+                            [{n.data.translit}]
+                          </tspan>
+                        )}
+                        {detail && (
                           <tspan className="gloss" x={radius(n) + 5} dy={12}>
                             {n.data.gloss}
                           </tspan>

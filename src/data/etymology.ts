@@ -1,35 +1,33 @@
 // The etymological tree of PIE *deru- / *dóru-.
 //
-// Nodes are WORDS ONLY — every node is an actual form (a reconstructed root,
-// a proto-form, an attested word, or a modern word). There are no artificial
-// "language-family" grouping nodes; each branch's earliest form hangs directly
-// off the root, and a word's language is shown as a small label beneath it.
+// Nodes are WORDS ONLY — each node is an actual form. No language-family
+// grouping nodes.
 //
-// Colour encodes the word's MEANING (its sense), not its language family.
+// Rules baked into the data:
+//  - ONE name per node (only the root may carry its two ablaut citation forms).
+//  - `gloss` is the word's MEANING only; derivation is shown by the TREE.
+//  - non-Latin scripts keep their native `form`; the romanisation goes in
+//    `translit`, rendered in [brackets] beneath the form.
+//  - parent → child means "descends from". Crucially, words that share an
+//    intermediate formation hang off THAT shared form, not off the root:
+//    e.g. Slavic *dervo (drzewo), *sъdorvъ (zdrowy), Germanic *terwą (tar),
+//    Lithuanian derva and Welsh derw all descend from *derw-o-. Going all the
+//    way back to the root is a last resort. (Intermediate formations per
+//    Wiktionary's *dóru "derived terms".)
+//  - colour encodes the word's sense (meaning bucket), not its language.
 //
-// The view is BOTTOM-UP: the root is the soil; modern words are the canopy.
-// `disputed: true` means the link FROM the parent is contested (dashed + "?").
-// Sources live in src/data/references.ts and /references.md (the `refs` ids).
+// Bottom-up view: root in the soil, modern words in the canopy.
+// `disputed: true` = link from the parent is contested (dashed + "?").
+// Sources: src/data/references.ts and /references.md (the `refs` ids).
 
-export type NodeKind =
-  | "root" // the PIE root itself
-  | "reconstructed" // starred proto-forms (*trewą, *daru …)
-  | "attested" // attested historical words (Old English trēow, Greek δρῦς …)
-  | "modern"; // living words & English borrowings (tree, druid, deodar …)
+export type NodeKind = "root" | "reconstructed" | "attested" | "modern";
 
-// Meaning buckets — what the word means, regardless of language.
-export type SenseId =
-  | "tree" // the literal noun: tree, wood
-  | "oak" // the narrowed tree
-  | "firm" // the adjective sense: firm, solid, hard
-  | "faith" // steadfastness → faithful, true, trust
-  | "object" // a thing made of wood: trough, tray, tar, spear
-  | "other"; // derived / abstract offshoots: healthy, druid, …
+export type SenseId = "tree" | "oak" | "firm" | "faith" | "object" | "other";
 
 export interface SenseMeta {
   id: SenseId;
-  short: string; // one-word key label
-  label: string; // fuller description (detail panel)
+  short: string;
+  label: string;
   color: string;
 }
 
@@ -46,31 +44,34 @@ export const ROOT_COLOR = "#3b2f22";
 
 export interface EtymNode {
   id: string;
-  form: string; // the word or reconstruction (asterisk kept for proto-forms)
-  lang: string; // language / stage — shown beneath the word
-  gloss: string; // short meaning
+  form: string;
+  translit?: string;
+  lang: string;
+  gloss: string;
   kind: NodeKind;
-  sense?: SenseId; // meaning bucket → colour (omitted on the root)
-  disputed?: boolean; // link from parent is contested
-  note?: string; // extra detail / the nature of a dispute
-  quote?: string; // short verbatim source quote for the detail panel
-  refs?: number[]; // reference ids → references.ts
+  sense?: SenseId;
+  disputed?: boolean;
+  note?: string;
+  quote?: string;
+  refs?: number[];
   children?: EtymNode[];
 }
 
 export const TREE: EtymNode = {
   id: "deru",
-  form: "*deru- / *dóru-",
+  form: "*deru-, *dóru-",
   lang: "Proto-Indo-European",
-  gloss: "be firm, solid, steadfast; (noun) tree, wood",
+  gloss: "firm, solid, steadfast; and, as a noun, tree, wood",
   kind: "root",
   note:
-    "One root, two faces: an adjective sense 'firm, solid' and a noun 'tree, wood'. " +
-    "Every colour below is a different shade of meaning that grew from these two.",
+    "One root, two faces: an adjective 'firm, solid' (giving true, trust, hard) and a noun 'tree, wood' " +
+    "(giving tree, oak and the rest). Words that share a LATER formation — *derw-o-, *dru-mo-, *druh₂- — " +
+    "branch together; the rest are direct reflexes of the root.",
   quote: "“to be firm, solid, steadfast … with specialized senses ‘wood,’ ‘tree.’” (etymonline)",
   refs: [1, 2, 24],
+  // children are ordered to INTERLEAVE branches & senses — never sorted by meaning.
   children: [
-    // ───────────── GERMANIC ─────────────
+    // *trewą "tree" (Germanic)
     {
       id: "pgmc-trewa",
       form: "*trewą",
@@ -85,46 +86,58 @@ export const TREE: EtymNode = {
           id: "oe-treow",
           form: "trēow",
           lang: "Old English",
-          gloss: "tree; timber, wood, beam",
+          gloss: "tree; timber, beam",
           kind: "attested",
           sense: "tree",
           refs: [3],
-          children: [
-            { id: "tree", form: "tree", lang: "English", gloss: "a tree", kind: "modern", sense: "tree", refs: [3] },
-          ],
+          children: [{ id: "tree", form: "tree", lang: "English", gloss: "a woody perennial plant", kind: "modern", sense: "tree", refs: [3] }],
         },
         { id: "got-triu", form: "triu", lang: "Gothic", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [4] },
         { id: "on-tre", form: "tré", lang: "Old Norse", gloss: "tree", kind: "attested", sense: "tree", refs: [4] },
       ],
     },
+
+    // δόρυ "spear" (Greek)
+    {
+      id: "gk-doru",
+      form: "δόρυ",
+      translit: "dóry",
+      lang: "Ancient Greek",
+      gloss: "wood; a spear-shaft, spear",
+      kind: "attested",
+      sense: "object",
+      quote: "“From Proto-Hellenic *dóru, from Proto-Indo-European *dóru.” (Wiktionary)",
+      refs: [40],
+      children: [{ id: "dory", form: "doru", lang: "English", gloss: "a long thrusting spear", kind: "modern", sense: "object", note: "Not the flat-bottomed boat, nor the fish 'John Dory'.", refs: [40, 41] }],
+    },
+
+    // *treuwaz "faithful" (Germanic) — the big 'faith' family
     {
       id: "pgmc-treuwaz",
-      form: "*treuwaz / *triwwiz",
+      form: "*treuwaz",
       lang: "Proto-Germanic",
-      gloss: "having good faith; faithful, true",
+      gloss: "faithful, trustworthy",
       kind: "reconstructed",
       sense: "faith",
-      note: "etymonline reconstructs *treuwaz; Wiktionary *triwwiz. Competing notations of one etymon.",
-      quote: "“*triwwiz ('faithful, true') … extension of *dóru ('tree'). More at tree.” (Wiktionary)",
+      note: "From the root's 'steadfast' sense; no closer shared formation is reconstructed, so it sits on the root.",
+      quote: "“from PIE root *deru- 'be firm, solid, steadfast.'” (etymonline)",
       refs: [5, 6],
       children: [
         {
           id: "oe-triewe",
-          form: "trīewe / trēowe",
+          form: "trēowe",
           lang: "Old English",
-          gloss: "faithful, trustworthy, steady",
+          gloss: "faithful, steady",
           kind: "attested",
           sense: "faith",
           refs: [5],
-          children: [
-            { id: "true", form: "true", lang: "English", gloss: "consistent with fact; faithful", kind: "modern", sense: "faith", refs: [5] },
-          ],
+          children: [{ id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", refs: [5] }],
         },
         {
           id: "oe-treowth",
           form: "trēowþ",
           lang: "Old English",
-          gloss: "faith, fidelity, a pledge",
+          gloss: "faith, fidelity; a pledge",
           kind: "attested",
           sense: "faith",
           quote: "“shares roots with troth, truce, trust, and tree.” (etymonline)",
@@ -135,29 +148,177 @@ export const TREE: EtymNode = {
               id: "troth",
               form: "troth",
               lang: "English",
-              gloss: "a solemn pledge (doublet of truth)",
+              gloss: "a solemn pledge",
               kind: "modern",
               sense: "faith",
               refs: [8],
+              children: [{ id: "betroth", form: "betroth", lang: "English", gloss: "to promise in marriage", kind: "modern", sense: "faith", refs: [9] }],
+            },
+          ],
+        },
+        { id: "trow", form: "trow", lang: "English (archaic)", gloss: "to believe, trust", kind: "modern", sense: "faith", refs: [10] },
+        { id: "truce", form: "truce", lang: "English", gloss: "an agreed halt to fighting", kind: "modern", sense: "faith", note: "Originally a plural — 'pledges'.", refs: [22] },
+        { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Unrelated to trig = trigonometry.", refs: [14] },
+        { id: "de-treu", form: "treu", lang: "German", gloss: "faithful, loyal", kind: "modern", sense: "faith", refs: [23, 5] },
+        { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; loyalty", kind: "modern", sense: "faith", refs: [5] },
+        { id: "got-triggws", form: "triggws", lang: "Gothic", gloss: "faithful, true", kind: "attested", sense: "faith", refs: [5, 6] },
+      ],
+    },
+
+    // *derw-o- "tree, wood" — the shared cluster (drzewo ~ zdrowy ~ tar ~ derw)
+    {
+      id: "derwo",
+      form: "*derw-o-",
+      lang: "Proto-Indo-European",
+      gloss: "tree, wood",
+      kind: "reconstructed",
+      sense: "tree",
+      note: "One formation, many fates: a Slavic 'tree', a Baltic and Germanic 'tar', a Welsh 'oak', and — by one account — a Slavic word for 'healthy'.",
+      quote: "“*derw-ó-m → Balto-Slavic *dérwa, Celtic *derwom, Germanic *terwą ('tar').” (Wiktionary)",
+      refs: [1, 62, 21],
+      children: [
+        {
+          id: "psl-dervo",
+          form: "*dervo",
+          lang: "Proto-Slavic",
+          gloss: "tree, wood",
+          kind: "reconstructed",
+          sense: "tree",
+          quote: "“Inherited from Proto-Balto-Slavic *dérwan, from Proto-Indo-European *derw-o-m.” (Wiktionary)",
+          refs: [62],
+          children: [
+            { id: "ru-derevo", form: "де́рево", translit: "dérevo", lang: "Russian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
+            { id: "pl-drzewo", form: "drzewo", lang: "Polish", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
+            { id: "ocs-drevo", form: "дрѣво", translit: "drěvo", lang: "Old Church Slavonic", gloss: "tree", kind: "attested", sense: "tree", refs: [62] },
+          ],
+        },
+        {
+          id: "psl-sdorvu",
+          form: "*sъdorvъ",
+          lang: "Proto-Slavic",
+          gloss: "healthy",
+          kind: "reconstructed",
+          sense: "other",
+          disputed: true,
+          note: "*sъ- 'good' + a *dorv- element. By one reading that element is this very *derw- 'tree' ('of sound wood'); but Wiktionary calls it 'uncertain', and Meillet/Derksen instead derive it from *dʰer- 'to support, hold'.",
+          quote: "“by surface analysis, *sъ- ('good') + *dorv-… The exact origin of the second component *dorv- is uncertain.” (Wiktionary)",
+          refs: [63],
+          children: [
+            { id: "ru-zdorov", form: "здоро́вый", translit: "zdoróvyj", lang: "Russian", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
+            { id: "pl-zdrowy", form: "zdrowy", lang: "Polish", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
+          ],
+        },
+        { id: "lt-derva", form: "derva", lang: "Lithuanian", gloss: "tar; resinous wood", kind: "modern", sense: "object", refs: [64] },
+        {
+          id: "pgmc-terwa",
+          form: "*terwą",
+          lang: "Proto-Germanic",
+          gloss: "tar, tree-resin",
+          kind: "reconstructed",
+          sense: "object",
+          quote: "“literally ‘the pitch of (certain kinds) of trees’ … from PIE *derw-.” (etymonline)",
+          refs: [20, 21],
+          children: [
+            {
+              id: "oe-teoru",
+              form: "teoru",
+              lang: "Old English",
+              gloss: "tar, resin",
+              kind: "attested",
+              sense: "object",
+              refs: [20],
+              children: [{ id: "tar", form: "tar", lang: "English", gloss: "dark sticky pitch", kind: "modern", sense: "object", refs: [20] }],
+            },
+            { id: "de-teer", form: "Teer", lang: "German", gloss: "tar", kind: "modern", sense: "object", refs: [21] },
+          ],
+        },
+        { id: "cy-derw", form: "derw", lang: "Welsh", gloss: "oak; oaks", kind: "modern", sense: "oak", refs: [59] },
+        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden framework; fabric", kind: "attested", sense: "object", note: "From the related 'wooden' derivative *dérwis.", refs: [1] },
+      ],
+    },
+
+    // dūrus "hard" (Latin) — direct reflex of the firm adjective (disputed)
+    {
+      id: "la-durus",
+      form: "dūrus",
+      lang: "Latin",
+      gloss: "hard, tough, harsh",
+      kind: "attested",
+      sense: "firm",
+      disputed: true,
+      note: "Watkins / etymonline derive dūrus from the 'firm' sense of the root; but de Vaan (2008) prefers an unrelated root *duh₂-ró- 'long'. The whole hard-words family hangs on this contested step.",
+      quote: "“there are semantic problems if the change ‘long’ > ‘enduring’ is not accepted.” (de Vaan, via Wiktionary)",
+      refs: [26, 27, 24, 2],
+      children: [
+        { id: "durable", form: "durable", lang: "English", gloss: "able to last", kind: "modern", sense: "firm", refs: [28] },
+        { id: "endure", form: "endure", lang: "English", gloss: "to last; to bear", kind: "modern", sense: "firm", refs: [31] },
+        { id: "duration", form: "duration", lang: "English", gloss: "length of time", kind: "modern", sense: "firm", refs: [29] },
+        { id: "during", form: "during", lang: "English", gloss: "throughout the time of", kind: "modern", sense: "firm", refs: [30] },
+        { id: "dour", form: "dour", lang: "English", gloss: "stern, gloomy", kind: "modern", sense: "firm", refs: [33] },
+        { id: "duress", form: "duress", lang: "English", gloss: "coercion, compulsion", kind: "modern", sense: "firm", refs: [34] },
+        { id: "obdurate", form: "obdurate", lang: "English", gloss: "stubborn, unyielding", kind: "modern", sense: "firm", refs: [35] },
+        { id: "indurate", form: "indurate", lang: "English", gloss: "to harden", kind: "modern", sense: "firm", refs: [36] },
+        { id: "duramen", form: "duramen", lang: "English", gloss: "heartwood", kind: "modern", sense: "object", refs: [24] },
+        { id: "duramater", form: "dura mater", lang: "English", gloss: "tough membrane around the brain", kind: "modern", sense: "firm", refs: [37] },
+      ],
+    },
+
+    // *druh₂- collective "wood, trees" → δρῦς → dryad
+    {
+      id: "druh2",
+      form: "*druh₂-",
+      lang: "Proto-Indo-European",
+      gloss: "wood, trees (collective)",
+      kind: "reconstructed",
+      sense: "tree",
+      quote: "“*druh₂ → Ancient Greek drûs; *druh₂-óm → Albanian dru.” (Wiktionary)",
+      refs: [1, 38, 65],
+      children: [
+        {
+          id: "gk-drys",
+          form: "δρῦς",
+          translit: "drŷs",
+          lang: "Ancient Greek",
+          gloss: "oak; tree",
+          kind: "attested",
+          sense: "oak",
+          refs: [38],
+          children: [
+            {
+              id: "gk-dryas",
+              form: "Δρυάς",
+              translit: "Dryás",
+              lang: "Ancient Greek",
+              gloss: "a wood-nymph",
+              kind: "attested",
+              sense: "tree",
+              refs: [39],
               children: [
-                { id: "betroth", form: "betroth", lang: "English", gloss: "to promise in marriage", kind: "modern", sense: "faith", note: "be- + Middle English treowðe 'a pledge'.", refs: [9] },
+                {
+                  id: "dryad",
+                  form: "dryad",
+                  lang: "English",
+                  gloss: "a tree nymph",
+                  kind: "modern",
+                  sense: "tree",
+                  refs: [39],
+                  children: [{ id: "hamadryad", form: "hamadryad", lang: "English", gloss: "a nymph that dies with her tree", kind: "modern", sense: "tree", note: "Strictly formed in Greek (hama- 'together with' + dryas); shown here as built on dryad.", refs: [39] }],
+                },
               ],
             },
           ],
         },
-        { id: "trow", form: "trow", lang: "English (archaic)", gloss: "to believe, trust, suppose", kind: "modern", sense: "faith", refs: [10] },
-        { id: "truce", form: "truce", lang: "English", gloss: "an agreed pause in fighting", kind: "modern", sense: "faith", note: "Plural of Old English trēow 'pledge, faith'.", refs: [22] },
-        { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Via Old Norse tryggr 'firm, trusty'. Unrelated to trig = trigonometry.", refs: [14] },
-        { id: "de-treu", form: "treu", lang: "German", gloss: "faithful, loyal", kind: "modern", sense: "faith", refs: [23, 5] },
-        { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; fidelity", kind: "modern", sense: "faith", refs: [5] },
-        { id: "got-triggws", form: "triggws", lang: "Gothic", gloss: "faithful, true", kind: "attested", sense: "faith", refs: [5, 6] },
+        { id: "sq-dru", form: "dru", lang: "Albanian", gloss: "wood, tree; firewood", kind: "modern", sense: "tree", quote: "“from Proto-Albanian *druwa, from Proto-Indo-European *druh₂-ó-m, from *dóru.” (Wiktionary)", refs: [65] },
+        { id: "sa-dru", form: "द्रु", translit: "dru", lang: "Sanskrit", gloss: "wood; tree, branch", kind: "attested", sense: "tree", refs: [52] },
       ],
     },
+
+    // *traustą "confidence" (Germanic) → trust
     {
       id: "pgmc-trausta",
       form: "*traustą",
       lang: "Proto-Germanic",
-      gloss: "confidence, help (← *traustaz 'firm, strong')",
+      gloss: "confidence, help",
       kind: "reconstructed",
       sense: "faith",
       quote: "“*traustą … From *traustaz ('firm, strong').” (Wiktionary)",
@@ -176,13 +337,11 @@ export const TREE: EtymNode = {
               id: "trust",
               form: "trust",
               lang: "English",
-              gloss: "reliance on someone's integrity",
+              gloss: "reliance on another's integrity",
               kind: "modern",
               sense: "faith",
               refs: [11],
-              children: [
-                { id: "trusty", form: "trusty", lang: "English", gloss: "dependable", kind: "modern", sense: "faith", refs: [13] },
-              ],
+              children: [{ id: "trusty", form: "trusty", lang: "English", gloss: "dependable", kind: "modern", sense: "faith", refs: [13] }],
             },
           ],
         },
@@ -190,225 +349,73 @@ export const TREE: EtymNode = {
         { id: "nl-troost", form: "troost", lang: "Dutch", gloss: "comfort", kind: "modern", sense: "faith", refs: [12] },
       ],
     },
+
+    // *dru-mo- "thicket" → drymós, druma, AND Germanic *trumaz → trim
     {
-      id: "pgmc-trumaz",
-      form: "*trumaz",
-      lang: "Proto-Germanic",
-      gloss: "firm, strong (← *drumos)",
+      id: "drumo",
+      form: "*dru-mo-",
+      lang: "Proto-Indo-European",
+      gloss: "thicket, woodland",
       kind: "reconstructed",
-      sense: "firm",
-      quote: "“Continues Proto-Indo-European *drumos, from *deru-, *drew- ('tree').” (Wiktionary)",
-      refs: [16],
+      sense: "tree",
+      quote: "“*dru-mos ('thicket') → Greek drumós, Sanskrit druma, Germanic *trumaz.” (Wiktionary)",
+      refs: [1, 47, 53, 16],
       children: [
+        { id: "gk-drymos", form: "δρυμός", translit: "drymós", lang: "Ancient Greek", gloss: "a thicket, oak forest", kind: "attested", sense: "tree", refs: [47] },
+        { id: "sa-druma", form: "द्रुम", translit: "druma", lang: "Sanskrit", gloss: "tree", kind: "attested", sense: "tree", refs: [53] },
         {
-          id: "oe-trum",
-          form: "trum / trymman",
-          lang: "Old English",
-          gloss: "strong, firm; to make firm",
-          kind: "attested",
+          id: "pgmc-trumaz",
+          form: "*trumaz",
+          lang: "Proto-Germanic",
+          gloss: "firm, strong",
+          kind: "reconstructed",
           sense: "firm",
-          refs: [15, 16],
+          quote: "“Continues Proto-Indo-European *drumos, from *deru-, *drew- ('tree').” (Wiktionary)",
+          refs: [16],
           children: [
             {
-              id: "trim",
-              form: "trim",
-              lang: "English",
-              gloss: "neat, in good order; to make tidy",
-              kind: "modern",
+              id: "oe-trum",
+              form: "trum",
+              lang: "Old English",
+              gloss: "firm, strong",
+              kind: "attested",
               sense: "firm",
-              disputed: true,
-              note: "The Old English→PIE chain is sound, but trim 'is missing in Middle English after about 1250, which makes connection uncertain' (etymonline).",
-              quote: "“the word is missing in Middle English after about 1250, which makes connection uncertain.” (etymonline)",
-              refs: [15],
+              refs: [15, 16],
+              children: [
+                {
+                  id: "trim",
+                  form: "trim",
+                  lang: "English",
+                  gloss: "neat and in good order",
+                  kind: "modern",
+                  sense: "firm",
+                  disputed: true,
+                  note: "trim 'is missing in Middle English after about 1250, which makes connection uncertain' (etymonline).",
+                  quote: "“the word is missing in Middle English after about 1250, which makes connection uncertain.” (etymonline)",
+                  refs: [15],
+                },
+              ],
             },
           ],
         },
       ],
     },
-    {
-      id: "pgmc-trugaz",
-      form: "*trugaz",
-      lang: "Proto-Germanic",
-      gloss: "trough, wooden vessel (← *dru-ko-)",
-      kind: "reconstructed",
-      sense: "object",
-      quote: "“*drukós ('trough, vessel'), derived from *dóru ('tree, wood').” (Wiktionary)",
-      refs: [17, 18],
-      children: [
-        {
-          id: "oe-trog",
-          form: "trog",
-          lang: "Old English",
-          gloss: "shallow wooden vessel",
-          kind: "attested",
-          sense: "object",
-          refs: [17],
-          children: [
-            { id: "trough", form: "trough", lang: "English", gloss: "a long open container", kind: "modern", sense: "object", refs: [17] },
-          ],
-        },
-        { id: "de-trog", form: "Trog", lang: "German", gloss: "trough", kind: "modern", sense: "object", refs: [17] },
-      ],
-    },
-    {
-      id: "pgmc-trauja",
-      form: "*traują",
-      lang: "Proto-Germanic",
-      gloss: "(probably) a wooden vessel",
-      kind: "reconstructed",
-      sense: "object",
-      note: "PIE link per etymonline (*dreu-, variant of *deru-); the Wiktionary Old English page stops at Proto-Germanic.",
-      quote: "“from PIE *dreu-, variant of root *deru- … original sense ‘might have been wooden vessel.’” (etymonline)",
-      refs: [19],
-      children: [
-        {
-          id: "oe-treg",
-          form: "trēg",
-          lang: "Old English",
-          gloss: "flat wooden board with a rim",
-          kind: "attested",
-          sense: "object",
-          refs: [19],
-          children: [
-            { id: "tray", form: "tray", lang: "English", gloss: "a flat carrying board", kind: "modern", sense: "object", refs: [19] },
-          ],
-        },
-      ],
-    },
-    {
-      id: "pgmc-terwa",
-      form: "*terwą",
-      lang: "Proto-Germanic",
-      gloss: "tar — 'the pitch of (certain) trees' (← *derw-)",
-      kind: "reconstructed",
-      sense: "object",
-      quote: "“literally ‘the pitch of (certain kinds) of trees’ … from PIE *derw-, a variant of the root *deru-.” (etymonline)",
-      refs: [20, 21],
-      children: [
-        {
-          id: "oe-teoru",
-          form: "teoru",
-          lang: "Old English",
-          gloss: "tar, bitumen, resin",
-          kind: "attested",
-          sense: "object",
-          refs: [20],
-          children: [
-            { id: "tar", form: "tar", lang: "English", gloss: "dark viscous wood/coal pitch", kind: "modern", sense: "object", refs: [20] },
-          ],
-        },
-        { id: "de-teer", form: "Teer", lang: "German", gloss: "tar", kind: "modern", sense: "object", refs: [21] },
-      ],
-    },
 
-    // ───────────── HELLENIC (Greek) ─────────────
-    {
-      id: "gk-drys",
-      form: "δρῦς (drŷs)",
-      lang: "Ancient Greek",
-      gloss: "oak; tree",
-      kind: "attested",
-      sense: "oak",
-      quote: "“From oblique case forms with *drew-, a stem of Proto-Indo-European *dóru ('tree').” (Wiktionary)",
-      refs: [38],
-      children: [
-        {
-          id: "gk-dryas",
-          form: "Δρυάς (Dryás)",
-          lang: "Ancient Greek",
-          gloss: "wood-nymph",
-          kind: "attested",
-          sense: "tree",
-          refs: [39],
-          children: [
-            { id: "dryad", form: "dryad", lang: "English", gloss: "a tree nymph", kind: "modern", sense: "tree", refs: [39] },
-            { id: "hamadryad", form: "hamadryad", lang: "English", gloss: "nymph fated to die with her tree", kind: "modern", sense: "tree", note: "hama- 'together with' + dryas.", refs: [39] },
-          ],
-        },
-      ],
-    },
-    {
-      id: "gk-doru",
-      form: "δόρυ (dóry)",
-      lang: "Ancient Greek",
-      gloss: "wood; spear-shaft, spear",
-      kind: "attested",
-      sense: "object",
-      quote: "“From Proto-Hellenic *dóru, from Proto-Indo-European *dóru.” (Wiktionary)",
-      refs: [40],
-      children: [
-        { id: "dory", form: "dory / doru", lang: "English", gloss: "the long hoplite spear", kind: "modern", sense: "object", note: "Not the flat-bottomed boat, nor the fish 'John Dory' — both unrelated.", refs: [40, 41] },
-      ],
-    },
-    {
-      id: "gk-dendron",
-      form: "δένδρον (déndron)",
-      lang: "Ancient Greek",
-      gloss: "tree",
-      kind: "attested",
-      sense: "tree",
-      disputed: true,
-      note: "A reduplicated *der-drew-om based on *dóru, but 'this type of reduplication is highly atypical, so the formation must be regarded as uncertain' (Wiktionary).",
-      quote: "“this type of reduplication is highly atypical, so the formation must be regarded as uncertain.” (Wiktionary)",
-      refs: [42],
-      children: [
-        { id: "dendrite", form: "dendrite", lang: "English", gloss: "branching, tree-like form (incl. neuron)", kind: "modern", sense: "tree", refs: [43] },
-        { id: "dendro", form: "dendro- / dendrochronology", lang: "English", gloss: "tree- (combining form); tree-ring dating", kind: "modern", sense: "tree", refs: [44] },
-        { id: "rhododendron", form: "rhododendron", lang: "English", gloss: "'rose-tree' shrub", kind: "modern", sense: "tree", refs: [45] },
-        { id: "philodendron", form: "philodendron", lang: "English", gloss: "'tree-loving' climbing plant", kind: "modern", sense: "tree", refs: [46] },
-      ],
-    },
-    {
-      id: "gk-drymos",
-      form: "δρυμός (drymós)",
-      lang: "Ancient Greek",
-      gloss: "thicket, oak forest",
-      kind: "attested",
-      sense: "tree",
-      note: "Same root as δόρυ/δρῦς; no English descendant.",
-      refs: [47, 1],
-    },
-
-    // ───────────── ITALIC (Latin) ─────────────
-    {
-      id: "la-durus",
-      form: "dūrus",
-      lang: "Latin",
-      gloss: "hard, tough, harsh",
-      kind: "attested",
-      sense: "firm",
-      disputed: true,
-      note: "AHD/Watkins (and etymonline) derive dūrus from *deru- 'be firm'. But de Vaan (2008) prefers PIE *duh₂-ró- 'long' (← *dweh₂- 'far, long'). The whole hard-words family below hangs on this one contested step.",
-      quote: "“there are semantic problems if the change ‘long’ > ‘enduring’ is not accepted.” (de Vaan, via Wiktionary)",
-      refs: [26, 27, 24, 2],
-      children: [
-        { id: "durable", form: "durable", lang: "English", gloss: "able to last", kind: "modern", sense: "firm", refs: [28] },
-        { id: "endure", form: "endure", lang: "English", gloss: "to last; to bear", kind: "modern", sense: "firm", note: "Latin indūrāre 'make hard'.", refs: [31] },
-        { id: "duration", form: "duration", lang: "English", gloss: "length of time", kind: "modern", sense: "firm", refs: [29] },
-        { id: "during", form: "during", lang: "English", gloss: "throughout the time of", kind: "modern", sense: "firm", refs: [30] },
-        { id: "dour", form: "dour", lang: "English", gloss: "stern, gloomy, hard", kind: "modern", sense: "firm", refs: [33] },
-        { id: "duress", form: "duress", lang: "English", gloss: "coercion (Latin dūritia 'hardness')", kind: "modern", sense: "firm", refs: [34] },
-        { id: "obdurate", form: "obdurate", lang: "English", gloss: "stubborn, hardened", kind: "modern", sense: "firm", refs: [35] },
-        { id: "indurate", form: "indurate", lang: "English", gloss: "to harden", kind: "modern", sense: "firm", refs: [36] },
-        { id: "duramen", form: "duramen", lang: "English", gloss: "heartwood", kind: "modern", sense: "object", refs: [24] },
-        { id: "duramater", form: "dura mater", lang: "English", gloss: "'hard mother' — tough brain membrane", kind: "modern", sense: "firm", refs: [37] },
-      ],
-    },
-
-    // ───────────── CELTIC ─────────────
+    // *daru "oak" (Goidelic Celtic) → Derry
     {
       id: "pc-daru",
-      form: "*daru / *derwo-",
+      form: "*daru",
       lang: "Proto-Celtic",
-      gloss: "oak (a 'tree → oak' narrowing)",
+      gloss: "oak",
       kind: "reconstructed",
       sense: "oak",
+      note: "Celtic narrowed the inherited 'tree' to 'oak'.",
       quote: "“From Proto-Indo-European *dóru ('tree').” (Wiktionary)",
-      refs: [57, 59],
+      refs: [57, 58],
       children: [
         {
           id: "oir-dair",
-          form: "daur / dair",
+          form: "dair",
           lang: "Old Irish",
           gloss: "oak",
           kind: "attested",
@@ -423,35 +430,105 @@ export const TREE: EtymNode = {
               kind: "modern",
               sense: "oak",
               refs: [60],
-              children: [
-                { id: "derry", form: "Derry", lang: "place name", gloss: "city < Daire 'oak grove'", kind: "modern", sense: "oak", refs: [60, 61] },
-              ],
+              children: [{ id: "derry", form: "Derry", lang: "place name", gloss: "a city named for its oak grove", kind: "modern", sense: "oak", refs: [60, 61] }],
             },
           ],
         },
-        { id: "cy-derw", form: "derw", lang: "Welsh", gloss: "oaks; oak (collective)", kind: "modern", sense: "oak", refs: [59] },
       ],
     },
+
+    // *trugaz "trough" (Germanic, *dru-ko-)
+    {
+      id: "pgmc-trugaz",
+      form: "*trugaz",
+      lang: "Proto-Germanic",
+      gloss: "trough, wooden vessel",
+      kind: "reconstructed",
+      sense: "object",
+      note: "Its own formation (*dru-ko-) — no closer cognate here, so it sits on the root.",
+      quote: "“*drukós ('trough, vessel'), derived from *dóru ('tree, wood').” (Wiktionary)",
+      refs: [17, 18],
+      children: [
+        {
+          id: "oe-trog",
+          form: "trog",
+          lang: "Old English",
+          gloss: "shallow wooden vessel",
+          kind: "attested",
+          sense: "object",
+          refs: [17],
+          children: [{ id: "trough", form: "trough", lang: "English", gloss: "a long open container", kind: "modern", sense: "object", refs: [17] }],
+        },
+        { id: "de-trog", form: "Trog", lang: "German", gloss: "trough", kind: "modern", sense: "object", refs: [17] },
+      ],
+    },
+
+    // δένδρον: a unique reduplication, its own formation (Greek)
+    {
+      id: "gk-dendron",
+      form: "δένδρον",
+      translit: "déndron",
+      lang: "Ancient Greek",
+      gloss: "tree",
+      kind: "attested",
+      sense: "tree",
+      disputed: true,
+      note: "A reduplicated form based on *dóru, but 'this type of reduplication is highly atypical, so the formation must be regarded as uncertain' (Wiktionary).",
+      quote: "“this type of reduplication is highly atypical, so the formation must be regarded as uncertain.” (Wiktionary)",
+      refs: [42],
+      children: [
+        { id: "dendrite", form: "dendrite", lang: "English", gloss: "a branching, tree-like form", kind: "modern", sense: "tree", refs: [43] },
+        { id: "dendro", form: "dendro-", lang: "English", gloss: "tree- (combining form)", kind: "modern", sense: "tree", refs: [44] },
+        { id: "rhododendron", form: "rhododendron", lang: "English", gloss: "a flowering 'rose-tree' shrub", kind: "modern", sense: "tree", refs: [45] },
+        { id: "philodendron", form: "philodendron", lang: "English", gloss: "a 'tree-loving' climbing plant", kind: "modern", sense: "tree", refs: [46] },
+      ],
+    },
+
+    // *traują "tray" (Germanic)
+    {
+      id: "pgmc-trauja",
+      form: "*traują",
+      lang: "Proto-Germanic",
+      gloss: "wooden vessel",
+      kind: "reconstructed",
+      sense: "object",
+      quote: "“from PIE *dreu-, variant of root *deru- … original sense ‘might have been wooden vessel.’” (etymonline)",
+      refs: [19],
+      children: [
+        {
+          id: "oe-treg",
+          form: "trēg",
+          lang: "Old English",
+          gloss: "flat wooden board with a rim",
+          kind: "attested",
+          sense: "object",
+          refs: [19],
+          children: [{ id: "tray", form: "tray", lang: "English", gloss: "a flat carrying board", kind: "modern", sense: "object", refs: [19] }],
+        },
+      ],
+    },
+
+    // *daru → druid (Celtic, disputed) — direct reflex of the root
     {
       id: "pc-druwits",
       form: "*druwits",
       lang: "Proto-Celtic",
-      gloss: "druid — 'oak-knower' or 'firm/great knower'",
+      gloss: "a druid",
       kind: "reconstructed",
       sense: "other",
       disputed: true,
-      note: "First element + *weid- 'to know'. The 'oak' (*deru-) reading is 'doubtful both on phonological and historical grounds'; since the 1960s scholars prefer *drew- 'firm, solid' → 'great sage'. Only the 'oak' gloss is contested.",
+      note: "Built on *weid- 'to know'. The old 'oak-knower' reading is 'doubtful'; since the 1960s scholars read the first element as *drew- 'firm, solid' → 'great sage'.",
       quote: "“The connection with 'oak' is doubtful both on phonological and historical grounds.” (Wiktionary)",
       refs: [48, 49, 50],
-      children: [
-        { id: "druid", form: "druid", lang: "English", gloss: "Celtic priest/seer", kind: "modern", sense: "other", refs: [48, 50] },
-      ],
+      children: [{ id: "druid", form: "druid", lang: "English", gloss: "a Celtic priest or seer", kind: "modern", sense: "other", refs: [48, 50] }],
     },
 
-    // ───────────── INDO-IRANIAN ─────────────
+    // ── bare-noun reflexes of *dóru (no closer shared ancestor) ──
+    { id: "hit-taru", form: "𒋫𒊒", translit: "taru", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested Indo-European — a ~4,000-year-old clay-tablet word.", refs: [1] },
     {
       id: "sa-daru",
-      form: "दारु (dāru)",
+      form: "दारु",
+      translit: "dāru",
       lang: "Sanskrit",
       gloss: "wood, timber",
       kind: "attested",
@@ -459,91 +536,33 @@ export const TREE: EtymNode = {
       quote: "“from Proto-Indo-Iranian *dā́ru ('tree, wood'), from Proto-Indo-European *dóru.” (Wiktionary)",
       refs: [51],
       children: [
-        { id: "sa-daruna", form: "दारुण (dāruṇa)", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "From dāru 'wood' — first the hardness of wood, then 'harsh'.", refs: [54] },
+        { id: "sa-daruna", form: "दारुण", translit: "dāruṇa", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "The hardness of wood, generalised to 'harsh'.", refs: [54] },
         {
           id: "sa-devadaru",
-          form: "देवदारु (devadāru)",
+          form: "देवदारु",
+          translit: "devadāru",
           lang: "Sanskrit",
-          gloss: "'divine tree' (deva + dāru)",
+          gloss: "divine tree",
           kind: "attested",
           sense: "tree",
           refs: [55, 56],
-          children: [
-            { id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", refs: [55, 56] },
-          ],
+          children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", refs: [55, 56] }],
         },
       ],
     },
-    { id: "sa-dru", form: "द्रु (dru)", lang: "Sanskrit", gloss: "wood; tree, branch", kind: "attested", sense: "tree", refs: [52] },
-    { id: "sa-druma", form: "द्रुम (druma)", lang: "Sanskrit", gloss: "tree (← *drumós)", kind: "attested", sense: "tree", refs: [53] },
-
-    // ───────────── BALTO-SLAVIC ─────────────
+    { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [1] },
     {
-      id: "psl-dervo",
-      form: "*dervo",
-      lang: "Proto-Slavic",
-      gloss: "tree, wood",
-      kind: "reconstructed",
-      sense: "tree",
-      quote: "“from Proto-Balto-Slavic *dérwan, from Proto-Indo-European *derw-o-m.” (Wiktionary)",
-      refs: [62],
-      children: [
-        { id: "ru-derevo", form: "де́рево (dérevo)", lang: "Russian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
-        { id: "pl-drzewo", form: "drzewo", lang: "Polish", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
-        { id: "ocs-drevo", form: "дрѣво (drěvo)", lang: "Old Church Slavonic", gloss: "tree", kind: "attested", sense: "tree", refs: [62] },
-      ],
-    },
-    {
-      id: "psl-sdorvu",
-      form: "*sъdorvъ",
-      lang: "Proto-Slavic",
-      gloss: "healthy — 'of good wood'?",
-      kind: "reconstructed",
-      sense: "other",
-      disputed: true,
-      note: "*sъ- 'good' + *-dorv-. The popular 'made of good wood' reading links *-dorv- to *dóru 'tree'; but Wiktionary calls the second element's origin 'uncertain', and Meillet/Derksen instead derive it from *dʰer- 'to support, hold'.",
-      quote: "“The exact origin of the second component *dorv- is uncertain.” (Wiktionary)",
-      refs: [63],
-      children: [
-        { id: "ru-zdorov", form: "здоро́вый (zdoróvyj)", lang: "Russian", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
-        { id: "pl-zdrowy", form: "zdrowy", lang: "Polish", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
-      ],
-    },
-    { id: "lt-derva", form: "derva", lang: "Lithuanian", gloss: "tar; resinous wood, kindling", kind: "modern", sense: "object", note: "From Proto-Balto-Slavic *dérwa 'tree' — the Baltic cousin of Germanic tar.", refs: [64] },
-
-    // ───────────── ANATOLIAN ─────────────
-    { id: "hit-taru", form: "𒋫𒊒 (taru / tāru)", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested Indo-European; these are ~4,000-year-old clay-tablet words.", refs: [1] },
-    { id: "luw-taru", form: "𒋫𒀀𒊒 (tāru)", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [1] },
-
-    // ───────────── ALBANIAN ─────────────
-    {
-      id: "sq-dru",
-      form: "dru",
-      lang: "Albanian",
-      gloss: "wood, tree; firewood; timber",
-      kind: "modern",
-      sense: "tree",
-      quote: "“from Proto-Albanian *druwa, from Proto-Indo-European *druh₂-ó-m, from *dóru.” (Wiktionary)",
-      refs: [65],
-    },
-
-    // ───────────── ARMENIAN ─────────────
-    {
-      id: "hy-tram",
-      form: "տրամ (tram)",
-      lang: "Old Armenian",
-      gloss: "firm, solid",
+      id: "txb-or",
+      form: "or",
+      lang: "Tocharian",
+      gloss: "wood",
       kind: "attested",
-      sense: "firm",
-      note: "From *dru-rā-mo- 'firm, solid', related to *dóru — the 'firm' face of the root, cognate with Germanic *trumaz.",
-      quote: "“from Proto-Indo-European *dru-rā-mo ('firm, solid') … related to *dóru ('tree').” (Wiktionary)",
-      refs: [66],
+      sense: "tree",
+      note: "From the Tarim Basin, in western China.",
+      refs: [1],
+      children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [1] }],
     },
-    { id: "hy-torg", form: "տորգ (torg)", lang: "Old Armenian", gloss: "wooden framework; fabric, net", kind: "attested", sense: "object", refs: [1] },
-    { id: "hy-tarr", form: "տարր (tarr)", lang: "Old Armenian", gloss: "element, matter, substance", kind: "attested", sense: "other", refs: [1] },
-
-    // ───────────── TOCHARIAN ─────────────
-    { id: "txb-or", form: "or", lang: "Tocharian A/B", gloss: "wood", kind: "attested", sense: "tree", note: "From the Tarim Basin (western China).", refs: [1] },
-    { id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood (plural of or)", kind: "attested", sense: "object", refs: [1] },
+    { id: "hy-tram", form: "տրամ", translit: "tram", lang: "Old Armenian", gloss: "firm, solid", kind: "attested", sense: "firm", quote: "“from Proto-Indo-European *dru-rā-mo ('firm, solid').” (Wiktionary)", refs: [66] },
+    { id: "hy-tarr", form: "տարր", translit: "tarr", lang: "Old Armenian", gloss: "element, matter, substance", kind: "attested", sense: "other", refs: [1] },
   ],
 };

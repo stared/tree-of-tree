@@ -31,6 +31,7 @@ export function DetailPanel({ node, accent, onClose }: Props) {
       </div>
 
       <h3 className="detail-form">{node.form}</h3>
+      {node.translit && <div className="detail-translit">[{node.translit}]</div>}
       <div className="detail-lang">{node.lang}</div>
       <p className="detail-gloss">“{node.gloss}”</p>
 
