@@ -42,18 +42,20 @@ const STEPS: Step[] = [
   {
     key: "faith",
     focus: ["pgmc-treuwaz", "pgmc-trausta"],
-    title: "Firmness became faith → true, truth, trust",
+    title: "“Firm as a tree” → true, trust",
     body: (
       <>
-        The root’s <i>other</i> sense — “firm, steadfast” — gave Germanic{" "}
-        <b>*treuwaz</b> “having good faith.” From it: <b>true</b>, <b>truth</b>,
-        its doublet <b>troth</b> (and <b>betroth</b>), <b>trow</b>, even{" "}
-        <b>truce</b>. A sibling, <b>*traustą</b> “firm, strong,” gave Old Norse{" "}
-        <i>traust</i> → English <b>trust</b>, and German <i>Trost</i> “comfort.”
+        Here’s the surprise the dictionaries confirm: <b>true</b> is a{" "}
+        <i>tree-word</i>. From the same oblique stem <b>*dréw-</b> as <i>tree</i>,
+        Germanic <b>*treuwaz</b> meant “firm, steadfast — as a tree,” giving{" "}
+        <b>true</b>, <b>truth</b>, <b>troth</b>/<b>betroth</b>, <b>trow</b>,{" "}
+        <b>truce</b>. Its close kin <b>*traustą</b> gave <b>trust</b> (and German{" "}
+        <i>Trost</i> “comfort”).
         <br />
         <small>
-          A caution: this is shared <i>ancestry</i>, not identity. “True” doesn’t
-          literally mean “tree” — both just descend from “be firm.”
+          Not folk etymology: Orel derives “true” straight from the tree-word,
+          and Matasović spells the chain out — <i>“firm as an oak &gt; strong &gt;
+          true.”</i>
         </small>
       </>
     ),
@@ -64,10 +66,11 @@ const STEPS: Step[] = [
     title: "Things made of wood → trough, tray, tar, trim",
     body: (
       <>
-        Wood you can shape leaves its own trail: <b>trough</b> (*trugaz, a
-        wooden vessel), <b>tray</b> (*traują), and <b>tar</b> — literally “the
-        pitch of certain trees” (*terwą). The “firm” adjective <b>*trumaz</b>{" "}
-        gave Old English <i>trum</i> “strong” and, more shakily, <b>trim</b>.
+        Wood you can shape leaves its own trail: <b>trough</b> and <b>tray</b>{" "}
+        both from <b>*dru-ko-</b> “vessel,” and <b>tar</b> — literally “the pitch
+        of certain trees” — from the o-grade <b>*derw-o-</b>. The “firm” word{" "}
+        <b>*trumaz</b> (with δρυμός and Sanskrit <i>druma</i>) gave Old English{" "}
+        <i>trum</i> “strong” and, more shakily, <b>trim</b>.
       </>
     ),
   },
@@ -155,7 +158,7 @@ const STEPS: Step[] = [
   },
   {
     key: "far",
-    focus: ["hit-taru", "txb-or", "hy-tram", "sq-dru", "sa-daru"],
+    focus: ["hit-taru", "txb-or", "hy-torg", "sq-dru", "sa-daru"],
     title: "To the edges of the family",
     body: (
       <>

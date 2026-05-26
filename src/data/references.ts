@@ -74,4 +74,21 @@ export const REFERENCES: Record<number, Reference> = {
   64: { id: 64, label: "Wiktionary — derva (Lithuanian)", url: "https://en.wiktionary.org/wiki/derva" },
   65: { id: 65, label: "Wiktionary — dru (Albanian)", url: "https://en.wiktionary.org/wiki/dru" },
   66: { id: 66, label: "Wiktionary — տրամ tram (Old Armenian)", url: "https://en.wiktionary.org/wiki/%D5%BF%D6%80%D5%A1%D5%B4" },
+
+  // ── scholarly etymological dictionaries (consulted in full text) ──
+  67: { id: 67, label: "Kroonen — Etym. Dict. of Proto-Germanic (Brill 2013), pp. 520–523", url: "https://archive.org/details/etymological-dictionary-of-proto-germanic" },
+  68: { id: 68, label: "Orel — Handbook of Germanic Etymology (Brill 2003), pp. 409–410", url: "https://archive.org/details/Orel-AHandbookOfGermanicEtymology" },
+  69: { id: 69, label: "Beekes — Etym. Dict. of Greek (Brill 2010), pp. 315, 349, 356", url: "https://archive.org/details/etymological-dictionary-of-greek_202306" },
+  70: { id: 70, label: "Derksen — Etym. Dict. of the Slavic Inherited Lexicon (Brill 2008), pp. 99, 478–479", url: "https://archive.org/details/EtymologicalDictionaryOfTheSlavicInheritedLexicon_201310" },
+  71: { id: 71, label: "Derksen — Etym. Dict. of the Baltic Inherited Lexicon (Brill 2015), pp. 123, 434", url: "https://archive.org/details/derksen-etymological-dictionary-of-the-baltic-inherited-lexicon-2015" },
+  72: { id: 72, label: "Mayrhofer — EWAia I (Indo-Aryan), pp. 721, 759", url: "https://archive.org/details/etymologischesworterbuchdesaltindoarischenmayrhoferewa11992rep_25_b" },
+  73: { id: 73, label: "Turner — Comparative Dict. of the Indo-Aryan Languages (CDIAL), §6298–6299", url: "https://dsal.uchicago.edu/dictionaries/soas/" },
+  74: { id: 74, label: "Matasović — Etym. Dict. of Proto-Celtic (Brill 2009), pp. 91, 107", url: "https://archive.org/details/matasovic-etymological-dictionary-of-proto-celtic" },
+  75: { id: 75, label: "Martirosyan — Etym. Dict. of the Armenian Inherited Lexicon (Brill 2010), pp. 606–608, 617", url: "https://archive.org/details/HrachMartirosyanEtymologicalDictionaryOfTheArmenianInheritedLexicon" },
+  76: { id: 76, label: "Kloekhorst — Etym. Dict. of the Hittite Inherited Lexicon (Brill 2008), pp. 849–850", url: "https://archive.org/details/EtymologicalDictionaryOfTheHittiteInheritedLexicon" },
+  77: { id: 77, label: "Adams — A Dictionary of Tocharian B, s.v. or", url: "https://www.win.tue.nl/~aeb/natlang/tocharian/" },
+  78: { id: 78, label: "Orel — Albanian Etymological Dictionary (Brill 1998), p. 76", url: "https://archive.org/details/orel-a-concise-historical-grammar-of-the-albanian-language" },
+  79: { id: 79, label: "Pokorny — Indogermanisches etym. Wörterbuch (IEW), pp. 214–217 (deru-)", url: "https://starlingdb.org/cgi-bin/etymology.cgi?single=1&basename=/data/ie/piet&text_number=+188" },
+  80: { id: 80, label: "Mallory & Adams — Encyclopedia of Indo-European Culture (EIEC 1997), p. 598 'TREE'", url: "https://archive.org/details/EncyclopediaOfIndoEuropeanCulture" },
+  81: { id: 81, label: "Wodtko/Irslinger/Schneider — Nomina im Indogermanischen Lexikon (NIL 2008)", url: "https://archive.org/details/NIL_2008" },
 };

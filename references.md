@@ -237,7 +237,71 @@ These were checked and are recorded so they are **not** silently asserted:
 
 ---
 
-*Compiled 2026-05-26. Primary sources: Online Etymology Dictionary (Douglas Harper),
-Wiktionary, the American Heritage Dictionary of Indo-European Roots (Watkins),
-de Vaan's Etymological Dictionary of Latin, and Wikipedia. Where sources disagree,
-the disagreement itself is shown rather than resolved.*
+---
+
+## §5 — Scholarly dictionaries & revised verdicts (deep pass)
+
+Beyond etymonline/Wiktionary, the tree's structure and disputes are now grounded in the
+standard etymological dictionaries (consulted in full text). The descent now follows the
+reconstructed **ablaut paradigm** of the noun — nom. `*dóru`, oblique `*dréw-`, zero-grade
+`*dru-`, o-grade `*derw-o-` — rather than hanging descendants off the bare root.
+
+**Scholarly sources** (ids match `refs` in `etymology.ts`):
+- **[R67]** Kroonen, *Etym. Dict. of Proto-Germanic* (Brill 2013), pp. 520–523.
+- **[R68]** Orel, *A Handbook of Germanic Etymology* (Brill 2003), pp. 409–410.
+- **[R69]** Beekes, *Etym. Dict. of Greek* (Brill 2010), pp. 315, 349, 356.
+- **[R70]** Derksen, *EDSIL — Slavic* (Brill 2008), pp. 99, 478–479.
+- **[R71]** Derksen, *EDBIL — Baltic* (Brill 2015), pp. 123, 434.
+- **[R72]** Mayrhofer, *EWAia I* (Indo-Aryan), pp. 721, 759.
+- **[R73]** Turner, *CDIAL*, §6298–6299.
+- **[R74]** Matasović, *Etym. Dict. of Proto-Celtic* (Brill 2009), pp. 91, 107.
+- **[R75]** Martirosyan, *EDAIL — Armenian* (Brill 2010), pp. 606–608, 617.
+- **[R76]** Kloekhorst, *EDHIL — Hittite* (Brill 2008), pp. 849–850.
+- **[R77]** Adams, *A Dictionary of Tocharian B*, s.v. *or*.
+- **[R78]** Orel, *Albanian Etymological Dictionary* (Brill 1998), p. 76.
+- **[R79]** Pokorny, *IEW*, pp. 214–217 (*deru-*).
+- **[R80]** Mallory & Adams, *EIEC* (1997), p. 598 ("TREE").
+- **[R81]** Wodtko/Irslinger/Schneider, *NIL* (2008).
+
+### Revised verdicts
+
+**V1. true / trust ARE tree-words (connection upgraded from "disputed folk-gloss" to "accepted").**
+- Orel (Handbook 410): *"*trewwaz [‘true’] … Based on *trewan [‘tree’]."*
+- Kroonen (EDPG 522): *"there may be a connection to the PIE word for ‘wood’ (see *trewa-)"*; semantic parallel Lat. *robustus* ← *robur* "oak".
+- Matasović (EDPC 91): *"The semantic development … was ‘firm as an oak’ > ‘firm, strong’ > ‘true’."*
+- Kroonen unites *treuwaz* and *traustą* via the verb *trūēn-* "to trust" (root *dreuH-* "firm"). → In the tree, *treuwaz* and *traustą* now sit under the oblique stem **`*dréw-`**, beside *trewą* "tree".
+
+**V2. Latin dūrus — de Vaan REJECTS the *deru- link.** De Vaan (EDL 184) derives *dūrus* from PIE
+**`*du(e)h₂-ró-` "long, far"** (cf. Skt *dūrá* "far", Gk *dērós* "long"), NOT from *deru- "firm".
+The *deru- derivation is the Watkins/AHD tradition only `[R24, R2]`. Kept in the tree but dashed,
+with the dissent stated. *(supersedes the milder framing in §3 D1.)*
+
+**V3. Slavic zdorov / zdrowy — Derksen PREFERS a different root.** Derksen (EDSIL 478): Meillet's
+derivation from **`*dʰer-` "hold firm"** (Skt *dhruvá-* "firm") *"is preferable"* to the "good wood"
+(*dóru*) reading, because Winter's law fails on the latter. (He softens toward "good wood" in EDBIL
+2015 §434 after Petit 2004.) So the *drzewo* link is the minority view; kept but dashed.
+
+**V4. dāruṇa "hard" is derived from dāru "wood"** (Mayrhofer EWAia I 721: *"kein Beleg für *fest"*) —
+i.e. the "hard/firm" senses across the family are offshoots of "wood/oak", not proof of a separate
+"firm" root. Supports treating it as one family (cf. Pokorny, EIEC).
+
+**V5. druid — first element is the oak/tree word.** Matasović (EDPC 107): *"*dru-wid- is … the priest
+with ‘strong insight’"*, the first element being *derw-/*dru- "oak", metaphorically "strong, firm".
+Pliny's literal "oak" link (via Gk *drûs*) is folk-etymology, but the root is correct. Link to root
+treated as secure; only the precise gloss is nuanced.
+
+**V6. Removed: Old Armenian *tram* "firm".** Not present in Martirosyan's *EDAIL* (the standard
+authority) and no link to Germanic *trumaz there — it was a Wiktionary artifact. The genuine Armenian
+reflexes kept are *torg* "wooden frame" (← fem. *doru-i(h₂)-*) and *tarr* "element" (← *dóru-r*,
+tentative), per Martirosyan 606–608 `[R75]`.
+
+**On "one root or two":** Pokorny (IEW 214) and Watkins treat tree↔firm as one root (differing only on
+which sense is older); EIEC 598 calls the relation unresolved but leans unified; NIL/LIV tentatively
+split a verb *der- "to fix, make firm". This project shows them as one family (the majority view),
+branching by the noun's ablaut stems.
+
+---
+
+*Compiled 2026-05-26; deepened with the standard etymological dictionaries (Kroonen, Beekes,
+de Vaan, Derksen, Mayrhofer, Matasović, Martirosyan, Kloekhorst, Adams, Orel, Pokorny, EIEC, NIL).
+Where sources disagree, the disagreement is shown, not resolved.*
