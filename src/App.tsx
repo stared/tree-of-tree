@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
 import { buildLayout } from "./lib/layout";
-import { BRANCHES, TREE, type BranchId } from "./data/etymology";
+import { SENSES, TREE, type SenseId } from "./data/etymology";
 
 interface Step {
   key: string;
@@ -100,7 +100,7 @@ const STEPS: Step[] = [
   },
   {
     key: "latin",
-    focus: ["italic"],
+    focus: ["la-durus"],
     title: "The hard family → endure, durable… probably",
     body: (
       <>
@@ -155,7 +155,7 @@ const STEPS: Step[] = [
   },
   {
     key: "far",
-    focus: ["anatolian", "tocharian", "armenian", "albanian", "indo-iranian"],
+    focus: ["hit-taru", "txb-or", "hy-tram", "sq-dru", "sa-daru"],
     title: "To the edges of the family",
     body: (
       <>
@@ -207,7 +207,7 @@ export function App() {
   }, []);
 
   const selectedNode = selectedId ? layout.byId.get(selectedId) ?? null : null;
-  const selectedBranchColor = selectedNode?.color ?? "#999";
+  const selectedAccent = selectedNode?.color ?? "#999";
 
   return (
     <div className="page">
@@ -252,37 +252,39 @@ export function App() {
 
         <div className="graphic">
           <div className="graphic-inner">
-            <EtymologyTree
-              focusIds={STEPS[activeStep]?.focus ?? []}
-              showDisputed={showDisputed}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-            />
-
-            <div className="legend">
-              <div className="legend-branches">
-                {(Object.keys(BRANCHES) as BranchId[]).map((b) => (
-                  <span className="legend-chip" key={b}>
-                    <i style={{ background: BRANCHES[b].color }} />
-                    {BRANCHES[b].name}
-                  </span>
-                ))}
-              </div>
-              <label className="legend-toggle">
+            {/* legend lives ABOVE the chart, not on it. it explains the COLOURS,
+                which encode meaning — language is shown per word in the tree. */}
+            <div className="sense-legend">
+              <span className="sense-legend-title">colour = meaning</span>
+              {(Object.keys(SENSES) as SenseId[]).map((s) => (
+                <span className="sense-chip" key={s}>
+                  <i style={{ background: SENSES[s].color }} />
+                  {SENSES[s].label}
+                </span>
+              ))}
+              <label className="sense-toggle">
                 <input
                   type="checkbox"
                   checked={showDisputed}
                   onChange={(e) => setShowDisputed(e.target.checked)}
                 />
-                show <span className="dashed-key">disputed</span> links (dashed, “?”)
+                <span className="dashed-key">disputed</span> links
               </label>
             </div>
 
-            <DetailPanel
-              node={selectedNode?.data ?? null}
-              branchColor={selectedBranchColor}
-              onClose={() => setSelectedId(null)}
-            />
+            <div className="tree-region">
+              <EtymologyTree
+                focusIds={STEPS[activeStep]?.focus ?? []}
+                showDisputed={showDisputed}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+              <DetailPanel
+                node={selectedNode?.data ?? null}
+                accent={selectedAccent}
+                onClose={() => setSelectedId(null)}
+              />
+            </div>
           </div>
         </div>
       </section>

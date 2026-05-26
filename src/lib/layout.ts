@@ -3,9 +3,10 @@
 //
 // The view is BOTTOM-UP: the PIE root sits at the base (largest screen-y),
 // modern words form the canopy at the top (smallest screen-y).
+// Node colour comes from the word's MEANING (sense), not its language.
 
 import { hierarchy, tree, type HierarchyPointNode } from "d3-hierarchy";
-import { BRANCHES, type BranchId, type EtymNode } from "../data/etymology";
+import { ROOT_COLOR, SENSES, type EtymNode } from "../data/etymology";
 
 export interface LaidNode {
   id: string;
@@ -13,8 +14,7 @@ export interface LaidNode {
   x: number; // screen x (breadth)
   y: number; // screen y (root at bottom)
   depth: number;
-  branch: BranchId | null;
-  color: string;
+  color: string; // by sense
   /** ids from this node up to (and including) the root */
   lineage: string[];
   hasChildren: boolean;
@@ -35,17 +35,9 @@ export interface Layout {
   height: number;
 }
 
-const ROOT_COLOR = "#4a3b2a";
-const BRANCHLESS = "#6b5d4f";
-
-/** Nearest ancestor (or self) carrying a `branch` field. */
-function resolveBranch(node: HierarchyPointNode<EtymNode>): BranchId | null {
-  let cur: HierarchyPointNode<EtymNode> | null = node;
-  while (cur) {
-    if (cur.data.branch) return cur.data.branch;
-    cur = cur.parent;
-  }
-  return null;
+function colorOf(node: EtymNode): string {
+  if (node.kind === "root") return ROOT_COLOR;
+  return node.sense ? SENSES[node.sense].color : SENSES.other.color;
 }
 
 export interface LayoutOptions {
@@ -65,32 +57,22 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     .separation((a, b) => (a.parent === b.parent ? 1 : 1.6));
   const positioned = layout(h);
 
-  const pointNodes = positioned.descendants();
+  const pointNodes: HierarchyPointNode<EtymNode>[] = positioned.descendants();
 
-  // Normalise x so the leftmost node sits at a small margin.
   const xs = pointNodes.map((n) => n.x);
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
 
   const byId = new Map<string, LaidNode>();
   const nodes: LaidNode[] = pointNodes.map((n) => {
-    const branch = resolveBranch(n);
-    const color =
-      n.data.kind === "root"
-        ? ROOT_COLOR
-        : branch
-          ? BRANCHES[branch].color
-          : BRANCHLESS;
-    const lineage = n.ancestors().map((a) => a.data.id);
     const laid: LaidNode = {
       id: n.data.id,
       data: n.data,
       x: n.x - minX,
       y: (maxDepth - n.depth) * dy,
       depth: n.depth,
-      branch,
-      color,
-      lineage,
+      color: colorOf(n.data),
+      lineage: n.ancestors().map((a) => a.data.id),
       hasChildren: !!n.children && n.children.length > 0,
     };
     byId.set(laid.id, laid);
@@ -108,13 +90,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     };
   });
 
-  return {
-    nodes,
-    links,
-    byId,
-    width: maxX - minX,
-    height: maxDepth * dy,
-  };
+  return { nodes, links, byId, width: maxX - minX, height: maxDepth * dy };
 }
 
 /** Smooth vertical S-curve between a parent (bottom) and child (top). */

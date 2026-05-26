@@ -17,8 +17,6 @@ function radius(node: LaidNode): number {
   switch (node.data.kind) {
     case "root":
       return 9;
-    case "branch":
-      return 6.5;
     case "modern":
       return 5;
     default:
@@ -28,7 +26,7 @@ function radius(node: LaidNode): number {
 
 function showGloss(node: LaidNode): boolean {
   const k = node.data.kind;
-  return !node.hasChildren || k === "root" || k === "branch" || k === "modern";
+  return !node.hasChildren || k === "root" || k === "modern";
 }
 
 export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: Props) {
@@ -223,14 +221,18 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
                     </text>
                   )}
 
-                  {/* label: root sits below the base, everything else reads up-right */}
+                  {/* label: root sits below the base, everything else reads up-right.
+                      stack is: WORD / gloss / language */}
                   {isRoot ? (
-                    <text className="label root-label" textAnchor="middle" y={28}>
+                    <text className="label root-label" textAnchor="middle" y={26}>
                       <tspan className="form" x={0}>
                         {n.data.form}
                       </tspan>
                       <tspan className="gloss" x={0} dy={16}>
                         {n.data.gloss}
+                      </tspan>
+                      <tspan className="lang" x={0} dy={14}>
+                        {n.data.lang}
                       </tspan>
                     </text>
                   ) : (
@@ -249,6 +251,9 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
                           {n.data.gloss}
                         </tspan>
                       )}
+                      <tspan className="lang" x={radius(n) + 5} dy={11}>
+                        {n.data.lang}
+                      </tspan>
                     </text>
                   )}
                 </g>

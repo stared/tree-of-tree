@@ -150,16 +150,62 @@ a {
   height: 100vh;
 }
 .graphic-inner {
-  position: relative;
   width: 100%;
   height: 100%;
-  background:
-    radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
+  display: flex;
+  flex-direction: column;
+}
+.tree-region {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
   overflow: hidden;
 }
 .tree-wrap {
   position: absolute;
   inset: 0;
+}
+
+/* sense legend — a bar ABOVE the chart (not floating over it) */
+.sense-legend {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--panel);
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.sense-legend-title {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-faint);
+}
+.sense-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sense-chip i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.sense-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  cursor: pointer;
+  white-space: nowrap;
 }
 .tree-wrap svg {
   display: block;
@@ -238,6 +284,13 @@ a {
   font-size: 10px;
   fill: var(--ink-soft);
 }
+.node .lang {
+  font-family: var(--sans);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  fill: var(--ink-faint);
+}
 .node-reconstructed .form {
   font-style: italic;
   fill: var(--ink-soft);
@@ -248,13 +301,6 @@ a {
 }
 .node-root .root-label .gloss {
   font-size: 12px;
-}
-.node-branch .form {
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-family: var(--sans);
-  font-weight: 700;
 }
 .node-modern .form {
   fill: #1f1a14;
@@ -272,50 +318,7 @@ a {
   stroke-width: 3px;
 }
 
-/* ──────────────────────── legend ──────────────────────── */
-.legend {
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  z-index: 4;
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  padding: 11px 13px;
-  max-width: 320px;
-  backdrop-filter: blur(3px);
-}
-.legend-branches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px 11px;
-  font-family: var(--sans);
-  font-size: 11px;
-  color: var(--ink-soft);
-}
-.legend-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.legend-chip i {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.legend-toggle {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 10px;
-  padding-top: 9px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-soft);
-  cursor: pointer;
-}
+/* ──────────────────────── legend key ──────────────────────── */
 .dashed-key {
   border-bottom: 2px dashed #b4452f;
   padding-bottom: 1px;
@@ -373,6 +376,21 @@ a {
   font-style: italic;
   margin: 0.7em 0 0;
   color: var(--ink);
+}
+.detail-sense {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.detail-sense-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
 }
 .detail-disputed {
   font-family: var(--sans);
@@ -471,9 +489,13 @@ a {
   .step {
     min-height: 78vh;
   }
-  .legend {
-    max-width: 230px;
-    font-size: 10px;
+  .sense-legend {
+    font-size: 10.5px;
+    gap: 4px 10px;
+    padding: 9px 12px;
+  }
+  .sense-toggle {
+    margin-left: 0;
   }
   .detail {
     width: min(300px, calc(100% - 24px));

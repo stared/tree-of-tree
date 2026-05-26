@@ -1,42 +1,45 @@
-import { BRANCHES, type EtymNode } from "../data/etymology";
+import { SENSES, type EtymNode } from "../data/etymology";
 import { REFERENCES } from "../data/references";
 
 interface Props {
   node: EtymNode | null;
-  branchColor: string;
+  accent: string; // the node's sense colour
   onClose: () => void;
 }
 
 const KIND_LABEL: Record<EtymNode["kind"], string> = {
   root: "Proto-Indo-European root",
-  branch: "language branch",
   reconstructed: "reconstructed form",
   attested: "attested historical word",
   modern: "modern word / borrowing",
 };
 
-export function DetailPanel({ node, branchColor, onClose }: Props) {
+export function DetailPanel({ node, accent, onClose }: Props) {
   if (!node) return null;
 
-  const branchName = node.branch ? BRANCHES[node.branch].name : null;
+  const sense = node.sense ? SENSES[node.sense] : null;
 
   return (
-    <aside className="detail" style={{ borderTopColor: branchColor }}>
+    <aside className="detail" style={{ borderTopColor: accent }}>
       <button className="detail-close" onClick={onClose} aria-label="Close">
         ×
       </button>
 
-      <div className="detail-kind" style={{ color: branchColor }}>
+      <div className="detail-kind" style={{ color: accent }}>
         {KIND_LABEL[node.kind]}
         {node.kind === "reconstructed" && " · *not attested, reconstructed"}
       </div>
 
       <h3 className="detail-form">{node.form}</h3>
-      <div className="detail-lang">
-        {node.lang}
-        {branchName && node.kind !== "branch" ? ` · ${branchName}` : ""}
-      </div>
+      <div className="detail-lang">{node.lang}</div>
       <p className="detail-gloss">“{node.gloss}”</p>
+
+      {sense && (
+        <div className="detail-sense">
+          <span className="detail-sense-dot" style={{ background: accent }} />
+          meaning: <b>{sense.label}</b>
+        </div>
+      )}
 
       {node.disputed && (
         <div className="detail-disputed">
