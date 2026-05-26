@@ -65,13 +65,33 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
 
+  // Vertical stagger: d3.tree() puts every node of a given depth on ONE line,
+  // which wastes vertical space and makes same-depth labels collide. We push
+  // each node UP by a fraction of dy, cycling through a pattern across the
+  // breadth-sorted nodes of its depth. Neighbours end at different heights, so
+  // their (rotated) labels no longer overlap — and branches get varied lengths,
+  // which reads as a more organic tree. Pushing only UP keeps every child above
+  // its parent (offset < dy always).
+  const STAGGER = [0, 0.66, 0.33, 0.5, 0.16];
+  const offsetById = new Map<string, number>();
+  const byDepth = new Map<number, HierarchyPointNode<EtymNode>[]>();
+  for (const n of pointNodes) {
+    const arr = byDepth.get(n.depth) ?? [];
+    arr.push(n);
+    byDepth.set(n.depth, arr);
+  }
+  for (const arr of byDepth.values()) {
+    arr.sort((a, b) => a.x - b.x);
+    arr.forEach((n, i) => offsetById.set(n.data.id, STAGGER[i % STAGGER.length] * dy));
+  }
+
   const byId = new Map<string, LaidNode>();
   const nodes: LaidNode[] = pointNodes.map((n) => {
     const laid: LaidNode = {
       id: n.data.id,
       data: n.data,
       x: n.x - minX,
-      y: (maxDepth - n.depth) * dy,
+      y: (maxDepth - n.depth) * dy - (offsetById.get(n.data.id) ?? 0),
       depth: n.depth,
       color: colorOf(n.data),
       lineage: n.ancestors().map((a) => a.data.id),
@@ -93,7 +113,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     };
   });
 
-  return { nodes, links, byId, width: maxX - minX, height: maxDepth * dy };
+  return { nodes, links, byId, width: maxX - minX, height: maxDepth * dy + dy };
 }
 
 /** Smooth vertical S-curve between a parent (bottom) and child (top). */

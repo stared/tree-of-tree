@@ -72,8 +72,36 @@ a {
   margin: 0 auto;
   max-width: 640px;
 }
+.hero-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 7px 16px;
+  margin: 2.4em auto 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.hero-key-label {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.hero-chip i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
 .hero-scroll {
-  margin-top: 3.5em;
+  margin-top: 3em;
   font-family: var(--sans);
   font-size: 13px;
   letter-spacing: 0.18em;
@@ -167,46 +195,6 @@ a {
   inset: 0;
 }
 
-/* sense legend — a bar ABOVE the chart (not floating over it) */
-.sense-legend {
-  flex: 0 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 16px;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--rule);
-  background: var(--panel);
-  font-family: var(--sans);
-  font-size: 12px;
-  color: var(--ink-soft);
-}
-.sense-legend-title {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--ink-faint);
-}
-.sense-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.sense-chip i {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.sense-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  cursor: pointer;
-  white-space: nowrap;
-}
 .tree-wrap svg {
   display: block;
   width: 100%;
@@ -243,6 +231,19 @@ a {
   font-family: var(--sans);
   font-size: 11.5px;
   color: var(--ink-faint);
+}
+.ctrl-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  padding: 5px 10px;
+  cursor: pointer;
 }
 
 /* links — stroke-width is set inline (organic, scales with subtree size) */
@@ -283,8 +284,8 @@ a {
 }
 .node .lang {
   font-family: var(--sans);
-  font-size: 8.5px;
-  letter-spacing: 0.04em;
+  font-size: 7px;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   fill: var(--ink-faint);
 }
@@ -485,14 +486,6 @@ a {
   }
   .step {
     min-height: 78vh;
-  }
-  .sense-legend {
-    font-size: 10.5px;
-    gap: 4px 10px;
-    padding: 9px 12px;
-  }
-  .sense-toggle {
-    margin-left: 0;
   }
   .detail {
     width: min(300px, calc(100% - 24px));

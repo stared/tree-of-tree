@@ -225,6 +225,17 @@ export function App() {
           on the right grows from the root upward, exactly like the thing it
           names.
         </p>
+
+        <div className="hero-key">
+          <span className="hero-key-label">colour = meaning</span>
+          {(Object.keys(SENSES) as SenseId[]).map((s) => (
+            <span className="hero-chip" key={s}>
+              <i style={{ background: SENSES[s].color }} />
+              {SENSES[s].short}
+            </span>
+          ))}
+        </div>
+
         <div className="hero-scroll">↓ scroll</div>
       </header>
 
@@ -252,30 +263,11 @@ export function App() {
 
         <div className="graphic">
           <div className="graphic-inner">
-            {/* legend lives ABOVE the chart, not on it. it explains the COLOURS,
-                which encode meaning — language is shown per word in the tree. */}
-            <div className="sense-legend">
-              <span className="sense-legend-title">colour = meaning</span>
-              {(Object.keys(SENSES) as SenseId[]).map((s) => (
-                <span className="sense-chip" key={s}>
-                  <i style={{ background: SENSES[s].color }} />
-                  {SENSES[s].label}
-                </span>
-              ))}
-              <label className="sense-toggle">
-                <input
-                  type="checkbox"
-                  checked={showDisputed}
-                  onChange={(e) => setShowDisputed(e.target.checked)}
-                />
-                <span className="dashed-key">disputed</span> links
-              </label>
-            </div>
-
             <div className="tree-region">
               <EtymologyTree
                 focusIds={STEPS[activeStep]?.focus ?? []}
                 showDisputed={showDisputed}
+                onToggleDisputed={() => setShowDisputed((v) => !v)}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
               />

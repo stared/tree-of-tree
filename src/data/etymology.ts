@@ -28,17 +28,18 @@ export type SenseId =
 
 export interface SenseMeta {
   id: SenseId;
-  label: string;
+  short: string; // one-word key label
+  label: string; // fuller description (detail panel)
   color: string;
 }
 
 export const SENSES: Record<SenseId, SenseMeta> = {
-  tree: { id: "tree", label: "tree · wood", color: "#4f9d52" },
-  oak: { id: "oak", label: "oak", color: "#8a6f2b" },
-  firm: { id: "firm", label: "firm · solid · hard", color: "#6b7785" },
-  faith: { id: "faith", label: "faithful · trust · truth", color: "#3f7fae" },
-  object: { id: "object", label: "thing made of wood", color: "#c4802f" },
-  other: { id: "other", label: "other · derived", color: "#9a8d7d" },
+  tree: { id: "tree", short: "tree", label: "tree · wood", color: "#4f9d52" },
+  oak: { id: "oak", short: "oak", label: "oak", color: "#8a6f2b" },
+  firm: { id: "firm", short: "firm", label: "firm · solid · hard", color: "#6b7785" },
+  faith: { id: "faith", short: "trust", label: "faithful · trust · truth", color: "#3f7fae" },
+  object: { id: "object", short: "wooden", label: "thing made of wood", color: "#c4802f" },
+  other: { id: "other", short: "other", label: "other · derived", color: "#9a8d7d" },
 };
 
 export const ROOT_COLOR = "#3b2f22";

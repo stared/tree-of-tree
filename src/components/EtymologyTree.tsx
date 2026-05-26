@@ -9,6 +9,7 @@ interface Props {
   /** ids the current narrative step wants to spotlight; empty = whole tree */
   focusIds: string[];
   showDisputed: boolean;
+  onToggleDisputed: () => void;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
 }
@@ -29,7 +30,13 @@ function showGloss(node: LaidNode): boolean {
   return !node.hasChildren || k === "root" || k === "modern";
 }
 
-export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: Props) {
+export function EtymologyTree({
+  focusIds,
+  showDisputed,
+  onToggleDisputed,
+  selectedId,
+  onSelect,
+}: Props) {
   const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 150 }), []);
 
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -197,7 +204,11 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
         <button onClick={() => fitTo(null)} title="Fit the whole tree">
           ⤢ Reset view
         </button>
-        <span className="hint">drag to pan · scroll to zoom · click a word</span>
+        <label className="ctrl-toggle" title="Show links scholars dispute (dashed)">
+          <input type="checkbox" checked={showDisputed} onChange={onToggleDisputed} />
+          <span className="dashed-key">disputed</span>
+        </label>
+        <span className="hint">drag · scroll · click a word</span>
       </div>
 
       <svg
