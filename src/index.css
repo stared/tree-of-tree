@@ -245,17 +245,14 @@ a {
   color: var(--ink-faint);
 }
 
-/* links */
+/* links — stroke-width is set inline (organic, scales with subtree size) */
 .link {
-  transition: opacity 0.45s ease;
-  stroke-width: 1.4px;
+  transition: opacity 0.4s ease;
 }
 .link.disputed {
   stroke-dasharray: 5 5;
-  stroke-width: 1.4px;
 }
 .link.trace {
-  stroke-width: 3px;
   opacity: 1 !important;
 }
 

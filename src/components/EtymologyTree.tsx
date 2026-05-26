@@ -30,7 +30,7 @@ function showGloss(node: LaidNode): boolean {
 }
 
 export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: Props) {
-  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 26, dy: 155 }), []);
+  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 150 }), []);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -146,6 +146,51 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
     return !activeIds.has(id);
   }
 
+  // Gloss + language only appear once you've zoomed in a bit, or when a small
+  // narrative focus is active — keeps the zoomed-out canopy from turning to mud.
+  const showDetailGlobal = transform.k >= 0.62;
+  const focusedSmall = !!activeIds && activeIds.size <= 18;
+
+  // Greedy label placement in SCREEN space: walk nodes by importance and keep a
+  // label only if it doesn't collide with one already kept. Zooming in spreads
+  // the anchors apart, so more labels reveal themselves — organic decluttering.
+  const labelShown = (() => {
+    const shown = new Set<string>();
+    const placed: Array<[number, number]> = [];
+    const prio = (n: LaidNode) =>
+      n.data.kind === "root" ? 0 : n.data.kind === "modern" ? 1 : n.hasChildren ? 2 : 3;
+    const sorted = [...visibleNodes].sort((a, b) => prio(a) - prio(b));
+    const minDist = 46;
+    for (const n of sorted) {
+      if (isDim(n.id)) continue;
+      const sx = n.x * transform.k + transform.x;
+      const sy = n.y * transform.k + transform.y;
+      const forced =
+        n.data.kind === "root" ||
+        n.id === selectedId ||
+        n.id === hoverId ||
+        !!hoverLineage?.has(n.id) ||
+        (focusedSmall && !!activeIds?.has(n.id));
+      if (forced) {
+        shown.add(n.id);
+        placed.push([sx, sy]);
+        continue;
+      }
+      if (sx < -120 || sx > size.w + 120 || sy < -80 || sy > size.h + 80) continue;
+      const collide = placed.some(([px, py]) => Math.abs(px - sx) < minDist && Math.abs(py - sy) < minDist);
+      if (!collide) {
+        shown.add(n.id);
+        placed.push([sx, sy]);
+      }
+    }
+    return shown;
+  })();
+
+  // organic branch thickness: more wood flows through a link with a bigger subtree
+  function strokeWidthFor(targetSubtree: number): number {
+    return Math.max(1.1, Math.min(7, 1 + Math.sqrt(targetSubtree) * 1.05));
+  }
+
   return (
     <div className="tree-wrap" ref={wrapRef}>
       <div className="tree-controls">
@@ -176,7 +221,13 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
                   d={linkPath(l)}
                   className={`link${l.disputed ? " disputed" : ""}${onHoverPath ? " trace" : ""}`}
                   stroke={l.target.color}
-                  style={{ opacity: dim ? 0.08 : l.disputed ? 0.85 : 0.55 }}
+                  strokeLinecap="round"
+                  style={{
+                    opacity: dim ? 0.07 : l.disputed ? 0.8 : 0.5,
+                    strokeWidth: l.disputed
+                      ? 1.4
+                      : Math.max(strokeWidthFor(l.target.subtreeSize), onHoverPath ? 2.6 : 0),
+                  }}
                 />
               );
             })}
@@ -190,6 +241,13 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
               const traced = hoverLineage?.has(n.id);
               const isRoot = n.data.kind === "root";
               const reconstructed = n.data.kind === "reconstructed";
+              const labeled = labelShown.has(n.id);
+              const detail =
+                isRoot ||
+                showDetailGlobal ||
+                selected ||
+                n.id === hoverId ||
+                (focusedSmall && !!activeIds?.has(n.id));
               return (
                 <g
                   key={n.id}
@@ -222,40 +280,45 @@ export function EtymologyTree({ focusIds, showDisputed, selectedId, onSelect }: 
                   )}
 
                   {/* label: root sits below the base, everything else reads up-right.
-                      stack is: WORD / gloss / language */}
-                  {isRoot ? (
-                    <text className="label root-label" textAnchor="middle" y={26}>
-                      <tspan className="form" x={0}>
-                        {n.data.form}
-                      </tspan>
-                      <tspan className="gloss" x={0} dy={16}>
-                        {n.data.gloss}
-                      </tspan>
-                      <tspan className="lang" x={0} dy={14}>
-                        {n.data.lang}
-                      </tspan>
-                    </text>
-                  ) : (
-                    <text
-                      className="label"
-                      transform="rotate(-32)"
-                      textAnchor="start"
-                      x={radius(n) + 5}
-                      y={2}
-                    >
-                      <tspan className="form" x={radius(n) + 5}>
-                        {n.data.form}
-                      </tspan>
-                      {showGloss(n) && (
-                        <tspan className="gloss" x={radius(n) + 5} dy={12}>
+                      stack is: WORD / gloss / language. Gloss + language only when
+                      `detail` (zoomed in or focused); whole label only when `labeled`
+                      (passed collision avoidance) or hovered/selected. */}
+                  {labeled &&
+                    (isRoot ? (
+                      <text className="label root-label" textAnchor="middle" y={26}>
+                        <tspan className="form" x={0}>
+                          {n.data.form}
+                        </tspan>
+                        <tspan className="gloss" x={0} dy={16}>
                           {n.data.gloss}
                         </tspan>
-                      )}
-                      <tspan className="lang" x={radius(n) + 5} dy={11}>
-                        {n.data.lang}
-                      </tspan>
-                    </text>
-                  )}
+                        <tspan className="lang" x={0} dy={14}>
+                          {n.data.lang}
+                        </tspan>
+                      </text>
+                    ) : (
+                      <text
+                        className="label"
+                        transform="rotate(-32)"
+                        textAnchor="start"
+                        x={radius(n) + 5}
+                        y={2}
+                      >
+                        <tspan className="form" x={radius(n) + 5}>
+                          {n.data.form}
+                        </tspan>
+                        {detail && showGloss(n) && (
+                          <tspan className="gloss" x={radius(n) + 5} dy={12}>
+                            {n.data.gloss}
+                          </tspan>
+                        )}
+                        {detail && (
+                          <tspan className="lang" x={radius(n) + 5} dy={11}>
+                            {n.data.lang}
+                          </tspan>
+                        )}
+                      </text>
+                    ))}
                 </g>
               );
             })}

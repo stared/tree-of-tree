@@ -18,6 +18,8 @@ export interface LaidNode {
   /** ids from this node up to (and including) the root */
   lineage: string[];
   hasChildren: boolean;
+  /** number of nodes in this node's subtree (incl. itself) — drives branch thickness */
+  subtreeSize: number;
 }
 
 export interface LaidLink {
@@ -74,6 +76,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
       color: colorOf(n.data),
       lineage: n.ancestors().map((a) => a.data.id),
       hasChildren: !!n.children && n.children.length > 0,
+      subtreeSize: n.descendants().length,
     };
     byId.set(laid.id, laid);
     return laid;
