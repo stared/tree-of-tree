@@ -31,7 +31,7 @@ export interface SenseMeta {
 export const SENSES: Record<SenseId, SenseMeta> = {
   tree: { id: "tree", short: "tree", label: "tree · wood", color: "#4f9d52" },
   oak: { id: "oak", short: "oak", label: "oak", color: "#8a6f2b" },
-  firm: { id: "firm", short: "firm", label: "firm · solid · hard", color: "#6b7785" },
+  firm: { id: "firm", short: "firm", label: "firm · solid · hard", color: "#8c5aa6" },
   faith: { id: "faith", short: "trust", label: "faithful · trust · truth", color: "#3f7fae" },
   object: { id: "object", short: "wooden", label: "thing made of wood", color: "#c4802f" },
   other: { id: "other", short: "other", label: "other · derived", color: "#9a8d7d" },

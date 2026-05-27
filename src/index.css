@@ -248,13 +248,13 @@ a {
   display: inline-block;
 }
 .legend-disputed {
-  color: #b4452f;
+  color: var(--ink-soft);
 }
 .legend-disputed .dash {
   width: 16px;
   height: 0;
   border-radius: 0;
-  border-top: 2px dashed #b4452f;
+  border-top: 2px dashed var(--ink-faint);
 }
 
 /* links — stroke-width is set inline (organic, scales with subtree size) */
