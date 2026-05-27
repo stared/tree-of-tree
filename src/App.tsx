@@ -152,7 +152,7 @@ const STEPS: Step[] = [
         <br />
         <small>
           <i>Dura lex, sed lex</i> — “the law is harsh, but it is the law.” If
-          de Vaan is right, even that harshness isn’t a tree. 🙂
+          de Vaan is right, even that harshness isn’t a tree.
         </small>
       </>
     ),
