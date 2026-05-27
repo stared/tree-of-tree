@@ -73,28 +73,12 @@ a {
   max-width: 640px;
 }
 .hero-scroll {
-  display: inline-block;
   margin-top: 3em;
   font-family: var(--sans);
   font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  transform-origin: 50% 0;
-  animation: drunk 2.6s ease-in-out infinite;
-}
-/* a tipsy stagger — irregular sway + roll, never quite steady on its feet */
-@keyframes drunk {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  15%  { transform: translate(-5px, 4px) rotate(-7deg); }
-  32%  { transform: translate(4px, 9px) rotate(6deg); }
-  48%  { transform: translate(-3px, 5px) rotate(-4deg); }
-  63%  { transform: translate(6px, 11px) rotate(8deg); }
-  80%  { transform: translate(-4px, 6px) rotate(-6deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-scroll { animation: none; }
 }
 
 /* ──────────────────────── scrolly ──────────────────────── */
