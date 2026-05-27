@@ -51,9 +51,16 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   const visibleNodes = layout.nodes;
   const visibleLinks = layout.links;
 
+  // "Reset view" lifts the narrative dimming so the WHOLE tree is lit again.
+  // Scrolling to another section re-arms the focus (effect below).
+  const [showAll, setShowAll] = useState(false);
+  useEffect(() => {
+    setShowAll(false);
+  }, [focusIds]);
+
   // active set for the current narrative focus: focus nodes + their ancestors + their subtrees
   const activeIds = useMemo(() => {
-    if (focusIds.length === 0) return null; // null = everything active
+    if (showAll || focusIds.length === 0) return null; // null = everything active
     const set = new Set<string>();
     for (const f of focusIds) {
       const fn = layout.byId.get(f);
@@ -61,7 +68,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
       for (const n of layout.nodes) if (n.lineage.includes(f)) set.add(n.id);
     }
     return set;
-  }, [focusIds, layout]);
+  }, [showAll, focusIds, layout]);
 
   const hoverLineage = useMemo(
     () => (hoverId ? new Set(layout.byId.get(hoverId)?.lineage ?? []) : null),
@@ -188,10 +195,10 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
       <div className="tree-controls">
         <button
           onClick={() => {
-            onSelect(null);
-            fitTo(null);
+            onSelect(null); // clear the clicked-node detail
+            setShowAll(true); // lift the narrative dimming — light the whole tree
+            fitTo(null); // and frame all of it
           }}
-          title="Deselect and fit the whole tree"
         >
           ⤢ Reset view
         </button>
