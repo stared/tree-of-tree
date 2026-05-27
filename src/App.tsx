@@ -42,8 +42,7 @@ const STEPS: Step[] = [
         In Germanic the root’s tree-sense became <b>*trewą</b>, then Old English{" "}
         <b>trēow</b>, then simply <b>tree</b>. This is really the English (and
         close-Germanic) line — Gothic <b>triu</b> and Old Norse <b>tré</b> keep
-        it too. Elsewhere the everyday word for a tree is something else
-        entirely: German <b>Baum</b>, Latin <b>arbor</b>, Greek <b>déndron</b>.
+        it too.
       </>
     ),
   },
@@ -80,23 +79,27 @@ const STEPS: Step[] = [
       <>
         Here’s the surprise the dictionaries confirm: <b>true</b> is a
         tree-word. From the same oblique stem <b>*dréw-</b> as <b>tree</b>,
-        Germanic <b>*treuwaz</b> meant <i>firm, steadfast — as a tree</i>,
-        giving <b>true</b>, <b>truth</b>, <b>troth</b>, <b>betroth</b>,{" "}
-        <b>trow</b>, <b>truce</b>. Its close kin <b>*traustą</b> gave{" "}
-        <b>trust</b> (and German <b>Trost</b> <i>comfort</i>).
+        Germanic <b>*treuwaz</b> meant <i>firm, steadfast — as a tree</i>. From
+        it grew <b>true</b> and <b>truth</b>; the <b>troth</b> you plight when
+        you <b>betroth</b>; the old verb <b>trow</b>, <i>to believe</i>; and
+        even a <b>truce</b>, a faith sworn between enemies. Its close kin{" "}
+        <b>*traustą</b> hardened into <b>trust</b>, and German <b>Trost</b>,{" "}
+        <i>comfort</i>.
       </>
     ),
   },
   {
-    key: "greek-oak",
-    focus: ["gk-drys"],
-    title: "The mightiest tree",
+    key: "oak",
+    focus: ["gk-drys", "pc-daru"],
+    title: "Narrowed to the oak",
     body: (
       <>
-        In Greek the root narrowed to the mightiest tree: <b>δρῦς [drŷs]</b>{" "}
-        <i>oak</i>. Its tree-nymphs, the <b>Dryades</b>, give us <b>dryad</b> —
-        and the <b>hamadryad</b>, the nymph fated to die together with her own
-        tree.
+        More than once the root narrowed from any tree to the mightiest one, the
+        oak. In Greek that oak is <b>δρῦς [drŷs]</b>, and its tree-nymphs, the{" "}
+        <b>Dryades</b>, give us <b>dryad</b> — and the <b>hamadryad</b>, fated to
+        die together with her own tree. Celtic did the same: <b>*daru</b> → Old
+        Irish <b>daur</b>, <b>dair</b>, Welsh <b>derw</b>, and the Irish{" "}
+        <b>doire</b> <i>oak grove</i> still names the city of <b>Derry</b>.
       </>
     ),
   },
@@ -134,7 +137,7 @@ const STEPS: Step[] = [
       <>
         Greek’s ordinary word for a tree, <b>δένδρον [déndron]</b>, looks like a
         reduplicated <b>*der-drew-om</b> — but the doubling is highly unusual,
-        so the link is uncertain (dashed here). On it we built{" "}
+        so the link stays uncertain. On it we built{" "}
         <b>dendrite</b>, <b>rhododendron</b> <i>rose-tree</i>,{" "}
         <b>philodendron</b> <i>tree-loving</i>, and <b>dendrochronology</b>.
       </>
@@ -143,31 +146,14 @@ const STEPS: Step[] = [
   {
     key: "latin",
     focus: ["la-durus"],
-    title: "The hard family",
+    title: "Dura lex, sed lex",
     body: (
       <>
         Latin <b>dūrus</b> <i>hard</i> looks like a perfect fit for a root
         meaning <i>firm</i>, and a long tradition files <b>endure</b>,{" "}
         <b>durable</b>, <b>duration</b>, <b>dour</b>, <b>duress</b>,{" "}
-        <b>obdurate</b>, even <b>dura mater</b> here. But that very first step is
-        disputed — shown dashed.
-        <br />
-        <small>
-          <b>Dura lex, sed lex</b> — <i>the law is harsh, but it is the law</i>.
-        </small>
-      </>
-    ),
-  },
-  {
-    key: "celtic",
-    focus: ["pc-daru"],
-    title: "The Celtic oak",
-    body: (
-      <>
-        Celtic took the general tree and narrowed it to one species — the oak in
-        particular: <b>*daru</b> → Old Irish <b>daur</b>, <b>dair</b>; Welsh{" "}
-        <b>derw</b>. The Irish <b>doire</b> <i>oak grove</i> still names the city
-        of <b>Derry</b> (<b>Daire</b>).
+        <b>obdurate</b>, even <b>dura mater</b> here. But that very first step —
+        from the tree-root to <i>hard</i> — is the disputed one.
       </>
     ),
   },
@@ -177,12 +163,13 @@ const STEPS: Step[] = [
     title: "Druids",
     body: (
       <>
-        The romantic story makes a <b>druid</b> an <i>oak-knower</i> (<b>*deru-</b>{" "}
-        <i>oak</i> + <b>*weid-</b> <i>to know</i>). Pliny said as much. But the
-        oak link is doubtful; the first element may instead be{" "}
-        <i>firm, strong</i> → <i>great sage</i>. Either way it lives in the{" "}
-        <b>*deru-</b> / <b>*drew-</b> complex; the oak meaning is the disputed
-        part.
+        A <b>druid</b> is, at heart, a <i>knower</i>: the second element is{" "}
+        <b>*weid-</b>, <i>to know</i> — the root behind <b>wit</b>. The first
+        element is the open part, and every reading rests on the same root. From{" "}
+        <b>*deru-</b> the tree it is an <i>oak-sage</i> or <i>tree-sage</i>;
+        from its strength-sense, a <i>great, firm sage</i>. Pliny liked the oak;
+        either way the druid stays inside the <b>*deru-</b> / <b>*drew-</b>{" "}
+        complex.
       </>
     ),
   },
@@ -197,10 +184,6 @@ const STEPS: Step[] = [
         <b>zdrowy</b> and Ukrainian <b>здоровий [zdorovyj]</b> <i>healthy</i>{" "}
         once meant <i>made of good wood</i> (<b>*sъ-</b> <i>good</i> +{" "}
         <b>*dorv-</b>).
-        <br />
-        <small>
-          A lovely idea — but that second step is uncertain, and shown dashed.
-        </small>
       </>
     ),
   },
