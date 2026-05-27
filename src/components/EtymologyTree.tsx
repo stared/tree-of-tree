@@ -212,8 +212,6 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
             disputed
           </span>
         </span>
-
-        <span className="hint">drag · scroll · click a word</span>
       </div>
 
       <svg
