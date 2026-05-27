@@ -176,10 +176,16 @@ a {
   position: absolute;
   top: 14px;
   left: 14px;
+  right: 14px;
   z-index: 4;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 10px 12px;
+  pointer-events: none; /* let drags pass through the gaps; children re-enable */
+}
+.tree-controls > * {
+  pointer-events: auto;
 }
 .tree-controls button {
   font-family: var(--sans);
@@ -213,19 +219,15 @@ a {
   cursor: pointer;
 }
 
-/* sense legend — single row pinned to the bottom of the chart, no caption */
+/* sense legend — sits inline on the same top control line; no caption.
+   colour = meaning; the dashed swatch = a link scholars dispute. */
 .tree-legend {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  display: flex;
+  display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 14px;
-  padding: 6px 13px;
-  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  gap: 12px;
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
   border: 1px solid var(--rule);
   border-radius: 999px;
   font-family: var(--sans);
@@ -244,6 +246,15 @@ a {
   height: 10px;
   border-radius: 50%;
   display: inline-block;
+}
+.legend-disputed {
+  color: #b4452f;
+}
+.legend-disputed .dash {
+  width: 16px;
+  height: 0;
+  border-radius: 0;
+  border-top: 2px dashed #b4452f;
 }
 
 /* links — stroke-width is set inline (organic, scales with subtree size) */

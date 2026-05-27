@@ -179,8 +179,8 @@ const STEPS: Step[] = [
       <>
         That’s the whole tree of <i>tree</i>. Drag to pan, scroll to zoom,{" "}
         <b>hover</b> any word to trace its line back to the root, and{" "}
-        <b>click</b> it for the gloss and the exact sources. Toggle the{" "}
-        <b>disputed links</b> off to see only what’s secure.
+        <b>click</b> it for the gloss and the exact sources. The{" "}
+        <b>dashed</b> links are the ones scholars dispute.
       </>
     ),
   },
@@ -189,7 +189,6 @@ const STEPS: Step[] = [
 export function App() {
   const layout = useMemo(() => buildLayout(TREE), []);
   const [activeStep, setActiveStep] = useState(0);
-  const [showDisputed, setShowDisputed] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -260,8 +259,6 @@ export function App() {
             <div className="tree-region">
               <EtymologyTree
                 focusIds={STEPS[activeStep]?.focus ?? []}
-                showDisputed={showDisputed}
-                onToggleDisputed={() => setShowDisputed((v) => !v)}
                 selectedId={selectedId}
                 onSelect={setSelectedId}
               />

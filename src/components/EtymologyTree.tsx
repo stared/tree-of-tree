@@ -8,8 +8,6 @@ import { SENSES, TREE, type SenseId } from "../data/etymology";
 interface Props {
   /** ids the current narrative step wants to spotlight; empty = whole tree */
   focusIds: string[];
-  showDisputed: boolean;
-  onToggleDisputed: () => void;
   selectedId: string | null;
   onSelect: (id: string | null) => void;
 }
@@ -25,13 +23,7 @@ function radius(node: LaidNode): number {
   }
 }
 
-export function EtymologyTree({
-  focusIds,
-  showDisputed,
-  onToggleDisputed,
-  selectedId,
-  onSelect,
-}: Props) {
+export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 150 }), []);
 
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -55,26 +47,9 @@ export function EtymologyTree({
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  // nodes hidden because they sit under a disputed link
-  const underDispute = useMemo(() => {
-    const set = new Set<string>();
-    for (const n of layout.nodes) {
-      if (n.lineage.some((id) => layout.byId.get(id)?.data.disputed)) set.add(n.id);
-    }
-    return set;
-  }, [layout]);
-
-  const visibleNodes = useMemo(
-    () => (showDisputed ? layout.nodes : layout.nodes.filter((n) => !underDispute.has(n.id))),
-    [layout, showDisputed, underDispute],
-  );
-  const visibleLinks = useMemo(
-    () =>
-      showDisputed
-        ? layout.links
-        : layout.links.filter((l) => !underDispute.has(l.target.id)),
-    [layout, showDisputed, underDispute],
-  );
+  // Disputed branches are always shown (dashed); the legend explains the dashing.
+  const visibleNodes = layout.nodes;
+  const visibleLinks = layout.links;
 
   // active set for the current narrative focus: focus nodes + their ancestors + their subtrees
   const activeIds = useMemo(() => {
@@ -152,7 +127,7 @@ export function EtymologyTree({
   useEffect(() => {
     fitTo(focusIds.length ? focusIds : null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusIds, size.w, size.h, showDisputed]);
+  }, [focusIds, size.w, size.h]);
 
   // A node is "active" only if it is a focus node, an ancestor of one (the
   // trunk leading to it), or a descendant of one — NOT merely a sibling that
@@ -223,21 +198,22 @@ export function EtymologyTree({
         <button onClick={toggleFullscreen} title="Toggle full screen">
           {isFullscreen ? "⤧ Exit full screen" : "⛶ Full screen"}
         </button>
-        <label className="ctrl-toggle" title="Show links scholars dispute (dashed)">
-          <input type="checkbox" checked={showDisputed} onChange={onToggleDisputed} />
-          <span className="dashed-key">disputed</span>
-        </label>
-        <span className="hint">drag · scroll · click a word</span>
-      </div>
 
-      {/* sense legend — a single row, on the chart, no caption */}
-      <div className="tree-legend">
-        {(Object.keys(SENSES) as SenseId[]).map((s) => (
-          <span className="legend-chip" key={s}>
-            <i style={{ background: SENSES[s].color }} />
-            {SENSES[s].short}
+        {/* sense legend, same line — colour = meaning; dashed = scholars disagree */}
+        <span className="tree-legend">
+          {(Object.keys(SENSES) as SenseId[]).map((s) => (
+            <span className="legend-chip" key={s}>
+              <i style={{ background: SENSES[s].color }} />
+              {SENSES[s].short}
+            </span>
+          ))}
+          <span className="legend-chip legend-disputed" title="A link scholars dispute">
+            <i className="dash" />
+            disputed
           </span>
-        ))}
+        </span>
+
+        <span className="hint">drag · scroll · click a word</span>
       </div>
 
       <svg
