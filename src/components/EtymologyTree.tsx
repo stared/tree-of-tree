@@ -188,9 +188,10 @@ export function EtymologyTree({
     return shown;
   })();
 
-  // organic branch thickness: more wood flows through a link with a bigger subtree
+  // organic branch thickness: more wood flows through a link with a bigger subtree.
+  // floor is generous so even a lone twig stays clearly attached (no "orphan" look).
   function strokeWidthFor(targetSubtree: number): number {
-    return Math.max(1.1, Math.min(7, 1 + Math.sqrt(targetSubtree) * 1.05));
+    return Math.max(1.8, Math.min(7.5, 1.4 + Math.sqrt(targetSubtree) * 1.05));
   }
 
   return (
@@ -229,10 +230,10 @@ export function EtymologyTree({
                   stroke={l.target.color}
                   strokeLinecap="round"
                   style={{
-                    opacity: dim ? 0.07 : l.disputed ? 0.8 : 0.5,
+                    opacity: dim ? 0.07 : l.disputed ? 0.9 : 0.72,
                     strokeWidth: l.disputed
-                      ? 1.4
-                      : Math.max(strokeWidthFor(l.target.subtreeSize), onHoverPath ? 2.6 : 0),
+                      ? 2
+                      : Math.max(strokeWidthFor(l.target.subtreeSize), onHoverPath ? 2.8 : 0),
                   }}
                 />
               );
