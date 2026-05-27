@@ -29,13 +29,39 @@ const STEPS: Step[] = [
   {
     key: "tree",
     focus: ["pgmc-trewa"],
-    title: "The literal branch → tree",
+    title: "The literal branch → English tree",
     body: (
       <>
         In Germanic the root’s tree-sense became <b>*trewą</b>, then Old English{" "}
-        <b>trēow</b>, then simply <b>tree</b>. The same form survives as Gothic{" "}
-        <i>triu</i> and Old Norse <i>tré</i>. (German <i>Baum</i> is a different
-        word entirely — see <i>beam</i>.)
+        <b>trēow</b>, then simply <b>tree</b>. This is really the <i>English</i>{" "}
+        (and close-Germanic) line — Gothic <i>triu</i> and Old Norse <i>tré</i>{" "}
+        keep it too. Elsewhere the everyday word for “tree” is something else
+        entirely: German <i>Baum</i>, Latin <i>arbor</i>, Greek <i>déndron</i>.
+      </>
+    ),
+  },
+  {
+    key: "objects",
+    focus: ["pgmc-trugaz", "pgmc-trauja"],
+    title: "Wood you can shape → trough, tray",
+    body: (
+      <>
+        Wood you can hollow and carve leaves its own trail: <b>trough</b> and{" "}
+        <b>tray</b> both descend from <b>*dru-ko-</b> “(wooden) vessel,” through
+        Old English <i>trog</i> and <i>trēg</i>.
+      </>
+    ),
+  },
+  {
+    key: "tar",
+    focus: ["pgmc-terwa"],
+    title: "Tree-pitch → tar",
+    body: (
+      <>
+        Render the resin of certain trees and you get <b>tar</b> — literally
+        “the pitch of (certain kinds of) trees,” from the o-grade <b>*derw-o-</b>.
+        It gives English <b>tar</b> and German <i>Teer</i> — the very same
+        formation as Slavic “tree” and Lithuanian <i>derva</i> “resin.”
       </>
     ),
   },
@@ -61,29 +87,39 @@ const STEPS: Step[] = [
     ),
   },
   {
-    key: "objects",
-    focus: ["pgmc-trugaz", "pgmc-trauja", "pgmc-terwa", "pgmc-trumaz"],
-    title: "Things made of wood → trough, tray, tar, trim",
+    key: "greek-oak",
+    focus: ["gk-drys"],
+    title: "Greek’s mightiest tree → drys, dryad",
     body: (
       <>
-        Wood you can shape leaves its own trail: <b>trough</b> and <b>tray</b>{" "}
-        both from <b>*dru-ko-</b> “vessel,” and <b>tar</b> — literally “the pitch
-        of certain trees” — from the o-grade <b>*derw-o-</b>. The “firm” word{" "}
-        <b>*trumaz</b> (with δρυμός and Sanskrit <i>druma</i>) gave Old English{" "}
-        <i>trum</i> “strong” and, more shakily, <b>trim</b>.
+        In Greek the root narrowed to the mightiest tree: <b>δρῦς (drŷs)</b>{" "}
+        “oak.” Its tree-nymphs, the <i>Dryades</i>, give us <b>dryad</b> — and the{" "}
+        <b>hamadryad</b>, the nymph fated to die together with her own tree.
       </>
     ),
   },
   {
-    key: "greek",
-    focus: ["gk-drys", "gk-doru", "gk-drymos"],
-    title: "Greek oaks and spears → drys, doru",
+    key: "greek-spear",
+    focus: ["gk-doru"],
+    title: "The wooden shaft → doru",
     body: (
       <>
-        In Greek the root narrowed to the mightiest tree: <b>δρῦς (drŷs)</b>
-        “oak.” Its nymphs, the <i>Dryades</i>, give us <b>dryad</b> and{" "}
-        <b>hamadryad</b>. A second form, <b>δόρυ (dóry)</b>, meant the wooden{" "}
-        <i>shaft</i> — and so a <b>spear</b>.
+        A second Greek form, <b>δόρυ (dóry)</b>, kept the bare “wood” sense and
+        sharpened it: the wooden <i>shaft</i> — and so the <b>spear</b>. Wood
+        narrowed all the way down to the weapon made from it.
+      </>
+    ),
+  },
+  {
+    key: "grove",
+    focus: ["gk-drymos", "sa-druma", "pgmc-trumaz"],
+    title: "A thicket, and the strength in it → trim",
+    body: (
+      <>
+        The zero-grade <b>*dru-</b> also built <b>*drumo-</b> “a dense stand of
+        trees”: Greek <b>δρυμός</b> “oak forest,” Sanskrit <b>druma</b> “tree.”
+        Germanic took the “dense, firm” sense to <b>*trumaz</b> → Old English{" "}
+        <i>trum</i> “strong,” and — more shakily — <b>trim</b>.
       </>
     ),
   },
@@ -113,16 +149,22 @@ const STEPS: Step[] = [
         <b>dura mater</b> here. But the specialist de Vaan prefers a{" "}
         <i>different</i> root, *dweh₂- “long.” So this whole branch hangs on one{" "}
         <b>disputed</b> step — shown dashed.
+        <br />
+        <small>
+          <i>Dura lex, sed lex</i> — “the law is harsh, but it is the law.” If
+          de Vaan is right, even that harshness isn’t a tree. 🙂
+        </small>
       </>
     ),
   },
   {
     key: "celtic",
+    title: "Celtic narrows it to the oak → Derry",
     focus: ["pc-daru"],
-    title: "Celtic: the tree that became the oak → Derry",
     body: (
       <>
-        Celtic narrowed “tree” to “oak”: <b>*daru</b> → Old Irish <i>daur/dair</i>,
+        Celtic took the general “tree” and narrowed it to one species — the{" "}
+        <b>oak</b> in particular: <b>*daru</b> → Old Irish <i>daur/dair</i>,
         Welsh <b>derw</b>. The Irish <i>doire</i> “oak grove” still names the city
         of <b>Derry</b> (Daire).
       </>
