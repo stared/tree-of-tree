@@ -249,8 +249,8 @@ export const TREE: EtymNode = {
               quote: "“BSl. *der(H)wom; PIE *deru-o-.” (Derksen, EDSIL 99)",
               refs: [70, 62],
               children: [
-                { id: "ru-derevo", form: "де́рево", translit: "dérevo", lang: "Russian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
                 { id: "pl-drzewo", form: "drzewo", lang: "Polish", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
+                { id: "uk-derevo", form: "де́рево", translit: "dérevo", lang: "Ukrainian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
                 { id: "ocs-drevo", form: "дрѣво", translit: "drěvo", lang: "Old Church Slavonic", gloss: "tree", kind: "attested", sense: "tree", refs: [62] },
               ],
             },
@@ -291,8 +291,8 @@ export const TREE: EtymNode = {
               quote: "“Meillet's etymology … cognate with Skt. dhruvá- ‘firm, solid’ … is preferable.” (Derksen, EDSIL 478)",
               refs: [70, 71, 63],
               children: [
-                { id: "ru-zdorov", form: "здоро́вый", translit: "zdoróvyj", lang: "Russian", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
                 { id: "pl-zdrowy", form: "zdrowy", lang: "Polish", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
+                { id: "uk-zdorovyj", form: "здоро́вий", translit: "zdoróvyj", lang: "Ukrainian", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
               ],
             },
           ],

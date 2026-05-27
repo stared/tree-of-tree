@@ -3,7 +3,7 @@ import { select } from "d3-selection";
 import "d3-transition"; // augments selection.prototype with .transition()
 import { zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform } from "d3-zoom";
 import { buildLayout, linkPath, type LaidNode, type Layout } from "../lib/layout";
-import { TREE } from "../data/etymology";
+import { SENSES, TREE, type SenseId } from "../data/etymology";
 
 interface Props {
   /** ids the current narrative step wants to spotlight; empty = whole tree */
@@ -40,6 +40,20 @@ export function EtymologyTree({
   const [transform, setTransform] = useState<ZoomTransform>(zoomIdentity);
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [hoverId, setHoverId] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // fullscreen the whole tree region (so the detail panel comes along too)
+  function toggleFullscreen() {
+    const region = wrapRef.current?.closest(".tree-region") as HTMLElement | null;
+    if (!region) return;
+    if (document.fullscreenElement) document.exitFullscreen();
+    else region.requestFullscreen?.();
+  }
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
 
   // nodes hidden because they sit under a disputed link
   const underDispute = useMemo(() => {
@@ -95,7 +109,7 @@ export function EtymologyTree({
   useEffect(() => {
     const svg = select(svgRef.current!);
     const zoomBehavior = d3zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.18, 3])
+      .scaleExtent([0.04, 12]) // wide open: zoom all the way out or deep in
       .on("zoom", (e) => setTransform(e.transform));
     svg.call(zoomBehavior);
     svg.on("dblclick.zoom", null); // dblclick is used for reset instead
@@ -197,14 +211,33 @@ export function EtymologyTree({
   return (
     <div className="tree-wrap" ref={wrapRef}>
       <div className="tree-controls">
-        <button onClick={() => fitTo(null)} title="Fit the whole tree">
+        <button
+          onClick={() => {
+            onSelect(null);
+            fitTo(null);
+          }}
+          title="Deselect and fit the whole tree"
+        >
           ⤢ Reset view
+        </button>
+        <button onClick={toggleFullscreen} title="Toggle full screen">
+          {isFullscreen ? "⤧ Exit full screen" : "⛶ Full screen"}
         </button>
         <label className="ctrl-toggle" title="Show links scholars dispute (dashed)">
           <input type="checkbox" checked={showDisputed} onChange={onToggleDisputed} />
           <span className="dashed-key">disputed</span>
         </label>
         <span className="hint">drag · scroll · click a word</span>
+      </div>
+
+      {/* sense legend — a single row, on the chart, no caption */}
+      <div className="tree-legend">
+        {(Object.keys(SENSES) as SenseId[]).map((s) => (
+          <span className="legend-chip" key={s}>
+            <i style={{ background: SENSES[s].color }} />
+            {SENSES[s].short}
+          </span>
+        ))}
       </div>
 
       <svg

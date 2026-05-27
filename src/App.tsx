@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
 import { buildLayout } from "./lib/layout";
-import { SENSES, TREE, type SenseId } from "./data/etymology";
+import { TREE } from "./data/etymology";
 
 interface Step {
   key: string;
@@ -148,9 +148,10 @@ const STEPS: Step[] = [
     title: "Slavic: tree, and maybe ‘healthy’",
     body: (
       <>
-        Slavic *dervo gives Russian <b>де́рево</b> and Polish <b>drzewo</b>
-        “tree.” A famous claim says Russian <b>здоровый</b> / Polish <b>zdrowy</b>{" "}
-        “healthy” literally meant “made of good wood” (*sъ- “good” + *dorv-). It’s
+        Slavic *dervo gives Polish <b>drzewo</b> and Ukrainian <b>де́рево</b>
+        “tree.” A famous claim says Polish <b>zdrowy</b> / Ukrainian{" "}
+        <b>здоровий</b> “healthy” literally meant “made of good wood” (*sъ-
+        “good” + *dorv-). It’s
         a lovely idea — but the second element’s origin is{" "}
         <b>uncertain</b>; Meillet and Derksen tie it instead to “support, hold.”
       </>
@@ -222,22 +223,12 @@ export function App() {
         <p className="hero-dek">
           The English word <b>tree</b> and dozens of unlikely relatives —{" "}
           <b>true</b>, <b>trust</b>, <b>trough</b>, <b>endure</b>, <b>druid</b>,{" "}
-          <b>dryad</b>, <b>tar</b>, even Russian <b>zdorov</b> “healthy” — all
+          <b>dryad</b>, <b>tar</b>, even Polish <b>zdrowy</b> “healthy” — all
           grew from one Proto-Indo-European root,{" "}
           <b className="ital">*deru-</b>. Scroll to follow the branches; the tree
           on the right grows from the root upward, exactly like the thing it
           names.
         </p>
-
-        <div className="hero-key">
-          <span className="hero-key-label">colour = meaning</span>
-          {(Object.keys(SENSES) as SenseId[]).map((s) => (
-            <span className="hero-chip" key={s}>
-              <i style={{ background: SENSES[s].color }} />
-              {SENSES[s].short}
-            </span>
-          ))}
-        </div>
 
         <div className="hero-scroll">↓ scroll</div>
       </header>

@@ -72,46 +72,29 @@ a {
   margin: 0 auto;
   max-width: 640px;
 }
-.hero-key {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 7px 16px;
-  margin: 2.4em auto 0;
-  font-family: var(--sans);
-  font-size: 13px;
-  color: var(--ink-soft);
-}
-.hero-key-label {
-  font-size: 10.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.hero-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.hero-chip i {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  display: inline-block;
-}
 .hero-scroll {
+  display: inline-block;
   margin-top: 3em;
   font-family: var(--sans);
   font-size: 13px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  animation: bob 1.8s ease-in-out infinite;
+  transform-origin: 50% 0;
+  animation: drunk 2.6s ease-in-out infinite;
 }
-@keyframes bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
+/* a tipsy stagger — irregular sway + roll, never quite steady on its feet */
+@keyframes drunk {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  15%  { transform: translate(-5px, 4px) rotate(-7deg); }
+  32%  { transform: translate(4px, 9px) rotate(6deg); }
+  48%  { transform: translate(-3px, 5px) rotate(-4deg); }
+  63%  { transform: translate(6px, 11px) rotate(8deg); }
+  80%  { transform: translate(-4px, 6px) rotate(-6deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll { animation: none; }
 }
 
 /* ──────────────────────── scrolly ──────────────────────── */
@@ -244,6 +227,39 @@ a {
   border-radius: 7px;
   padding: 5px 10px;
   cursor: pointer;
+}
+
+/* sense legend — single row pinned to the bottom of the chart, no caption */
+.tree-legend {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 13px;
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--ink-soft);
+  backdrop-filter: blur(2px);
+}
+.legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.legend-chip i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 /* links — stroke-width is set inline (organic, scales with subtree size) */
