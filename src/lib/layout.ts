@@ -51,7 +51,9 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
 
   const layout = tree<EtymNode>()
     .nodeSize([dx, dy])
-    .separation((a, b) => (a.parent === b.parent ? 1 : 1.6));
+    // Wider sibling gaps so that when a step frames one small branch, its
+    // forced labels (which read up-right) have room to clear each other.
+    .separation((a, b) => (a.parent === b.parent ? 1.5 : 2));
   const positioned = layout(h);
 
   const pointNodes: HierarchyPointNode<EtymNode>[] = positioned.descendants();
@@ -66,8 +68,10 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // breadth-sorted nodes of its depth. Neighbours end at different heights, so
   // their (rotated) labels no longer overlap — and branches get varied lengths,
   // which reads as a more organic tree. Pushing only UP keeps every child above
-  // its parent (offset < dy always).
-  const STAGGER = [0, 0.66, 0.33, 0.5, 0.16];
+  // its parent (offset < dy always). The pattern is chosen so EVERY consecutive
+  // pair differs a lot (min gap 0.38·dy), so two adjacent same-depth siblings
+  // never land at nearly the same height where their up-right labels would stack.
+  const STAGGER = [0, 0.62, 0.24, 0.86, 0.44];
   const offsetById = new Map<string, number>();
   const byDepth = new Map<number, HierarchyPointNode<EtymNode>[]>();
   for (const n of pointNodes) {

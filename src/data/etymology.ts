@@ -48,6 +48,8 @@ export interface EtymNode {
   kind: NodeKind;
   sense?: SenseId;
   disputed?: boolean;
+  /** A headline relative — labelled even in the zoomed-out (bird's-eye) view. */
+  important?: boolean;
   note?: string;
   quote?: string;
   refs?: number[];
@@ -98,7 +100,7 @@ export const TREE: EtymNode = {
       quote: "“the form of the Greek reduplication is rare.” (Beekes, EDG 315)",
       refs: [69, 42],
       children: [
-        { id: "dendrite", form: "dendrite", lang: "English", gloss: "a branching, tree-like form", kind: "modern", sense: "tree", refs: [43] },
+        { id: "dendrite", form: "dendrite", lang: "English", gloss: "a branching, tree-like form", kind: "modern", sense: "tree", important: true, refs: [43] },
         { id: "rhododendron", form: "rhododendron", lang: "English", gloss: "a flowering 'rose-tree' shrub", kind: "modern", sense: "tree", refs: [45] },
         { id: "philodendron", form: "philodendron", lang: "English", gloss: "a 'tree-loving' climbing plant", kind: "modern", sense: "tree", refs: [46] },
       ],
@@ -134,7 +136,7 @@ export const TREE: EtymNode = {
               kind: "attested",
               sense: "tree",
               refs: [3],
-              children: [{ id: "tree", form: "tree", lang: "English", gloss: "a woody perennial plant", kind: "modern", sense: "tree", refs: [3] }],
+              children: [{ id: "tree", form: "tree", lang: "English", gloss: "a woody perennial plant", kind: "modern", sense: "tree", important: true, refs: [3] }],
             },
             { id: "got-triu", form: "triu", lang: "Gothic", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [4] },
             { id: "on-tre", form: "tré", lang: "Old Norse", gloss: "tree", kind: "attested", sense: "tree", refs: [4] },
@@ -159,7 +161,7 @@ export const TREE: EtymNode = {
               kind: "attested",
               sense: "faith",
               refs: [5],
-              children: [{ id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", refs: [5] }],
+              children: [{ id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", important: true, refs: [5] }],
             },
             {
               id: "oe-treowth",
@@ -219,6 +221,7 @@ export const TREE: EtymNode = {
                   gloss: "reliance on another's integrity",
                   kind: "modern",
                   sense: "faith",
+                  important: true,
                   refs: [11],
                   children: [
                     {
@@ -270,6 +273,7 @@ export const TREE: EtymNode = {
                   gloss: "a tree nymph",
                   kind: "modern",
                   sense: "tree",
+                  important: true,
                   refs: [39],
                   children: [{ id: "hamadryad", form: "hamadryad", lang: "English", gloss: "a nymph that dies with her tree", kind: "modern", sense: "tree", note: "Strictly Greek hama- 'together' + dryas; shown here as built on dryad.", refs: [39] }],
                 },
@@ -310,7 +314,7 @@ export const TREE: EtymNode = {
                   kind: "attested",
                   sense: "object",
                   refs: [20],
-                  children: [{ id: "tar", form: "tar", lang: "English", gloss: "dark sticky pitch", kind: "modern", sense: "object", refs: [20] }],
+                  children: [{ id: "tar", form: "tar", lang: "English", gloss: "dark sticky pitch", kind: "modern", sense: "object", important: true, refs: [20] }],
                 },
                 { id: "de-teer", form: "Teer", lang: "German", gloss: "tar", kind: "modern", sense: "object", refs: [21] },
               ],
@@ -343,7 +347,7 @@ export const TREE: EtymNode = {
               quote: "“Meillet's etymology … cognate with Skt. dhruvá- ‘firm, solid’ … is preferable.” (Derksen, EDSIL 478)",
               refs: [70, 71, 63],
               children: [
-                { id: "pl-zdrowy", form: "zdrowy", lang: "Polish", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
+                { id: "pl-zdrowy", form: "zdrowy", lang: "Polish", gloss: "healthy", kind: "modern", sense: "other", important: true, refs: [63] },
                 { id: "uk-zdorovyj", form: "здоро́вий", translit: "zdoróvyj", lang: "Ukrainian", gloss: "healthy", kind: "modern", sense: "other", refs: [63] },
               ],
             },
@@ -399,7 +403,7 @@ export const TREE: EtymNode = {
               kind: "attested",
               sense: "tree",
               refs: [55, 56],
-              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", refs: [55, 56] }],
+              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", important: true, refs: [55, 56] }],
             },
           ],
         },
@@ -579,7 +583,7 @@ export const TREE: EtymNode = {
                   kind: "attested",
                   sense: "object",
                   refs: [17],
-                  children: [{ id: "trough", form: "trough", lang: "English", gloss: "a long open container", kind: "modern", sense: "object", refs: [17] }],
+                  children: [{ id: "trough", form: "trough", lang: "English", gloss: "a long open container", kind: "modern", sense: "object", important: true, refs: [17] }],
                 },
                 { id: "de-trog", form: "Trog", lang: "German", gloss: "trough", kind: "modern", sense: "object", refs: [17] },
               ],
@@ -619,7 +623,7 @@ export const TREE: EtymNode = {
           note: "Matasović: the first element is this oak/tree word *dru-, metaphorically 'strong, firm', + *weyd- 'to know' — 'one of strong insight'. Pliny's literal 'oak-knower' (Greek drûs) is folk-etymology, but the root is right.",
           quote: "“*dru-wid- is therefore the priest with ‘strong insight’.” (Matasović, EDPC 107)",
           refs: [74, 48, 50],
-          children: [{ id: "druid", form: "druid", lang: "English", gloss: "a Celtic priest or seer", kind: "modern", sense: "other", refs: [48, 50] }],
+          children: [{ id: "druid", form: "druid", lang: "English", gloss: "a Celtic priest or seer", kind: "modern", sense: "other", important: true, refs: [48, 50] }],
         },
       ],
     },
@@ -637,7 +641,7 @@ export const TREE: EtymNode = {
       quote: "“PIE *du(e)h₂-ro- ‘far, long’.” (de Vaan, EDL 184)",
       refs: [27, 26, 24, 2],
       children: [
-        { id: "endure", form: "endure", lang: "English", gloss: "to last; to bear", kind: "modern", sense: "firm", note: "The plainly-dur one: Latin in-dūrāre 'to harden' → 'to last, bear'.", refs: [31] },
+        { id: "endure", form: "endure", lang: "English", gloss: "to last; to bear", kind: "modern", sense: "firm", important: true, note: "The plainly-dur one: Latin in-dūrāre 'to harden' → 'to last, bear'.", refs: [31] },
         { id: "dour", form: "dour", lang: "English", gloss: "stern, gloomy, hard", kind: "modern", sense: "firm", note: "The one you'd never guess: dour is literally the word 'hard' — its dur- is hidden.", refs: [33] },
         { id: "duramen", form: "duramen", lang: "English", gloss: "heartwood", kind: "modern", sense: "object", note: "The lovely one: the hard, dead wood at a tree's core. Here the root's two faces — 'hard' and 'wood' — meet again in a single word.", refs: [24] },
       ],

@@ -154,47 +154,34 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
     return !activeIds.has(id);
   }
 
-  // Gloss + language only appear once you've zoomed in a bit, or when a small
-  // narrative focus is active — keeps the zoomed-out canopy from turning to mud.
-  const showDetailGlobal = transform.k >= 0.62;
-  const focusedSmall = !!activeIds && activeIds.size <= 18;
+  // TWO label levels, by zoom — nothing in between:
+  //   • zoomed IN (a step frames a branch, or you zoom): show ALL words in view.
+  //   • zoomed OUT (bird's-eye canopy): show only a few `important` anchor words.
+  // Every narrative step fits to k ≥ 0.7, so it always lands in the "all" level
+  // and never hides one of the words it is about. Gloss + language ride along
+  // with "all"; the few zoomed-out labels stay bare so the canopy reads clean.
+  const showAllLabels = transform.k >= 0.5;
 
-  // Greedy label placement in SCREEN space: walk nodes by importance and keep a
-  // label only if it doesn't collide with one already kept. Zooming in spreads
-  // the anchors apart, so more labels reveal themselves — organic decluttering.
-  // Memoized: this runs on every zoom/pan/hover, so recompute only when an input
-  // it actually reads changes.
   const labelShown = useMemo(() => {
     const shown = new Set<string>();
-    const placed: Array<[number, number]> = [];
-    const prio = (n: LaidNode) =>
-      n.data.kind === "root" ? 0 : n.data.kind === "modern" ? 1 : n.hasChildren ? 2 : 3;
-    const sorted = [...visibleNodes].sort((a, b) => prio(a) - prio(b));
-    const minDist = 46;
-    for (const n of sorted) {
-      if (activeIds && !activeIds.has(n.id)) continue; // dimmed → no label
+    for (const n of visibleNodes) {
+      if (activeIds && !activeIds.has(n.id)) continue; // dimmed by the current focus
       const sx = n.x * transform.k + transform.x;
       const sy = n.y * transform.k + transform.y;
-      const forced =
+      if (n.data.kind !== "root" && (sx < -160 || sx > size.w + 160 || sy < -120 || sy > size.h + 120))
+        continue; // off-screen
+      if (
+        showAllLabels ||
         n.data.kind === "root" ||
+        n.data.important ||
         n.id === selectedId ||
         n.id === hoverId ||
-        !!hoverLineage?.has(n.id) ||
-        (focusedSmall && !!activeIds?.has(n.id));
-      if (forced) {
+        !!hoverLineage?.has(n.id)
+      )
         shown.add(n.id);
-        placed.push([sx, sy]);
-        continue;
-      }
-      if (sx < -120 || sx > size.w + 120 || sy < -80 || sy > size.h + 80) continue;
-      const collide = placed.some(([px, py]) => Math.abs(px - sx) < minDist && Math.abs(py - sy) < minDist);
-      if (!collide) {
-        shown.add(n.id);
-        placed.push([sx, sy]);
-      }
     }
     return shown;
-  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, focusedSmall]);
+  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, showAllLabels]);
 
   // organic branch thickness: more wood flows through a link with a bigger subtree.
   // floor is generous so even a lone twig stays clearly attached (no "orphan" look).
@@ -275,12 +262,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
               const isRoot = n.data.kind === "root";
               const reconstructed = n.data.kind === "reconstructed";
               const labeled = labelShown.has(n.id);
-              const detail =
-                isRoot ||
-                showDetailGlobal ||
-                selected ||
-                n.id === hoverId ||
-                (focusedSmall && !!activeIds?.has(n.id));
+              const detail = isRoot || showAllLabels || selected || n.id === hoverId;
               return (
                 <g
                   key={n.id}
