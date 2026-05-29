@@ -2,7 +2,7 @@
 
 An **explorable explanation** of the English word *tree* and its surprising
 relatives — *true, trust, truth, trough, tray, tar, endure, durable, druid,
-dryad, dendrite, rhododendron, deodar*, even Russian *zdorov* "healthy" — all
+dryad, dendrite, rhododendron, deodar*, even Polish *zdrowy* "healthy" — all
 traced back to one Proto-Indo-European root, **\*deru- / \*dóru-**
 ("be firm, solid, steadfast; tree, wood").
 
@@ -16,8 +16,9 @@ words grow upward like a canopy — the diagram is literally the thing it names.
 - **Interactive tree** — drag to pan, scroll to zoom, **hover** a word to trace
   its line back to the root, **click** it for the gloss and exact sources.
 - **Honest about uncertainty** — contested links (the Latin *dūrus* family,
-  *druid* as "oak-knower", Slavic *zdorov* as "good wood", Greek *déndron*) are
-  drawn **dashed with a "?"** and can be toggled off to see only secure descent.
+  *druid* as "oak-knower", Slavic *zdrowy* as "good wood", Greek *déndron*) are
+  drawn **dashed with a "?"**, so secure and disputed descent stay visually
+  distinct.
 
 ## Sourcing
 
