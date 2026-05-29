@@ -13,9 +13,9 @@
 // `sense` (meaning bucket) drives colour, never the tree's shape or order;
 // `disputed: true` = the link from the parent is contested (dashed + "?").
 //
-// Sources are cited per node in `refs` (see references.ts and /references.md),
-// now including Kroonen, Beekes, de Vaan, Derksen, Mayrhofer, Matasović,
-// Martirosyan, Kloekhorst, Adams, Orel, Pokorny, EIEC.
+// Sources are cited per node in `refs` (id → URL in references.ts), and include
+// Kroonen, Beekes, de Vaan, Derksen, Mayrhofer, Matasović, Martirosyan,
+// Kloekhorst, Adams, Orel, Pokorny, EIEC.
 
 export type NodeKind = "root" | "reconstructed" | "attested" | "modern";
 

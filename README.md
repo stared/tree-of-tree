@@ -22,14 +22,18 @@ words grow upward like a canopy — the diagram is literally the thing it names.
 
 ## Sourcing
 
-Every claim is cited. The full claim-by-claim reference list — and *who disputes
-what* — lives in [`references.md`](references.md). The structured data and its
-`refs` live in [`src/data/etymology.ts`](src/data/etymology.ts) and
+Every word links to its exact source — click any node in the tree for the gloss,
+a short quote, and the link(s). The data lives in
+[`src/data/etymology.ts`](src/data/etymology.ts) (each node carries its `refs`
+and any disputing note) and the source URLs in
 [`src/data/references.ts`](src/data/references.ts).
 
-Primary sources: the Online Etymology Dictionary, Wiktionary, the American
-Heritage Dictionary of Indo-European Roots (Watkins), de Vaan's *Etymological
-Dictionary of Latin*, and Wikipedia.
+Key sources: the Online Etymology Dictionary and Wiktionary for the everyday
+words; and the standard etymological dictionaries for the deeper reconstructions
+and disputes — Watkins (*American Heritage Dictionary of IE Roots*), de Vaan
+(Latin), Kroonen (Proto-Germanic), Beekes (Greek), Derksen (Slavic & Baltic),
+Mayrhofer (Indo-Aryan), Matasović (Proto-Celtic), Martirosyan (Armenian),
+Kloekhorst (Hittite), plus Pokorny and the EIEC.
 
 ## Run it
 
@@ -50,7 +54,7 @@ jQuery-style DOM mutation).
 ```
 src/
   data/etymology.ts    the typed etymology tree (root → branches → words)
-  data/references.ts   numbered source list, keyed to references.md
+  data/references.ts   id → source URL, with a URL→label formatter
   lib/layout.ts        d3-hierarchy → positioned nodes & links (bottom-up)
   components/EtymologyTree.tsx   the zoomable SVG tree
   components/DetailPanel.tsx     per-word detail + sources

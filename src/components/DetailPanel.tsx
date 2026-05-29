@@ -1,5 +1,5 @@
 import { SENSES, type EtymNode } from "../data/etymology";
-import { REFERENCES } from "../data/references";
+import { REFERENCES, sourceLink } from "../data/references";
 
 interface Props {
   node: EtymNode | null;
@@ -58,12 +58,12 @@ export function DetailPanel({ node, accent, onClose }: Props) {
           <div className="detail-refs-title">Sources</div>
           <ul>
             {node.refs.map((rid) => {
-              const ref = REFERENCES[rid];
-              if (!ref) return null;
+              const url = REFERENCES[rid];
+              if (!url) return null;
               return (
                 <li key={rid}>
-                  <a href={ref.url} target="_blank" rel="noreferrer">
-                    {ref.label}
+                  <a href={url} target="_blank" rel="noreferrer">
+                    {sourceLink(url)}
                   </a>
                 </li>
               );
