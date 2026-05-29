@@ -80,8 +80,30 @@ export const TREE: EtymNode = {
     "The handbooks split on which sense is older: Pokorny derives 'firm' from 'tree/oak' (to be 'oak-strong'); Watkins reverses it ('be firm' → 'tree'); EIEC calls the link unresolved; NIL/LIV tentatively split off a verb *der- 'to fix, make firm'. This tree follows the majority view — one family — and branches by the noun's three ablaut stems.",
   quote: "“‘tree’, probably originally and properly ‘oak’ … figuratively ‘firm – firmly trusting’.” (Pokorny, IEW 214)",
   refs: [79, 80, 2, 1, 81],
-  // children ordered to interleave branches & senses, never sorted by meaning.
+  // children ordered so kindred senses sit adjacent (smooth colour runs by sense)
+  // and the two disputed branches (δένδρον, dūrus) bookend the solid stems at the
+  // edges, so their dashed trunk-lines frame the tree instead of tangling.
   children: [
+    // ═══════════ δένδρον — a reduplicated formation, its own (uncertain) thing ═══════════
+    {
+      id: "gk-dendron",
+      form: "δένδρον",
+      translit: "déndron",
+      lang: "Ancient Greek",
+      gloss: "tree",
+      kind: "attested",
+      sense: "tree",
+      disputed: true,
+      note: "A reduplication of *drew-, but Beekes flags it '<IE?>' and calls the reduplication 'rare' — the formation is uncertain.",
+      quote: "“the form of the Greek reduplication is rare.” (Beekes, EDG 315)",
+      refs: [69, 42],
+      children: [
+        { id: "dendrite", form: "dendrite", lang: "English", gloss: "a branching, tree-like form", kind: "modern", sense: "tree", refs: [43] },
+        { id: "rhododendron", form: "rhododendron", lang: "English", gloss: "a flowering 'rose-tree' shrub", kind: "modern", sense: "tree", refs: [45] },
+        { id: "philodendron", form: "philodendron", lang: "English", gloss: "a 'tree-loving' climbing plant", kind: "modern", sense: "tree", refs: [46] },
+      ],
+    },
+
     // ═══════════ oblique stem *dréw- — tree, AND (firm-as-a-tree) true/trust ═══════════
     {
       id: "stem-drew",
@@ -268,21 +290,7 @@ export const TREE: EtymNode = {
           quote: "“derwo-/derwā … OCS drěvo, Lith. dervà ‘Pech’, Welsh derw ‘Eiche’.” (Pokorny, IEW 215)",
           refs: [79, 70, 71, 21],
           children: [
-            {
-              id: "psl-dervo",
-              form: "*dervo",
-              lang: "Proto-Slavic",
-              gloss: "tree, wood",
-              kind: "reconstructed",
-              sense: "tree",
-              quote: "“BSl. *der(H)wom; PIE *deru-o-.” (Derksen, EDSIL 99)",
-              refs: [70, 62],
-              children: [
-                { id: "pl-drzewo", form: "drzewo", lang: "Polish", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
-                { id: "uk-derevo", form: "де́рево", translit: "dérevo", lang: "Ukrainian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
-                { id: "ocs-drevo", form: "дрѣво", translit: "drěvo", lang: "Old Church Slavonic", gloss: "tree", kind: "attested", sense: "tree", refs: [62] },
-              ],
-            },
+            { id: "cy-derw", form: "derw", lang: "Welsh", gloss: "oak; oaks", kind: "modern", sense: "oak", quote: "“*derw-o- ‘oak’ … OIr. derb, MW derwen.” (Matasović, EDPC 91)", refs: [74, 59] },
             { id: "lt-derva", form: "derva", lang: "Lithuanian", gloss: "tar; resinous wood", kind: "modern", sense: "object", note: "Derksen: the same etymon as Slavic *dervo; Baltic specialised 'resinous wood → tar'.", quote: "“PSL *dérvo … PIE *deru-o-.” (Derksen, EDBIL 123)", refs: [71, 64] },
             {
               id: "pgmc-terwa",
@@ -307,7 +315,21 @@ export const TREE: EtymNode = {
                 { id: "de-teer", form: "Teer", lang: "German", gloss: "tar", kind: "modern", sense: "object", refs: [21] },
               ],
             },
-            { id: "cy-derw", form: "derw", lang: "Welsh", gloss: "oak; oaks", kind: "modern", sense: "oak", quote: "“*derw-o- ‘oak’ … OIr. derb, MW derwen.” (Matasović, EDPC 91)", refs: [74, 59] },
+            {
+              id: "psl-dervo",
+              form: "*dervo",
+              lang: "Proto-Slavic",
+              gloss: "tree, wood",
+              kind: "reconstructed",
+              sense: "tree",
+              quote: "“BSl. *der(H)wom; PIE *deru-o-.” (Derksen, EDSIL 99)",
+              refs: [70, 62],
+              children: [
+                { id: "pl-drzewo", form: "drzewo", lang: "Polish", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
+                { id: "uk-derevo", form: "де́рево", translit: "dérevo", lang: "Ukrainian", gloss: "tree", kind: "modern", sense: "tree", refs: [62] },
+                { id: "ocs-drevo", form: "дрѣво", translit: "drěvo", lang: "Old Church Slavonic", gloss: "tree", kind: "attested", sense: "tree", refs: [62] },
+              ],
+            },
             {
               id: "psl-sdorvu",
               form: "*sъdorvъ",
@@ -345,16 +367,16 @@ export const TREE: EtymNode = {
         { id: "hit-taru", form: "𒋫𒊒", translit: "taru", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested IE — a ~4,000-year-old clay-tablet word.", quote: "“PAnat. *doru- … PIE *dóru-.” (Kloekhorst, EDHIL 849)", refs: [76, 1] },
         { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [76, 1] },
         {
-          id: "gk-doru",
-          form: "δόρυ",
-          translit: "dóry",
-          lang: "Ancient Greek",
-          gloss: "wood; a spear-shaft, spear",
+          id: "txb-or",
+          form: "or",
+          lang: "Tocharian B",
+          gloss: "wood",
           kind: "attested",
-          sense: "object",
-          note: "The 'wood → spear' narrowing (the spear is its shaft). Borrowed into English only as the hoplite term doru — not the boat, nor the fish 'John Dory', both unrelated.",
-          quote: "“δόρυ [n.] ‘wood, tree (trunk), spear’ … <IE *doru ‘tree, wood’>.” (Beekes, EDG 349)",
-          refs: [69, 40],
+          sense: "tree",
+          note: "From the Tarim Basin (western China). *d- was lost via the oblique stem (*dreu-s > *reu).",
+          quote: "“PTch *or … connected … to PIE *dóru ‘tree, wood’.” (Adams, DTB)",
+          refs: [77, 1],
+          children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [77, 1] }],
         },
         {
           id: "sa-daru",
@@ -419,17 +441,18 @@ export const TREE: EtymNode = {
           ],
         },
         {
-          id: "txb-or",
-          form: "or",
-          lang: "Tocharian B",
-          gloss: "wood",
+          id: "gk-doru",
+          form: "δόρυ",
+          translit: "dóry",
+          lang: "Ancient Greek",
+          gloss: "wood; a spear-shaft, spear",
           kind: "attested",
-          sense: "tree",
-          note: "From the Tarim Basin (western China). *d- was lost via the oblique stem (*dreu-s > *reu).",
-          quote: "“PTch *or … connected … to PIE *dóru ‘tree, wood’.” (Adams, DTB)",
-          refs: [77, 1],
-          children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [77, 1] }],
+          sense: "object",
+          note: "The 'wood → spear' narrowing (the spear is its shaft). Borrowed into English only as the hoplite term doru — not the boat, nor the fish 'John Dory', both unrelated.",
+          quote: "“δόρυ [n.] ‘wood, tree (trunk), spear’ … <IE *doru ‘tree, wood’>.” (Beekes, EDG 349)",
+          refs: [69, 40],
         },
+        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
         {
           id: "pc-daru",
           form: "*daru",
@@ -464,7 +487,6 @@ export const TREE: EtymNode = {
             },
           ],
         },
-        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
       ],
     },
 
@@ -529,6 +551,7 @@ export const TREE: EtymNode = {
             },
           ],
         },
+        { id: "sq-dru", form: "dru", lang: "Albanian", gloss: "wood, tree; firewood", kind: "modern", sense: "tree", quote: "“From PAlb *druwa … Gk δρῦς, Skt dru-, Slav *drъvo.” (Orel, AED 76)", refs: [78, 65] },
         {
           id: "druko",
           form: "*dru-ko-",
@@ -586,7 +609,6 @@ export const TREE: EtymNode = {
             },
           ],
         },
-        { id: "sq-dru", form: "dru", lang: "Albanian", gloss: "wood, tree; firewood", kind: "modern", sense: "tree", quote: "“From PAlb *druwa … Gk δρῦς, Skt dru-, Slav *drъvo.” (Orel, AED 76)", refs: [78, 65] },
         {
           id: "pc-druwits",
           form: "*druwits",
@@ -599,26 +621,6 @@ export const TREE: EtymNode = {
           refs: [74, 48, 50],
           children: [{ id: "druid", form: "druid", lang: "English", gloss: "a Celtic priest or seer", kind: "modern", sense: "other", refs: [48, 50] }],
         },
-      ],
-    },
-
-    // ═══════════ δένδρον — a reduplicated formation, its own (uncertain) thing ═══════════
-    {
-      id: "gk-dendron",
-      form: "δένδρον",
-      translit: "déndron",
-      lang: "Ancient Greek",
-      gloss: "tree",
-      kind: "attested",
-      sense: "tree",
-      disputed: true,
-      note: "A reduplication of *drew-, but Beekes flags it '<IE?>' and calls the reduplication 'rare' — the formation is uncertain.",
-      quote: "“the form of the Greek reduplication is rare.” (Beekes, EDG 315)",
-      refs: [69, 42],
-      children: [
-        { id: "dendrite", form: "dendrite", lang: "English", gloss: "a branching, tree-like form", kind: "modern", sense: "tree", refs: [43] },
-        { id: "rhododendron", form: "rhododendron", lang: "English", gloss: "a flowering 'rose-tree' shrub", kind: "modern", sense: "tree", refs: [45] },
-        { id: "philodendron", form: "philodendron", lang: "English", gloss: "a 'tree-loving' climbing plant", kind: "modern", sense: "tree", refs: [46] },
       ],
     },
 
