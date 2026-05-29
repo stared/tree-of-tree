@@ -162,6 +162,12 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   // with "all"; the few zoomed-out labels stay bare so the canopy reads clean.
   const showAllLabels = transform.k >= 0.5;
 
+  // Semantic zoom for labels: they live inside the zoomed group, so zoomed out
+  // they'd shrink to specks. Counter-scale by 1/k while k < 1 to hold a constant
+  // readable size; once k reaches 1 (label at its default size) stop, and let it
+  // grow with the tree like everything else.
+  const labelScale = transform.k < 1 ? 1 / transform.k : 1;
+
   const labelShown = useMemo(() => {
     const shown = new Set<string>();
     for (const n of visibleNodes) {
@@ -294,7 +300,12 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
                       (passed collision avoidance) or hovered/selected. */}
                   {labeled &&
                     (isRoot ? (
-                      <text className="label root-label" textAnchor="middle" y={26}>
+                      <text
+                        className="label root-label"
+                        textAnchor="middle"
+                        y={26}
+                        transform={`scale(${labelScale})`}
+                      >
                         <tspan className="form" x={0}>
                           {n.data.form}
                         </tspan>
@@ -308,7 +319,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
                     ) : (
                       <text
                         className="label"
-                        transform="rotate(-32)"
+                        transform={`scale(${labelScale}) rotate(-32)`}
                         textAnchor="start"
                         x={radius(n) + 5}
                         y={2}
