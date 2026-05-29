@@ -54,6 +54,22 @@ export interface EtymNode {
   children?: EtymNode[];
 }
 
+/** A node's display colour comes from its MEANING (sense); the root is special. */
+export function senseColor(node: EtymNode): string {
+  if (node.kind === "root") return ROOT_COLOR;
+  return node.sense ? SENSES[node.sense].color : SENSES.other.color;
+}
+
+/** Flat id → node index, for looking a node up by id (e.g. the selected one). */
+export function nodeById(root: EtymNode): Map<string, EtymNode> {
+  const map = new Map<string, EtymNode>();
+  (function walk(n: EtymNode) {
+    map.set(n.id, n);
+    n.children?.forEach(walk);
+  })(root);
+  return map;
+}
+
 export const TREE: EtymNode = {
   id: "deru",
   form: "*deru-, *dóru-",

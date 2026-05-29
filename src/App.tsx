@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
-import { buildLayout } from "./lib/layout";
-import { TREE } from "./data/etymology";
+import { nodeById, senseColor, TREE } from "./data/etymology";
 import { COLOPHON, HERO, STEPS } from "./content/load";
 
 export function App() {
-  const layout = useMemo(() => buildLayout(TREE), []);
+  const index = useMemo(() => nodeById(TREE), []);
   const [activeStep, setActiveStep] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -28,8 +27,8 @@ export function App() {
     return () => observer.disconnect();
   }, []);
 
-  const selectedNode = selectedId ? layout.byId.get(selectedId) ?? null : null;
-  const selectedAccent = selectedNode?.color ?? "#999";
+  const selectedNode = selectedId ? index.get(selectedId) ?? null : null;
+  const selectedAccent = selectedNode ? senseColor(selectedNode) : "#999";
 
   return (
     <div className="page">
@@ -74,7 +73,7 @@ export function App() {
                 onSelect={setSelectedId}
               />
               <DetailPanel
-                node={selectedNode?.data ?? null}
+                node={selectedNode}
                 accent={selectedAccent}
                 onClose={() => setSelectedId(null)}
               />

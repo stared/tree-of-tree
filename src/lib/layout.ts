@@ -6,7 +6,7 @@
 // Node colour comes from the word's MEANING (sense), not its language.
 
 import { hierarchy, tree, type HierarchyPointNode } from "d3-hierarchy";
-import { ROOT_COLOR, SENSES, type EtymNode } from "../data/etymology";
+import { senseColor, type EtymNode } from "../data/etymology";
 
 export interface LaidNode {
   id: string;
@@ -35,11 +35,6 @@ export interface Layout {
   byId: Map<string, LaidNode>;
   width: number;
   height: number;
-}
-
-function colorOf(node: EtymNode): string {
-  if (node.kind === "root") return ROOT_COLOR;
-  return node.sense ? SENSES[node.sense].color : SENSES.other.color;
 }
 
 export interface LayoutOptions {
@@ -93,7 +88,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
       x: n.x - minX,
       y: (maxDepth - n.depth) * dy - (offsetById.get(n.data.id) ?? 0),
       depth: n.depth,
-      color: colorOf(n.data),
+      color: senseColor(n.data),
       lineage: n.ancestors().map((a) => a.data.id),
       hasChildren: !!n.children && n.children.length > 0,
       subtreeSize: n.descendants().length,
