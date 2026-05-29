@@ -282,6 +282,7 @@ export const TREE: EtymNode = {
             {
               id: "psl-sdorvu",
               form: "*sъdorvъ",
+              translit: "sŭdorvŭ",
               lang: "Proto-Slavic",
               gloss: "healthy",
               kind: "reconstructed",
