@@ -104,6 +104,10 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
     const zoomBehavior = zoomRef.current;
     if (!svg || !zoomBehavior || size.w < 10) return;
 
+    // Frame the focus nodes and their subtrees, but NOT the trunk down to the
+    // root — so a step zooms into its branch rather than always showing the
+    // whole stem. (The dimming in `activeIds` does include ancestors, so the
+    // lit region is a little larger than the framed one; intentional.)
     const pool = ids
       ? visibleNodes.filter((n) => ids.includes(n.id) || ids.some((f) => n.lineage.includes(f)))
       : visibleNodes;
@@ -130,10 +134,11 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
     select(svg).transition().duration(720).call(zoomBehavior.transform, t);
   }
 
-  // refit whenever the narrative focus or the disputed toggle changes
+  // Refit whenever the narrative focus or the viewport size changes. fitTo and
+  // visibleNodes are deliberately not deps: fitTo is stable enough for this and
+  // we don't want a refit on every unrelated render.
   useEffect(() => {
     fitTo(focusIds.length ? focusIds : null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusIds, size.w, size.h]);
 
   // A node is "active" only if it is a focus node, an ancestor of one (the
@@ -152,7 +157,9 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   // Greedy label placement in SCREEN space: walk nodes by importance and keep a
   // label only if it doesn't collide with one already kept. Zooming in spreads
   // the anchors apart, so more labels reveal themselves — organic decluttering.
-  const labelShown = (() => {
+  // Memoized: this runs on every zoom/pan/hover, so recompute only when an input
+  // it actually reads changes.
+  const labelShown = useMemo(() => {
     const shown = new Set<string>();
     const placed: Array<[number, number]> = [];
     const prio = (n: LaidNode) =>
@@ -160,7 +167,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
     const sorted = [...visibleNodes].sort((a, b) => prio(a) - prio(b));
     const minDist = 46;
     for (const n of sorted) {
-      if (isDim(n.id)) continue;
+      if (activeIds && !activeIds.has(n.id)) continue; // dimmed → no label
       const sx = n.x * transform.k + transform.x;
       const sy = n.y * transform.k + transform.y;
       const forced =
@@ -182,7 +189,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
       }
     }
     return shown;
-  })();
+  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, focusedSmall]);
 
   // organic branch thickness: more wood flows through a link with a bigger subtree.
   // floor is generous so even a lone twig stays clearly attached (no "orphan" look).
