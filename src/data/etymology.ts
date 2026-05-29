@@ -586,22 +586,6 @@ export const TREE: EtymNode = {
             },
           ],
         },
-        {
-          id: "psl-drva",
-          form: "*drъva",
-          translit: "drŭva",
-          lang: "Proto-Slavic",
-          gloss: "wood, firewood",
-          kind: "reconstructed",
-          sense: "tree",
-          note: "The zero-grade doublet of *dervo 'tree' (→ drzewo): one Slavic wood-word split by ablaut, this stem giving 'firewood'.",
-          quote: "“Plural of *drъvo … from PIE *dr̥w-ó-m, from *dóru.” (Wiktionary)",
-          refs: [84],
-          children: [
-            { id: "ru-drova", form: "дрова́", translit: "drová", lang: "Russian", gloss: "firewood", kind: "modern", sense: "tree", refs: [85] },
-            { id: "pl-drwa", form: "drwa", lang: "Polish", gloss: "firewood", kind: "modern", sense: "tree", refs: [86] },
-          ],
-        },
         { id: "sq-dru", form: "dru", lang: "Albanian", gloss: "wood, tree; firewood", kind: "modern", sense: "tree", quote: "“From PAlb *druwa … Gk δρῦς, Skt dru-, Slav *drъvo.” (Orel, AED 76)", refs: [78, 65] },
         {
           id: "pc-druwits",

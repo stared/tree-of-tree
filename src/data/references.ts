@@ -89,9 +89,6 @@ export const REFERENCES: Record<number, string> = {
   81: "https://archive.org/details/NIL_2008",
   82: "https://en.wiktionary.org/wiki/%D8%AF%D8%A7%D8%B1",
   83: "https://en.wiktionary.org/wiki/%D8%AF%D8%A7%D8%B1%D9%88",
-  84: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Slavic/dr%D1%8Ava",
-  85: "https://en.wiktionary.org/wiki/%D0%B4%D1%80%D0%BE%D0%B2%D0%B0",
-  86: "https://en.wiktionary.org/wiki/drwa",
   87: "https://www.etymonline.com/word/tryst",
   88: "https://en.wiktionary.org/wiki/tryst",
 };
