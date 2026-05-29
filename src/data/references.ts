@@ -1,5 +1,15 @@
-// Master source list. Ids match `refs: [...]` on nodes in `etymology.ts`
-// and the [Rn] markers in /references.md.
+// Source list for the detail panel, parsed from the human-facing /references.md
+// so the two can never drift. references.md is the single source of truth;
+// this module just lifts its master-list bullets into a typed map keyed by the
+// [Rn] id, and checks at load that every `refs` in the tree resolves.
+//
+// A master-list line looks like:
+//   - **[R3]** etymonline, *tree* — https://www.etymonline.com/word/tree
+// The label may itself contain " — " (e.g. "EDSIL — Slavic Inherited Lexicon"),
+// so we anchor on the trailing URL rather than splitting on the dash.
+
+import rawReferences from "../../references.md?raw";
+import { TREE, type EtymNode } from "./etymology";
 
 export interface Reference {
   id: number;
@@ -7,88 +17,40 @@ export interface Reference {
   url: string;
 }
 
-export const REFERENCES: Record<number, Reference> = {
-  1: { id: 1, label: "Wiktionary — Reconstruction: PIE *dóru", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/d%C3%B3ru" },
-  2: { id: 2, label: "etymonline — root *deru-", url: "https://www.etymonline.com/word/*deru-" },
-  3: { id: 3, label: "etymonline — tree", url: "https://www.etymonline.com/word/tree" },
-  4: { id: 4, label: "Wiktionary — PGmc *trewą", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/trew%C4%85" },
-  5: { id: 5, label: "etymonline — true", url: "https://www.etymonline.com/word/true" },
-  6: { id: 6, label: "Wiktionary — true", url: "https://en.wiktionary.org/wiki/true" },
-  7: { id: 7, label: "etymonline — truth", url: "https://www.etymonline.com/word/truth" },
-  8: { id: 8, label: "etymonline — troth", url: "https://www.etymonline.com/word/troth" },
-  9: { id: 9, label: "etymonline — betroth", url: "https://www.etymonline.com/word/betroth" },
-  10: { id: 10, label: "etymonline — trow", url: "https://www.etymonline.com/word/trow" },
-  11: { id: 11, label: "etymonline — trust", url: "https://www.etymonline.com/word/trust" },
-  12: { id: 12, label: "Wiktionary — PGmc *traustą", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/traust%C4%85" },
-  13: { id: 13, label: "etymonline — trusty", url: "https://www.etymonline.com/word/trusty" },
-  14: { id: 14, label: "etymonline — trig", url: "https://www.etymonline.com/word/trig" },
-  15: { id: 15, label: "etymonline — trim", url: "https://www.etymonline.com/word/trim" },
-  16: { id: 16, label: "Wiktionary — PGmc *trumaz", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/trumaz" },
-  17: { id: 17, label: "etymonline — trough", url: "https://www.etymonline.com/word/trough" },
-  18: { id: 18, label: "Wiktionary — PGmc *trugaz", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/trugaz" },
-  19: { id: 19, label: "etymonline — tray", url: "https://www.etymonline.com/word/tray" },
-  20: { id: 20, label: "etymonline — tar", url: "https://www.etymonline.com/word/tar" },
-  21: { id: 21, label: "Wiktionary — PGmc *terwą", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/terw%C4%85" },
-  22: { id: 22, label: "etymonline — truce", url: "https://www.etymonline.com/word/truce" },
-  23: { id: 23, label: "Wiktionary — treu (German)", url: "https://en.wiktionary.org/wiki/treu" },
-  24: { id: 24, label: "AHD / Watkins — IE root deru- (TheFreeDictionary)", url: "https://www.thefreedictionary.com/_/roots.aspx?type=Indo-European&root=deru-" },
-  25: { id: 25, label: "Watkins — AHD of IE Roots (2011), full text", url: "https://archive.org/stream/WatkinsAmericanHeritageDictionaryOfIndoEuropeanRoots2011/Watkins%20-%20American%20Heritage%20Dictionary%20of%20Indo-European%20Roots%20(2011)_djvu.txt" },
-  26: { id: 26, label: "Wiktionary — durus (Latin)", url: "https://en.wiktionary.org/wiki/durus#Latin" },
-  27: { id: 27, label: "de Vaan (2008) — Etym. Dict. of Latin, s.v. dūrus p.184", url: "https://archive.org/details/de-vaan-michiel-etymological-dictionary-of-latin" },
-  28: { id: 28, label: "etymonline — durable", url: "https://www.etymonline.com/word/durable" },
-  29: { id: 29, label: "etymonline — duration", url: "https://www.etymonline.com/word/duration" },
-  30: { id: 30, label: "etymonline — during", url: "https://www.etymonline.com/word/during" },
-  31: { id: 31, label: "etymonline — endure", url: "https://www.etymonline.com/word/endure" },
-  32: { id: 32, label: "etymonline — endurance", url: "https://www.etymonline.com/word/endurance" },
-  33: { id: 33, label: "etymonline — dour", url: "https://www.etymonline.com/word/dour" },
-  34: { id: 34, label: "etymonline — duress", url: "https://www.etymonline.com/word/duress" },
-  35: { id: 35, label: "etymonline — obdurate", url: "https://www.etymonline.com/word/obdurate" },
-  36: { id: 36, label: "etymonline — indurate", url: "https://www.etymonline.com/word/indurate" },
-  37: { id: 37, label: "etymonline — dura mater", url: "https://www.etymonline.com/word/dura+mater" },
-  38: { id: 38, label: "Wiktionary — δρῦς (Ancient Greek)", url: "https://en.wiktionary.org/wiki/%CE%B4%CF%81%E1%BF%A6%CF%82" },
-  39: { id: 39, label: "etymonline — dryad", url: "https://www.etymonline.com/word/dryad" },
-  40: { id: 40, label: "Wiktionary — δόρυ (Ancient Greek)", url: "https://en.wiktionary.org/wiki/%CE%B4%CF%8C%CF%81%CF%85" },
-  41: { id: 41, label: "Wiktionary — dory (English)", url: "https://en.wiktionary.org/wiki/dory" },
-  42: { id: 42, label: "Wiktionary — δένδρον (Ancient Greek)", url: "https://en.wiktionary.org/wiki/%CE%B4%CE%AD%CE%BD%CE%B4%CF%81%CE%BF%CE%BD" },
-  43: { id: 43, label: "etymonline — dendrite", url: "https://www.etymonline.com/word/dendrite" },
-  44: { id: 44, label: "etymonline — dendrochronology", url: "https://www.etymonline.com/word/dendrochronology" },
-  45: { id: 45, label: "etymonline — rhododendron", url: "https://www.etymonline.com/word/rhododendron" },
-  46: { id: 46, label: "etymonline — philodendron", url: "https://www.etymonline.com/word/philodendron" },
-  47: { id: 47, label: "Wiktionary — δρυμός (Ancient Greek)", url: "https://en.wiktionary.org/wiki/%CE%B4%CF%81%CF%85%CE%BC%CF%8C%CF%82" },
-  48: { id: 48, label: "etymonline — druid", url: "https://www.etymonline.com/word/druid" },
-  49: { id: 49, label: "Wiktionary — Proto-Celtic *druwits", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Celtic/druwits" },
-  50: { id: 50, label: "Wiktionary — druid (English)", url: "https://en.wiktionary.org/wiki/druid" },
-  51: { id: 51, label: "Wiktionary — दारु dāru (Sanskrit)", url: "https://en.wiktionary.org/wiki/%E0%A4%A6%E0%A4%BE%E0%A4%B0%E0%A5%81" },
-  52: { id: 52, label: "Wiktionary — द्रु dru (Sanskrit)", url: "https://en.wiktionary.org/wiki/%E0%A4%A6%E0%A5%8D%E0%A4%B0%E0%A5%81" },
-  53: { id: 53, label: "Wiktionary — द्रुम druma (Sanskrit)", url: "https://en.wiktionary.org/wiki/%E0%A4%A6%E0%A5%8D%E0%A4%B0%E0%A5%81%E0%A4%AE" },
-  54: { id: 54, label: "Wiktionary — दारुण dāruṇa (Sanskrit)", url: "https://en.wiktionary.org/wiki/%E0%A4%A6%E0%A4%BE%E0%A4%B0%E0%A5%81%E0%A4%A3" },
-  55: { id: 55, label: "Wiktionary — deodar (English)", url: "https://en.wiktionary.org/wiki/deodar" },
-  56: { id: 56, label: "Wikipedia — Cedrus deodara", url: "https://en.wikipedia.org/wiki/Cedrus_deodara" },
-  57: { id: 57, label: "Wiktionary — Proto-Celtic *daru", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Celtic/daru" },
-  58: { id: 58, label: "Wiktionary — dair (Old Irish)", url: "https://en.wiktionary.org/wiki/dair" },
-  59: { id: 59, label: "Wiktionary — derw (Welsh)", url: "https://en.wiktionary.org/wiki/derw" },
-  60: { id: 60, label: "Wiktionary — doire (Irish)", url: "https://en.wiktionary.org/wiki/doire" },
-  61: { id: 61, label: "Wikipedia — Derry/Londonderry name", url: "https://en.wikipedia.org/wiki/Derry/Londonderry_name_dispute" },
-  62: { id: 62, label: "Wiktionary — Proto-Slavic *dervo", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Slavic/dervo" },
-  63: { id: 63, label: "Wiktionary — Proto-Slavic *sъdorvъ", url: "https://en.wiktionary.org/wiki/Reconstruction:Proto-Slavic/s%D1%8Adorv%D1%8A" },
-  64: { id: 64, label: "Wiktionary — derva (Lithuanian)", url: "https://en.wiktionary.org/wiki/derva" },
-  65: { id: 65, label: "Wiktionary — dru (Albanian)", url: "https://en.wiktionary.org/wiki/dru" },
-  66: { id: 66, label: "Wiktionary — տրամ tram (Old Armenian)", url: "https://en.wiktionary.org/wiki/%D5%BF%D6%80%D5%A1%D5%B4" },
+const LINE = /^[-*]\s+\*\*\[R(\d+)\]\*\*\s+(.+?)\s*—\s*(https?:\/\/\S+)\s*$/;
 
-  // ── scholarly etymological dictionaries (consulted in full text) ──
-  67: { id: 67, label: "Kroonen — Etym. Dict. of Proto-Germanic (Brill 2013), pp. 520–523", url: "https://archive.org/details/etymological-dictionary-of-proto-germanic" },
-  68: { id: 68, label: "Orel — Handbook of Germanic Etymology (Brill 2003), pp. 409–410", url: "https://archive.org/details/Orel-AHandbookOfGermanicEtymology" },
-  69: { id: 69, label: "Beekes — Etym. Dict. of Greek (Brill 2010), pp. 315, 349, 356", url: "https://archive.org/details/etymological-dictionary-of-greek_202306" },
-  70: { id: 70, label: "Derksen — Etym. Dict. of the Slavic Inherited Lexicon (Brill 2008), pp. 99, 478–479", url: "https://archive.org/details/EtymologicalDictionaryOfTheSlavicInheritedLexicon_201310" },
-  71: { id: 71, label: "Derksen — Etym. Dict. of the Baltic Inherited Lexicon (Brill 2015), pp. 123, 434", url: "https://archive.org/details/derksen-etymological-dictionary-of-the-baltic-inherited-lexicon-2015" },
-  72: { id: 72, label: "Mayrhofer — EWAia I (Indo-Aryan), pp. 721, 759", url: "https://archive.org/details/etymologischesworterbuchdesaltindoarischenmayrhoferewa11992rep_25_b" },
-  73: { id: 73, label: "Turner — Comparative Dict. of the Indo-Aryan Languages (CDIAL), §6298–6299", url: "https://dsal.uchicago.edu/dictionaries/soas/" },
-  74: { id: 74, label: "Matasović — Etym. Dict. of Proto-Celtic (Brill 2009), pp. 91, 107", url: "https://archive.org/details/matasovic-etymological-dictionary-of-proto-celtic" },
-  75: { id: 75, label: "Martirosyan — Etym. Dict. of the Armenian Inherited Lexicon (Brill 2010), pp. 606–608, 617", url: "https://archive.org/details/HrachMartirosyanEtymologicalDictionaryOfTheArmenianInheritedLexicon" },
-  76: { id: 76, label: "Kloekhorst — Etym. Dict. of the Hittite Inherited Lexicon (Brill 2008), pp. 849–850", url: "https://archive.org/details/EtymologicalDictionaryOfTheHittiteInheritedLexicon" },
-  77: { id: 77, label: "Adams — A Dictionary of Tocharian B, s.v. or", url: "https://www.win.tue.nl/~aeb/natlang/tocharian/" },
-  78: { id: 78, label: "Orel — Albanian Etymological Dictionary (Brill 1998), p. 76", url: "https://archive.org/details/orel-a-concise-historical-grammar-of-the-albanian-language" },
-  79: { id: 79, label: "Pokorny — Indogermanisches etym. Wörterbuch (IEW), pp. 214–217 (deru-)", url: "https://starlingdb.org/cgi-bin/etymology.cgi?single=1&basename=/data/ie/piet&text_number=+188" },
-  80: { id: 80, label: "Mallory & Adams — Encyclopedia of Indo-European Culture (EIEC 1997), p. 598 'TREE'", url: "https://archive.org/details/EncyclopediaOfIndoEuropeanCulture" },
-  81: { id: 81, label: "Wodtko/Irslinger/Schneider — Nomina im Indogermanischen Lexikon (NIL 2008)", url: "https://archive.org/details/NIL_2008" },
-};
+/** drop the markdown emphasis/code that's noise in a link label, while keeping
+ *  backslash-escaped asterisks (e.g. the PIE star in "*deru-"). */
+function plain(md: string): string {
+  return md
+    .replace(/\\\*/g, "\x00") // park escaped asterisks on a sentinel
+    .replace(/[*`]/g, "") // strip emphasis / code markers
+    .replace(/\x00/g, "*") // restore the literal asterisks
+    .trim();
+}
+
+function parseReferences(md: string): Record<number, Reference> {
+  const out: Record<number, Reference> = {};
+  for (const line of md.split(/\r?\n/)) {
+    const m = LINE.exec(line.trim());
+    if (!m) continue;
+    const id = Number(m[1]);
+    if (out[id]) throw new Error(`[references] duplicate [R${id}] in references.md`);
+    out[id] = { id, label: plain(m[2]), url: m[3] };
+  }
+  return out;
+}
+
+export const REFERENCES: Record<number, Reference> = parseReferences(rawReferences);
+
+// fail fast if a node cites a source that references.md doesn't define
+(function validateTreeRefs(root: EtymNode) {
+  const dangling: string[] = [];
+  (function walk(n: EtymNode) {
+    for (const r of n.refs ?? []) if (!REFERENCES[r]) dangling.push(`${n.id} → R${r}`);
+    n.children?.forEach(walk);
+  })(root);
+  if (dangling.length) {
+    throw new Error(`[references] nodes cite undefined sources: ${dangling.join(", ")}`);
+  }
+})(TREE);
