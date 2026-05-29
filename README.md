@@ -17,8 +17,7 @@ words grow upward like a canopy — the diagram is literally the thing it names.
   its line back to the root, **click** it for the gloss and exact sources.
 - **Honest about uncertainty** — contested links (the Latin *dūrus* family,
   *druid* as "oak-knower", Slavic *zdrowy* as "good wood", Greek *déndron*) are
-  drawn **dashed with a "?"**, so secure and disputed descent stay visually
-  distinct.
+  drawn **dashed**, so secure and disputed descent stay visually distinct.
 
 ## Sourcing
 

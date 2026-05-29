@@ -323,15 +323,6 @@ a {
 .node.selected circle {
   stroke-width: 3px;
 }
-.node .badge {
-  font-family: var(--sans);
-  font-weight: 700;
-  font-size: 13px;
-  fill: #b4452f;
-  paint-order: stroke;
-  stroke: var(--paper);
-  stroke-width: 3px;
-}
 
 /* ──────────────────────── legend key ──────────────────────── */
 .dashed-key {

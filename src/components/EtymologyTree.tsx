@@ -306,12 +306,6 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
                     strokeDasharray={reconstructed ? "2.5 2" : undefined}
                   />
 
-                  {n.data.disputed && (
-                    <text className="badge" x={radius(n) + 2} y={-radius(n) - 1}>
-                      ?
-                    </text>
-                  )}
-
                   {/* label: root sits below the base, everything else reads up-right.
                       stack is: WORD / gloss / language. Gloss + language only when
                       `detail` (zoomed in or focused); whole label only when `labeled`
