@@ -12,6 +12,10 @@ interface Props {
   onSelect: (id: string | null) => void;
 }
 
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
 function radius(node: LaidNode): number {
   switch (node.data.kind) {
     case "root":
@@ -131,7 +135,8 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
       .translate(size.w / 2, size.h / 2)
       .scale(k)
       .translate(-cx, -cy);
-    select(svg).transition().duration(720).call(zoomBehavior.transform, t);
+    const dur = prefersReducedMotion() ? 0 : 720;
+    select(svg).transition().duration(dur).call(zoomBehavior.transform, t);
   }
 
   // Refit whenever the narrative focus or the viewport size changes. fitTo and

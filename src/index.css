@@ -521,3 +521,16 @@ a {
     width: min(300px, calc(100% - 24px));
   }
 }
+
+/* ──────────────────── reduced motion ──────────────────── */
+/* Honour the OS "reduce motion" setting: the focus/dim fades and the
+   scroll-card reveal become instant. The zoom transition is shortened
+   in EtymologyTree.tsx separately (it's a JS d3 transition). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
