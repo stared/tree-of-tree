@@ -10,6 +10,12 @@ interface Props {
   focusIds: string[];
   selectedId: string | null;
   onSelect: (id: string | null) => void;
+  /** wheel/drag zoom — off during the narrative so the page scrolls, on to explore */
+  interactive?: boolean;
+  /** draw word labels at all (off for the bare intro backdrop) */
+  showLabels?: boolean;
+  /** show the controls + legend bar */
+  chrome?: boolean;
 }
 
 const prefersReducedMotion = () =>
@@ -27,8 +33,19 @@ function radius(node: LaidNode): number {
   }
 }
 
-export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
+export function EtymologyTree({
+  focusIds,
+  selectedId,
+  onSelect,
+  interactive = true,
+  showLabels = true,
+  chrome = true,
+}: Props) {
   const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
+  const interactiveRef = useRef(interactive);
+  useEffect(() => {
+    interactiveRef.current = interactive;
+  }, [interactive]);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -96,6 +113,9 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
     const svg = select(svgRef.current!);
     const zoomBehavior = d3zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.04, 12]) // wide open: zoom all the way out or deep in
+      // Block ALL zoom gestures unless interactive — so wheeling over the tree
+      // scrolls the PAGE during the narrative, and only frees up to explore.
+      .filter((e) => interactiveRef.current && !e.button)
       .on("zoom", (e) => setTransform(e.transform));
     svg.call(zoomBehavior);
     svg.on("dblclick.zoom", null); // dblclick is used for reset instead
@@ -103,7 +123,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   }, []);
 
   // compute a transform that fits a set of nodes into the viewport
-  function fitTo(ids: string[] | null) {
+  function fitTo(ids: string[] | null, animate = true) {
     const svg = svgRef.current;
     const zoomBehavior = zoomRef.current;
     if (!svg || !zoomBehavior || size.w < 10) return;
@@ -135,15 +155,20 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
       .translate(size.w / 2, size.h / 2)
       .scale(k)
       .translate(-cx, -cy);
-    const dur = prefersReducedMotion() ? 0 : 720;
-    select(svg).transition().duration(dur).call(zoomBehavior.transform, t);
+    const dur = animate && !prefersReducedMotion() ? 720 : 0;
+    if (dur === 0) select(svg).call(zoomBehavior.transform, t);
+    else select(svg).transition().duration(dur).call(zoomBehavior.transform, t);
   }
 
   // Refit whenever the narrative focus or the viewport size changes. fitTo and
   // visibleNodes are deliberately not deps: fitTo is stable enough for this and
   // we don't want a refit on every unrelated render.
+  const prevFocusKey = useRef("");
   useEffect(() => {
-    fitTo(focusIds.length ? focusIds : null);
+    const key = focusIds.join(",");
+    const focusChanged = key !== prevFocusKey.current;
+    prevFocusKey.current = key;
+    fitTo(focusIds.length ? focusIds : null, focusChanged);
   }, [focusIds, size.w, size.h]);
 
   // A node is "active" only if it is a focus node, an ancestor of one (the
@@ -160,7 +185,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   // Every narrative step fits to k ≥ 0.7, so it always lands in the "all" level
   // and never hides one of the words it is about. Gloss + language ride along
   // with "all"; the few zoomed-out labels stay bare so the canopy reads clean.
-  const showAllLabels = transform.k >= 0.5;
+  const showAllLabels = transform.k >= 0.62;
 
   // Semantic zoom for labels: they live inside the zoomed group, so zoomed out
   // they'd shrink to specks. Counter-scale by 1/k while k < 1 to hold a constant
@@ -170,6 +195,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
 
   const labelShown = useMemo(() => {
     const shown = new Set<string>();
+    if (!showLabels) return shown; // bare intro backdrop — no words at all
     for (const n of visibleNodes) {
       if (activeIds && !activeIds.has(n.id)) continue; // dimmed by the current focus
       const sx = n.x * transform.k + transform.x;
@@ -187,7 +213,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
         shown.add(n.id);
     }
     return shown;
-  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, showAllLabels]);
+  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, showAllLabels, showLabels]);
 
   // organic branch thickness: more wood flows through a link with a bigger subtree.
   // floor is generous so even a lone twig stays clearly attached (no "orphan" look).
@@ -196,7 +222,8 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
   }
 
   return (
-    <div className="tree-wrap" ref={wrapRef}>
+    <div className={`tree-wrap${interactive ? "" : " tree-wrap-locked"}`} ref={wrapRef}>
+      {chrome && (
       <div className="tree-controls">
         <button
           onClick={() => {
@@ -225,6 +252,7 @@ export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
           </span>
         </span>
       </div>
+      )}
 
       <svg
         ref={svgRef}

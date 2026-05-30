@@ -43,11 +43,26 @@ a {
 
 /* ───────────────────────── hero ───────────────────────── */
 .hero {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 8vh 0;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  /* soft paper vignette so the title stays legible over the tree backdrop */
+  background: radial-gradient(
+    ellipse 72% 54% at 50% 47%,
+    var(--paper) 0%,
+    var(--paper) 40%,
+    transparent 76%
+  );
+}
+.hero-kicker,
+.hero h1,
+.hero-dek,
+.hero-scroll {
+  max-width: 720px;
 }
 .hero-kicker {
   font-family: var(--sans);
@@ -58,8 +73,8 @@ a {
   margin-bottom: 1.2em;
 }
 .hero h1 {
-  font-size: clamp(40px, 4.6vw, 62px);
-  line-height: 1;
+  font-size: clamp(44px, 7.5vw, 86px);
+  line-height: 0.98;
   margin: 0 0 0.4em;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -69,9 +84,10 @@ a {
   font-style: italic;
 }
 .hero-dek {
-  font-size: clamp(17px, 1.5vw, 20px);
+  font-size: clamp(17px, 2vw, 21px);
   color: var(--ink-soft);
-  margin: 0;
+  margin: 0 auto;
+  max-width: 620px;
 }
 .hero-scroll {
   margin-top: 3em;
@@ -82,15 +98,60 @@ a {
   color: var(--ink-faint);
 }
 
-/* ──────────────────────── scrolly ──────────────────────── */
-.scrolly {
-  display: grid;
-  grid-template-columns: minmax(330px, 0.95fr) 1.25fr;
+/* ────────────────── acts + the phasing tree stage ────────────────── */
+/* The text acts give the page its scroll length and sit ABOVE the tree, but are
+   click-through, so the fixed tree behind them stays interactive where needed. */
+.act {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+.act a {
+  pointer-events: auto;
+}
+.act-intro {
+  height: 100vh;
+}
+.act-explore {
+  height: 100vh;
 }
 
+/* One persistent tree. Its slot is chosen by data-phase; it glides between
+   slots, and within a phase it never resizes — so scrolling just scrolls. */
+.tree-stage {
+  position: fixed;
+  z-index: 1;
+  background: radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
+  transition:
+    top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    left 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tree-stage[data-phase="intro"] {
+  inset: 0 0 auto 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* a locked backdrop */
+}
+.tree-stage[data-phase="story"] {
+  top: 0;
+  left: 42vw;
+  width: 58vw;
+  height: 100vh;
+  pointer-events: auto;
+}
+.tree-stage[data-phase="explore"] {
+  inset: 0 0 auto 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: auto;
+}
+
+/* story: the steps sit in a left column; the tree glides to the right */
 .narrative {
-  padding: 0 clamp(20px, 4vw, 64px);
-  border-right: 1px solid var(--rule);
+  width: 42vw;
+  padding: 0 clamp(20px, 3.4vw, 54px);
 }
 
 .step {
@@ -138,23 +199,11 @@ a {
   font-weight: 600;
 }
 
-/* ──────────────────────── graphic ──────────────────────── */
-.graphic {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
-.graphic-inner {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+/* ──────────────────────── tree ──────────────────────── */
 .tree-region {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  background: radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 .tree-wrap {
@@ -170,6 +219,10 @@ a {
 }
 .tree-wrap svg:active {
   cursor: grabbing;
+}
+.tree-wrap-locked svg,
+.tree-wrap-locked svg:active {
+  cursor: default;
 }
 
 .tree-controls {
@@ -453,36 +506,27 @@ a {
   margin-bottom: 6px;
 }
 
-/* ──────────────────────── colophon ──────────────────────── */
-.colophon {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 12vh 24px 16vh;
-  border-top: 1px solid var(--rule);
-}
-.colophon h2 {
-  font-size: 30px;
+/* ──────────────────────── colophon (closing card) ──────────────────────── */
+.colophon-card h2 {
+  font-size: clamp(24px, 3vw, 33px);
   font-weight: 600;
-  margin: 0 0 0.6em;
+  margin: 0 0 0.5em;
+  letter-spacing: -0.01em;
 }
-.colophon p {
+.colophon-card p {
   color: var(--ink-soft);
+  font-size: 18px;
 }
-.colophon code {
+.colophon-card code {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.85em;
   background: var(--paper-2);
   padding: 1px 6px;
   border-radius: 4px;
 }
-.colophon .disputes {
-  font-size: 16px;
-  border-left: 3px solid #d8a48f;
-  padding-left: 16px;
-}
-.colophon .byline {
-  margin-top: 2.4em;
-  padding-top: 1.4em;
+.colophon-card .byline {
+  margin-top: 1.8em;
+  padding-top: 1.2em;
   border-top: 1px solid var(--rule);
   font-size: 15px;
   color: var(--ink-faint);
@@ -493,24 +537,39 @@ a {
   body {
     font-size: 17px;
   }
-  .scrolly {
-    display: block;
+  /* No phase choreography on mobile: the tree is a sticky banner the text
+     scrolls under. It sits after the hero in source order. */
+  .tree-stage,
+  .tree-stage[data-phase] {
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 52vh !important;
+    pointer-events: auto !important;
+    transition: none !important;
+    border-bottom: 1px solid var(--rule);
+  }
+  .act {
+    pointer-events: auto;
+  }
+  .act-intro {
+    height: auto;
+  }
+  .hero {
+    height: auto;
+    min-height: 56vh;
+    padding: 12vh 20px 6vh;
+    background: none;
   }
   .narrative {
-    border-right: none;
-    order: 2;
-  }
-  .graphic {
-    height: 56vh;
-    border-bottom: 1px solid var(--rule);
+    width: auto;
   }
   .step {
     min-height: 78vh;
   }
-  .hero {
-    min-height: auto;
-    justify-content: flex-start;
-    padding: 13vh 0 9vh;
+  .act-explore {
+    display: none;
   }
   .detail {
     width: min(300px, calc(100% - 24px));
