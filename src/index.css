@@ -43,10 +43,11 @@ a {
 
 /* ───────────────────────── hero ───────────────────────── */
 .hero {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 16vh 24px 12vh;
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8vh 0;
 }
 .hero-kicker {
   font-family: var(--sans);
@@ -57,8 +58,8 @@ a {
   margin-bottom: 1.2em;
 }
 .hero h1 {
-  font-size: clamp(44px, 9vw, 96px);
-  line-height: 0.98;
+  font-size: clamp(40px, 4.6vw, 62px);
+  line-height: 1;
   margin: 0 0 0.4em;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -68,10 +69,9 @@ a {
   font-style: italic;
 }
 .hero-dek {
-  font-size: clamp(18px, 2.4vw, 22px);
+  font-size: clamp(17px, 1.5vw, 20px);
   color: var(--ink-soft);
-  margin: 0 auto;
-  max-width: 640px;
+  margin: 0;
 }
 .hero-scroll {
   margin-top: 3em;
@@ -86,7 +86,6 @@ a {
 .scrolly {
   display: grid;
   grid-template-columns: minmax(330px, 0.95fr) 1.25fr;
-  border-top: 1px solid var(--rule);
 }
 
 .narrative {
@@ -507,6 +506,11 @@ a {
   }
   .step {
     min-height: 78vh;
+  }
+  .hero {
+    min-height: auto;
+    justify-content: flex-start;
+    padding: 13vh 0 9vh;
   }
   .detail {
     width: min(300px, calc(100% - 24px));

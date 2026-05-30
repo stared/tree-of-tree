@@ -32,18 +32,17 @@ export function App() {
 
   return (
     <div className="page">
-      <header className="hero">
-        <div className="hero-kicker">{HERO.kicker}</div>
-        <h1 dangerouslySetInnerHTML={{ __html: HERO.titleHtml }} />
-        <p
-          className="hero-dek"
-          dangerouslySetInnerHTML={{ __html: HERO.bodyHtml }}
-        />
-        <div className="hero-scroll">↓ scroll</div>
-      </header>
-
       <section className="scrolly">
         <div className="narrative">
+          <header className="hero">
+            <div className="hero-kicker">{HERO.kicker}</div>
+            <h1 dangerouslySetInnerHTML={{ __html: HERO.titleHtml }} />
+            <p
+              className="hero-dek"
+              dangerouslySetInnerHTML={{ __html: HERO.bodyHtml }}
+            />
+            <div className="hero-scroll">↓ scroll</div>
+          </header>
           {STEPS.map((s, i) => (
             <div
               key={s.key}

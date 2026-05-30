@@ -28,7 +28,7 @@ function radius(node: LaidNode): number {
 }
 
 export function EtymologyTree({ focusIds, selectedId, onSelect }: Props) {
-  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 150 }), []);
+  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
