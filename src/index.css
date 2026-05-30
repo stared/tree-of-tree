@@ -259,6 +259,7 @@ a {
   align-items: center;
   gap: 10px 12px;
   pointer-events: none; /* let drags pass through the gaps; children re-enable */
+  animation: labelIn 0.6s ease both; /* fade in (it only mounts once settled) */
 }
 .tree-controls > * {
   pointer-events: auto;

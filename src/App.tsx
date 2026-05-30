@@ -17,6 +17,7 @@ export function App() {
   const index = useMemo(() => nodeById(TREE), []);
   const [activeStep, setActiveStep] = useState(0);
   const [phase, setPhase] = useState<Phase>("intro");
+  const [legendOn, setLegendOn] = useState(false); // legend fades in only once the tree has settled
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
@@ -57,6 +58,7 @@ export function App() {
       if (vw <= 920) {
         stage.style.cssText = ""; // hand off to the sticky-banner mobile CSS
         setPhase((p) => (p === "story" ? p : "story"));
+        setLegendOn((v) => (v ? v : true));
         return;
       }
       const MZ = vh; // the intro→story move spans ~one screen of scroll
@@ -67,9 +69,14 @@ export function App() {
       stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
       stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
       stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
-      // labels fade in only as the move finishes — the "old root" step arriving
+      // labels fade in as the move finishes (the "old root" step arriving); the
+      // legend waits until the tree has fully settled, so it never slides in.
       const next: Phase = a >= 0.85 ? "story" : "intro";
       setPhase((p) => (p === next ? p : next));
+      setLegendOn((v) => {
+        const on = a >= 0.995;
+        return v === on ? v : on;
+      });
     }
     function onScroll() {
       if (!raf) raf = requestAnimationFrame(() => ((raf = 0), update()));
@@ -106,7 +113,7 @@ export function App() {
             onSelect={setSelectedId}
             interactive={activeStep >= lastIdx}
             showLabels={phase !== "intro"}
-            chrome={phase !== "intro"}
+            chrome={legendOn}
           />
           <DetailPanel
             node={selectedNode}
@@ -139,7 +146,7 @@ export function App() {
 
           {/* closing card — the words beyond this family; reaching it frees the tree */}
           <div
-            className="step"
+            className={`step${activeStep === lastIdx ? " active" : ""}`}
             data-idx={lastIdx}
             ref={(el) => {
               stepRefs.current[lastIdx] = el;
