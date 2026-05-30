@@ -16,9 +16,9 @@ interface Props {
   showLabels: boolean;
   /** show the controls + legend bar */
   chrome: boolean;
-  /** the full-view (explore) toggle is currently engaged */
+  /** which mode the tree is in — drives the Story/Explore segmented control */
   exploreSelected: boolean;
-  /** click the full-view toggle (enter explore, or leave back to the last point) */
+  /** switch modes: Story (back to the last narrative point) or Explore (full view) */
   onToggleExplore: () => void;
 }
 
@@ -252,14 +252,30 @@ export function EtymologyTree({
         >
           ⤢ Reset view
         </button>
-        <button
-          className={exploreSelected ? "selected" : ""}
-          aria-pressed={exploreSelected}
-          onClick={onToggleExplore}
-          title={exploreSelected ? "Leave full view" : "See the whole tree"}
-        >
-          ⛶ Full screen
-        </button>
+        {/* Story / Explore — a segmented toggle; the lit half tracks where you
+            are, and clicking the other half moves you into that mode. */}
+        <span className="mode-toggle" role="group" aria-label="View mode">
+          <button
+            className={exploreSelected ? "" : "selected"}
+            aria-pressed={!exploreSelected}
+            onClick={() => {
+              if (exploreSelected) onToggleExplore();
+            }}
+            title="Read the story"
+          >
+            Story
+          </button>
+          <button
+            className={exploreSelected ? "selected" : ""}
+            aria-pressed={exploreSelected}
+            onClick={() => {
+              if (!exploreSelected) onToggleExplore();
+            }}
+            title="Explore the whole tree"
+          >
+            Explore
+          </button>
+        </span>
 
         {/* sense legend, same line — colour = meaning; dashed = scholars disagree */}
         <span className="tree-legend">
