@@ -112,8 +112,30 @@ a {
 .act-intro {
   height: 100vh;
 }
-.act-explore {
-  height: 100vh;
+
+/* persistent author credit, pinned to the bottom, fading softly over the tree */
+.authorbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  pointer-events: none;
+  text-align: center;
+  padding: 14px 16px 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+  background: linear-gradient(to top, var(--paper) 35%, transparent);
+}
+.authorbar a {
+  pointer-events: auto;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--rule);
+}
+.authorbar a:hover {
+  color: var(--ink);
 }
 
 /* One persistent tree. Its rectangle is set CONTINUOUSLY from scroll (App.tsx)
@@ -568,9 +590,6 @@ a {
   }
   .step {
     min-height: 78vh;
-  }
-  .act-explore {
-    display: none;
   }
   .detail {
     width: min(300px, calc(100% - 24px));

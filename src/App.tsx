@@ -8,10 +8,10 @@ import { COLOPHON, HERO, STEPS } from "./content/load";
 // fixed element; its rectangle is set by CSS per `data-phase`, so WITHIN a phase
 // it is perfectly stable (scrolling scrolls), and only at a boundary does it
 // glide to the next slot. Same size throughout — only its place changes.
-//   intro   — full screen, no labels, locked: a calm backdrop for the title
-//   story   — right pane, labelled, clickable: text steps scroll on the left
-//   explore — full screen, fully interactive: just the tree, to roam
-type Phase = "intro" | "story" | "explore";
+//   intro — full screen, no labels, locked: a calm backdrop for the title
+//   story — right pane, labelled: text steps scroll on the left, then the tree
+//           frees up to roam in place once you reach the closing card
+type Phase = "intro" | "story";
 
 export function App() {
   const index = useMemo(() => nodeById(TREE), []);
@@ -20,8 +20,9 @@ export function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
-  const exploreRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  // the closing "now explore" card is the last one; reaching it frees the tree
+  const exploreCardIdx = STEPS.length + 1;
 
   // scrollytelling: mark the step nearest the middle of the viewport as active
   useEffect(() => {
@@ -46,13 +47,11 @@ export function App() {
     const clamp = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
     const lerp = (A: number[], B: number[], t: number) => A.map((v, i) => v + (B[i] - v) * t);
     const INTRO = [0, 0, 1, 1]; // full screen — the backdrop
-    const STORY = [0.42, 0, 0.58, 1]; // right pane
-    const EXPLORE = [0, 0, 1, 1]; // full screen again
+    const STORY = [0.42, 0, 0.58, 1]; // right pane (and it stays here to the end)
     function update() {
       const stage = stageRef.current;
       const story = storyRef.current?.getBoundingClientRect();
-      const explore = exploreRef.current?.getBoundingClientRect();
-      if (!stage || !story || !explore) return;
+      if (!stage || !story) return;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       if (vw <= 920) {
@@ -60,18 +59,16 @@ export function App() {
         setPhase((p) => (p === "story" ? p : "story"));
         return;
       }
-      const MZ = vh; // each transition morphs over ~one screen of scroll
-      const a = clamp((MZ - story.top) / MZ); // intro → story
-      const b = clamp((MZ - explore.top) / MZ); // story → explore
-      const r = b > 0 ? lerp(STORY, EXPLORE, b) : lerp(INTRO, STORY, a);
+      const MZ = vh; // the intro→story move spans ~one screen of scroll
+      const a = clamp((MZ - story.top) / MZ);
+      const r = lerp(INTRO, STORY, a);
       stage.style.position = "fixed";
       stage.style.left = `${(r[0] * vw).toFixed(1)}px`;
       stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
       stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
       stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
-      // labels fade in only once the move is nearly done (the "old root" step
-      // arriving); the tree only frees up to explore once fully full again.
-      const next: Phase = b >= 0.95 ? "explore" : a >= 0.85 ? "story" : "intro";
+      // labels fade in only as the move finishes — the "old root" step arriving
+      const next: Phase = a >= 0.85 ? "story" : "intro";
       setPhase((p) => (p === next ? p : next));
     }
     function onScroll() {
@@ -104,10 +101,10 @@ export function App() {
       <div className="tree-stage" data-phase={phase} ref={stageRef}>
         <div className="tree-region">
           <EtymologyTree
-            focusIds={phase === "explore" ? [] : STEPS[activeStep]?.focus ?? []}
+            focusIds={activeStep >= exploreCardIdx ? [] : STEPS[activeStep]?.focus ?? []}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            interactive={phase === "explore"}
+            interactive={activeStep >= exploreCardIdx}
             showLabels={phase !== "intro"}
             chrome={phase !== "intro"}
           />
@@ -155,10 +152,36 @@ export function App() {
               }}
             />
           </div>
+
+          {/* closing invitation — reaching this card frees the tree to roam */}
+          <div
+            className="step"
+            data-idx={exploreCardIdx}
+            ref={(el) => {
+              stepRefs.current[exploreCardIdx] = el;
+            }}
+          >
+            <div className="step-card">
+              <h2>And now — explore</h2>
+              <p>
+                The whole family is yours to roam. <b>Drag</b> to pan, <b>scroll</b> to zoom,
+                <b> click</b> any word for its gloss and exact sources.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="act act-explore" ref={exploreRef} aria-hidden="true" />
+      <footer className="authorbar">
+        By{" "}
+        <a href="https://p.migdal.pl/" target="_blank" rel="noreferrer">
+          Piotr Migdał
+        </a>{" "}
+        · Source &amp; data on{" "}
+        <a href="https://github.com/stared/tree-of-tree" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </footer>
     </div>
   );
 }
