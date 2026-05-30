@@ -122,6 +122,26 @@ export function EtymologyTree({
     zoomRef.current = zoomBehavior;
   }, []);
 
+  // Coerce free zoom/pan so you can never leave dead space: the min scale is
+  // "the whole tree just fits" and panning is bounded to the tree's box. (Only
+  // affects user gestures; the programmatic step-framing sets transforms direct.)
+  useEffect(() => {
+    const zb = zoomRef.current;
+    if (!zb || size.w < 10) return;
+    const xs = layout.nodes.map((n) => n.x);
+    const ys = layout.nodes.map((n) => n.y);
+    const pad = 70;
+    const x0 = Math.min(...xs) - pad;
+    const x1 = Math.max(...xs) + pad;
+    const y0 = Math.min(...ys) - pad;
+    const y1 = Math.max(...ys) + pad;
+    const fit = Math.min(size.w / (x1 - x0), size.h / (y1 - y0));
+    zb.scaleExtent([fit, 12]).translateExtent([
+      [x0, y0],
+      [x1, y1],
+    ]);
+  }, [size.w, size.h, layout]);
+
   // compute a transform that fits a set of nodes into the viewport
   function fitTo(ids: string[] | null, animate = true) {
     const svg = svgRef.current;
