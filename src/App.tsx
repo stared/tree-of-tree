@@ -21,6 +21,7 @@ export function App() {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
   const exploreRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   // scrollytelling: mark the step nearest the middle of the viewport as active
   useEffect(() => {
@@ -36,21 +37,41 @@ export function App() {
     return () => observer.disconnect();
   }, []);
 
-  // pick the phase from scroll position (the tree's CSS does the gliding)
+  // Drive the tree's rectangle CONTINUOUSLY from scroll, so it slides between
+  // slots as you scroll (not a one-shot animation). Within a phase the rect is
+  // pinned, so scrolling there just scrolls. Phase (for labels/interaction) is
+  // derived from the same morph params.
   useEffect(() => {
     let raf = 0;
+    const clamp = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
+    const lerp = (A: number[], B: number[], t: number) => A.map((v, i) => v + (B[i] - v) * t);
+    const INTRO = [0, 0, 1, 1]; // full screen — the backdrop
+    const STORY = [0.42, 0, 0.58, 1]; // right pane
+    const EXPLORE = [0, 0, 1, 1]; // full screen again
     function update() {
-      // mobile: no choreography — the tree is a static labelled banner that the
-      // page scrolls past, so keep it non-interactive ("story") and let drags scroll
-      if (window.innerWidth <= 920) {
+      const stage = stageRef.current;
+      const story = storyRef.current?.getBoundingClientRect();
+      const explore = exploreRef.current?.getBoundingClientRect();
+      if (!stage || !story || !explore) return;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      if (vw <= 920) {
+        stage.style.cssText = ""; // hand off to the sticky-banner mobile CSS
         setPhase((p) => (p === "story" ? p : "story"));
         return;
       }
-      const vh = window.innerHeight;
-      const story = storyRef.current?.getBoundingClientRect();
-      const explore = exploreRef.current?.getBoundingClientRect();
-      if (!story || !explore) return;
-      const next: Phase = explore.top <= vh * 0.5 ? "explore" : story.top <= vh * 0.45 ? "story" : "intro";
+      const MZ = vh; // each transition morphs over ~one screen of scroll
+      const a = clamp((MZ - story.top) / MZ); // intro → story
+      const b = clamp((MZ - explore.top) / MZ); // story → explore
+      const r = b > 0 ? lerp(STORY, EXPLORE, b) : lerp(INTRO, STORY, a);
+      stage.style.position = "fixed";
+      stage.style.left = `${(r[0] * vw).toFixed(1)}px`;
+      stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
+      stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
+      stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
+      // labels fade in only once the move is nearly done (the "old root" step
+      // arriving); the tree only frees up to explore once fully full again.
+      const next: Phase = b >= 0.95 ? "explore" : a >= 0.85 ? "story" : "intro";
       setPhase((p) => (p === next ? p : next));
     }
     function onScroll() {
@@ -80,7 +101,7 @@ export function App() {
         </header>
       </section>
 
-      <div className="tree-stage" data-phase={phase}>
+      <div className="tree-stage" data-phase={phase} ref={stageRef}>
         <div className="tree-region">
           <EtymologyTree
             focusIds={phase === "explore" ? [] : STEPS[activeStep]?.focus ?? []}

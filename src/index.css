@@ -116,36 +116,37 @@ a {
   height: 100vh;
 }
 
-/* One persistent tree. Its slot is chosen by data-phase; it glides between
-   slots, and within a phase it never resizes — so scrolling just scrolls. */
+/* One persistent tree. Its rectangle is set CONTINUOUSLY from scroll (App.tsx)
+   so it slides between slots as you scroll; pointer-events follow the phase. */
 .tree-stage {
   position: fixed;
   z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh; /* JS overrides these as you scroll */
   background: radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
-  transition:
-    top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-    left 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-    height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tree-stage[data-phase="intro"] {
-  inset: 0 0 auto 0;
-  width: 100vw;
-  height: 100vh;
   pointer-events: none; /* a locked backdrop */
 }
-.tree-stage[data-phase="story"] {
-  top: 0;
-  left: 42vw;
-  width: 58vw;
-  height: 100vh;
+.tree-stage[data-phase="story"],
+.tree-stage[data-phase="explore"] {
   pointer-events: auto;
 }
-.tree-stage[data-phase="explore"] {
-  inset: 0 0 auto 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: auto;
+
+/* labels ease in softly as they appear (a step's focus, or zooming in) */
+@keyframes labelIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.node .label,
+.node .root-label {
+  animation: labelIn 0.55s ease both;
 }
 
 /* story: the steps sit in a left column; the tree glides to the right */
