@@ -8,10 +8,11 @@ import { COLOPHON, HERO, STEPS } from "./content/load";
 // fixed element; its rectangle is set by CSS per `data-phase`, so WITHIN a phase
 // it is perfectly stable (scrolling scrolls), and only at a boundary does it
 // glide to the next slot. Same size throughout — only its place changes.
-//   intro — full screen, no labels, locked: a calm backdrop for the title
-//   story — right pane, labelled: text steps scroll on the left, then the tree
-//           frees up to roam in place once you reach the closing card
-type Phase = "intro" | "story";
+//   intro   — full screen, no labels, locked: a calm backdrop for the title
+//   story   — right pane, labelled: text steps scroll on the left
+//   explore — slide further and the tree takes the full width (small note below),
+//             fully interactive to roam
+type Phase = "intro" | "story" | "explore";
 
 export function App() {
   const index = useMemo(() => nodeById(TREE), []);
@@ -21,9 +22,10 @@ export function App() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
+  const exploreRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  // the closing "Beyond PIE tree" card is the last one; reaching it frees the tree
-  const lastIdx = STEPS.length;
+  const lastIdx = STEPS.length; // the "Beyond PIE tree" card sits after the steps
+  const totalChapters = STEPS.length + 1; // steps + the "Beyond" closing chapter
 
   // scrollytelling: mark the step nearest the middle of the viewport as active
   useEffect(() => {
@@ -48,11 +50,13 @@ export function App() {
     const clamp = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
     const lerp = (A: number[], B: number[], t: number) => A.map((v, i) => v + (B[i] - v) * t);
     const INTRO = [0, 0, 1, 1]; // full screen — the backdrop
-    const STORY = [0.42, 0, 0.58, 1]; // right pane (and it stays here to the end)
+    const STORY = [0.42, 0, 0.58, 1]; // right pane, for the narrative
+    const EXPLORE = [0, 0, 1, 0.85]; // full width, with a small note strip below
     function update() {
       const stage = stageRef.current;
       const story = storyRef.current?.getBoundingClientRect();
-      if (!stage || !story) return;
+      const explore = exploreRef.current?.getBoundingClientRect();
+      if (!stage || !story || !explore) return;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       if (vw <= 920) {
@@ -61,17 +65,18 @@ export function App() {
         setLegendOn((v) => (v ? v : true));
         return;
       }
-      const MZ = vh; // the intro→story move spans ~one screen of scroll
-      const a = clamp((MZ - story.top) / MZ);
-      const r = lerp(INTRO, STORY, a);
+      const MZ = vh; // each move spans ~one screen of scroll
+      const a = clamp((MZ - story.top) / MZ); // intro → story (slide right)
+      const b = clamp((MZ - explore.top) / MZ); // story → explore (open to full width)
+      const r = b > 0 ? lerp(STORY, EXPLORE, b) : lerp(INTRO, STORY, a);
       stage.style.position = "fixed";
       stage.style.left = `${(r[0] * vw).toFixed(1)}px`;
       stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
       stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
       stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
-      // labels fade in as the move finishes (the "old root" step arriving); the
-      // legend waits until the tree has fully settled, so it never slides in.
-      const next: Phase = a >= 0.85 ? "story" : "intro";
+      // labels fade in as the slide finishes; the legend waits until fully
+      // settled so it never slides; the tree frees to roam once full-width.
+      const next: Phase = b >= 0.95 ? "explore" : a >= 0.85 ? "story" : "intro";
       setPhase((p) => (p === next ? p : next));
       setLegendOn((v) => {
         const on = a >= 0.995;
@@ -108,10 +113,10 @@ export function App() {
       <div className="tree-stage" data-phase={phase} ref={stageRef}>
         <div className="tree-region">
           <EtymologyTree
-            focusIds={activeStep >= lastIdx ? [] : STEPS[activeStep]?.focus ?? []}
+            focusIds={phase === "explore" ? [] : STEPS[activeStep]?.focus ?? []}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            interactive={activeStep >= lastIdx}
+            interactive={phase === "explore"}
             showLabels={phase !== "intro"}
             chrome={legendOn}
           />
@@ -136,7 +141,7 @@ export function App() {
             >
               <div className="step-card">
                 <div className="step-num">
-                  {String(i + 1).padStart(2, "0")} / {STEPS.length}
+                  {String(i + 1).padStart(2, "0")} / {totalChapters}
                 </div>
                 <h2>{s.title}</h2>
                 <p dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
@@ -144,7 +149,7 @@ export function App() {
             </div>
           ))}
 
-          {/* closing card — the words beyond this family; reaching it frees the tree */}
+          {/* closing chapter — the words beyond this family; a normal step card */}
           <div
             className={`step${activeStep === lastIdx ? " active" : ""}`}
             data-idx={lastIdx}
@@ -152,15 +157,22 @@ export function App() {
               stepRefs.current[lastIdx] = el;
             }}
           >
-            <div
-              className="step-card colophon-card"
-              dangerouslySetInnerHTML={{
-                __html: `<h2>${COLOPHON.title}</h2>${COLOPHON.bodyHtml}`,
-              }}
-            />
+            <div className="step-card">
+              <div className="step-num">
+                {totalChapters} / {totalChapters}
+              </div>
+              <h2>{COLOPHON.title}</h2>
+              <p dangerouslySetInnerHTML={{ __html: COLOPHON.bodyHtml }} />
+            </div>
           </div>
         </div>
       </section>
+
+      {/* slide past the last chapter and the tree opens to full width to roam */}
+      <section className="act act-explore" ref={exploreRef} aria-hidden="true" />
+      {phase === "explore" && (
+        <div className="explore-note">Now explore on your own. Click any word to see its sources.</div>
+      )}
 
       <footer className="authorbar">
         By{" "}

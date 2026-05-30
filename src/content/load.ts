@@ -74,14 +74,6 @@ function stripOuterP(html: string): string {
   return m ? m[1] : html;
 }
 
-/** tag the LAST `<p>` as the byline (colophon convention) */
-function classLastP(html: string, cls: string): string {
-  const idx = html.lastIndexOf("<p>");
-  return idx === -1
-    ? html
-    : html.slice(0, idx) + `<p class="${cls}">` + html.slice(idx + 3);
-}
-
 // ─── glob-load each kind ───
 
 function singleRaw(
@@ -140,5 +132,5 @@ const colophonRaw = parseFrontmatter(
 );
 export const COLOPHON: Colophon = {
   title: String(colophonRaw.data.title ?? ""),
-  bodyHtml: classLastP(renderBlock(colophonRaw.body), "byline"),
+  bodyHtml: stripOuterP(renderBlock(colophonRaw.body)), // one paragraph, like a step
 };

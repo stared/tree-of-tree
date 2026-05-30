@@ -112,6 +112,25 @@ a {
 .act-intro {
   height: 100vh;
 }
+.act-explore {
+  height: 120vh; /* scroll room for the tree to open to full width, then roam */
+}
+
+/* the small invitation under the full-width tree in the explore phase */
+.explore-note {
+  position: fixed;
+  bottom: 6vh;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  pointer-events: none;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  animation: labelIn 0.6s ease both;
+}
 
 /* persistent author credit, pinned to the bottom, fading softly over the tree */
 .authorbar {
@@ -530,30 +549,13 @@ a {
   margin-bottom: 6px;
 }
 
-/* ──────────────────────── colophon (closing card) ──────────────────────── */
-.colophon-card h2 {
-  font-size: clamp(24px, 3vw, 33px);
-  font-weight: 600;
-  margin: 0 0 0.5em;
-  letter-spacing: -0.01em;
-}
-.colophon-card p {
-  color: var(--ink-soft);
-  font-size: 18px;
-}
-.colophon-card code {
+/* the closing "Beyond PIE tree" chapter is a normal step card — no special font */
+.step code {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.85em;
   background: var(--paper-2);
   padding: 1px 6px;
   border-radius: 4px;
-}
-.colophon-card .byline {
-  margin-top: 1.8em;
-  padding-top: 1.2em;
-  border-top: 1px solid var(--rule);
-  font-size: 15px;
-  color: var(--ink-faint);
 }
 
 /* ──────────────────────── responsive ──────────────────────── */
@@ -591,6 +593,9 @@ a {
   }
   .step {
     min-height: 78vh;
+  }
+  .act-explore {
+    display: none;
   }
   .detail {
     width: min(300px, calc(100% - 24px));
