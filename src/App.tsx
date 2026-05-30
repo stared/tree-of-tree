@@ -21,8 +21,8 @@ export function App() {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  // the closing "now explore" card is the last one; reaching it frees the tree
-  const exploreCardIdx = STEPS.length + 1;
+  // the closing "Beyond PIE tree" card is the last one; reaching it frees the tree
+  const lastIdx = STEPS.length;
 
   // scrollytelling: mark the step nearest the middle of the viewport as active
   useEffect(() => {
@@ -101,10 +101,10 @@ export function App() {
       <div className="tree-stage" data-phase={phase} ref={stageRef}>
         <div className="tree-region">
           <EtymologyTree
-            focusIds={activeStep >= exploreCardIdx ? [] : STEPS[activeStep]?.focus ?? []}
+            focusIds={activeStep >= lastIdx ? [] : STEPS[activeStep]?.focus ?? []}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            interactive={activeStep >= exploreCardIdx}
+            interactive={activeStep >= lastIdx}
             showLabels={phase !== "intro"}
             chrome={phase !== "intro"}
           />
@@ -137,12 +137,12 @@ export function App() {
             </div>
           ))}
 
-          {/* the colophon rides along as the closing card, then we hand off to explore */}
+          {/* closing card — the words beyond this family; reaching it frees the tree */}
           <div
             className="step"
-            data-idx={STEPS.length}
+            data-idx={lastIdx}
             ref={(el) => {
-              stepRefs.current[STEPS.length] = el;
+              stepRefs.current[lastIdx] = el;
             }}
           >
             <div
@@ -151,23 +151,6 @@ export function App() {
                 __html: `<h2>${COLOPHON.title}</h2>${COLOPHON.bodyHtml}`,
               }}
             />
-          </div>
-
-          {/* closing invitation — reaching this card frees the tree to roam */}
-          <div
-            className="step"
-            data-idx={exploreCardIdx}
-            ref={(el) => {
-              stepRefs.current[exploreCardIdx] = el;
-            }}
-          >
-            <div className="step-card">
-              <h2>And now — explore</h2>
-              <p>
-                The whole family is yours to roam. <b>Drag</b> to pan, <b>scroll</b> to zoom,
-                <b> click</b> any word for its gloss and exact sources.
-              </p>
-            </div>
           </div>
         </div>
       </section>

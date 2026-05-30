@@ -121,8 +121,8 @@ a {
   right: 0;
   z-index: 3;
   pointer-events: none;
-  text-align: center;
-  padding: 14px 16px 12px;
+  text-align: right;
+  padding: 14px 28px 12px;
   font-family: var(--sans);
   font-size: 13px;
   letter-spacing: 0.02em;
