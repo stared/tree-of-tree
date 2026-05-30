@@ -166,7 +166,7 @@ a {
   top: 0;
   width: 100vw;
   height: 100vh; /* JS overrides these as you scroll */
-  background: radial-gradient(120% 80% at 50% 100%, var(--paper-2) 0%, var(--paper) 60%);
+  background: var(--paper); /* same as the page — no separate panel look */
 }
 .tree-stage[data-phase="intro"] {
   pointer-events: none; /* a locked backdrop */
@@ -268,10 +268,12 @@ a {
 }
 
 .tree-controls {
-  position: absolute;
+  /* FIXED to the viewport (not the tree), so it never slides as the tree moves
+     or opens to full width. It is pinned to the story slot's top edge. */
+  position: fixed;
   top: 14px;
-  left: 14px;
-  right: 14px;
+  left: calc(42vw + 14px);
+  right: 18px;
   z-index: 4;
   display: flex;
   flex-wrap: wrap;
@@ -596,6 +598,11 @@ a {
   }
   .act-explore {
     display: none;
+  }
+  .tree-controls {
+    position: absolute;
+    left: 14px;
+    right: 14px;
   }
   .detail {
     width: min(300px, calc(100% - 24px));

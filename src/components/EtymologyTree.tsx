@@ -184,10 +184,16 @@ export function EtymologyTree({
   // visibleNodes are deliberately not deps: fitTo is stable enough for this and
   // we don't want a refit on every unrelated render.
   const prevFocusKey = useRef("");
+  const prevSize = useRef({ w: 0, h: 0 });
   useEffect(() => {
     const key = focusIds.join(",");
     const focusChanged = key !== prevFocusKey.current;
+    const sizeChanged = size.w !== prevSize.current.w || size.h !== prevSize.current.h;
     prevFocusKey.current = key;
+    prevSize.current = { w: size.w, h: size.h };
+    // Only refit when the focus VALUE or the viewport actually changes — never on
+    // a bare re-render (e.g. clicking a node), which would otherwise snap the zoom.
+    if (!focusChanged && !sizeChanged) return;
     fitTo(focusIds.length ? focusIds : null, focusChanged);
   }, [focusIds, size.w, size.h]);
 
