@@ -11,11 +11,15 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string | null) => void;
   /** wheel/drag zoom — off during the narrative so the page scrolls, on to explore */
-  interactive?: boolean;
+  interactive: boolean;
   /** draw word labels at all (off for the bare intro backdrop) */
-  showLabels?: boolean;
+  showLabels: boolean;
   /** show the controls + legend bar */
-  chrome?: boolean;
+  chrome: boolean;
+  /** the full-view (explore) toggle is currently engaged */
+  exploreSelected: boolean;
+  /** click the full-view toggle (enter explore, or leave back to the last point) */
+  onToggleExplore: () => void;
 }
 
 const prefersReducedMotion = () =>
@@ -37,9 +41,11 @@ export function EtymologyTree({
   focusIds,
   selectedId,
   onSelect,
-  interactive = true,
-  showLabels = true,
-  chrome = true,
+  interactive,
+  showLabels,
+  chrome,
+  exploreSelected,
+  onToggleExplore,
 }: Props) {
   const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
   const interactiveRef = useRef(interactive);
@@ -53,20 +59,6 @@ export function EtymologyTree({
   const [transform, setTransform] = useState<ZoomTransform>(zoomIdentity);
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [hoverId, setHoverId] = useState<string | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  // fullscreen the whole tree region (so the detail panel comes along too)
-  function toggleFullscreen() {
-    const region = wrapRef.current?.closest(".tree-region") as HTMLElement | null;
-    if (!region) return;
-    if (document.fullscreenElement) document.exitFullscreen();
-    else region.requestFullscreen?.();
-  }
-  useEffect(() => {
-    const onChange = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
 
   // Disputed branches are always shown (dashed); the legend explains the dashing.
   const visibleNodes = layout.nodes;
@@ -260,8 +252,13 @@ export function EtymologyTree({
         >
           ⤢ Reset view
         </button>
-        <button onClick={toggleFullscreen} title="Toggle full screen">
-          {isFullscreen ? "⤧ Exit full screen" : "⛶ Full screen"}
+        <button
+          className={exploreSelected ? "selected" : ""}
+          aria-pressed={exploreSelected}
+          onClick={onToggleExplore}
+          title={exploreSelected ? "Leave full view" : "See the whole tree"}
+        >
+          ⛶ Full screen
         </button>
 
         {/* sense legend, same line — colour = meaning; dashed = scholars disagree */}

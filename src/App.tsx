@@ -99,6 +99,17 @@ export function App() {
   const selectedNode = selectedId ? index.get(selectedId) ?? null : null;
   const selectedAccent = selectedNode ? senseColor(selectedNode) : "#999";
 
+  // The full-view toggle: engaged automatically once you scroll to the end;
+  // clicking it when engaged scrolls back to the last point (the way out, so you
+  // never have to fight the zoom-wheel to leave).
+  function toggleExplore() {
+    if (phase === "explore") {
+      stepRefs.current[lastIdx]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      exploreRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   return (
     <div className="page">
       <section className="act act-intro">
@@ -119,6 +130,8 @@ export function App() {
             interactive={phase === "explore"}
             showLabels={phase !== "intro"}
             chrome={legendOn}
+            exploreSelected={phase === "explore"}
+            onToggleExplore={toggleExplore}
           />
           <DetailPanel
             node={selectedNode}
