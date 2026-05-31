@@ -42,12 +42,22 @@ export interface LayoutOptions {
   dy?: number; // vertical gap between generations
 }
 
+/** small seeded PRNG (mulberry32) — irregular but deterministic branch lengths */
+function mulberry32(a: number): () => number {
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const dx = opts.dx ?? 26;
   const dy = opts.dy ?? 150;
 
   const h = hierarchy<EtymNode>(root);
-  const maxDepth = h.height;
 
   const layout = tree<EtymNode>()
     .nodeSize([dx, dy])
@@ -62,29 +72,29 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
 
-  // Vertical stagger: d3.tree() puts every node of a depth on ONE line, so a
-  // parent's children sit at the same height and their (rotated) labels collide.
-  // We push children UP by a fraction of dy, in a "tent" per parent: children
-  // NEAR the parent's x rise highest, those FARTHER OUT sit lower. This (a)
-  // gives adjacent siblings different heights so their labels don't stack, and
-  // (b) guarantees no link crossings — a farther sibling, sitting lower, sweeps
-  // UNDER a nearer one rather than over it, so same-side branches never weave.
-  // Pushing only up (< dy) keeps every child above its parent.
-  const offsetById = new Map<string, number>();
-  const kids = new Map<string, { nodes: HierarchyPointNode<EtymNode>[]; px: number }>();
-  for (const n of pointNodes) {
-    if (!n.parent) continue;
-    const g = kids.get(n.parent.data.id) ?? { nodes: [], px: n.parent.x };
-    g.nodes.push(n);
-    kids.set(n.parent.data.id, g);
-  }
-  for (const { nodes: arr, px } of kids.values()) {
-    arr.sort((a, b) => Math.abs(a.x - px) - Math.abs(b.x - px)); // nearest the parent first
-    arr.forEach((n, i) => {
-      const frac = arr.length === 1 ? 0.5 : 1 - i / (arr.length - 1); // near → high, far → low
-      offsetById.set(n.data.id, frac * 0.72 * dy);
-    });
-  }
+  // ─── vertical placement ───
+  // Walk top-down: each child sits a "branch length" above its parent. Lengths
+  // are IRREGULAR (seeded random, so the tree reads organic, not mechanically
+  // stepped), but within each parent they're assigned LONGEST→nearest child,
+  // SHORTEST→farthest — that monotonic order is what stops sibling branches from
+  // weaving, so NO links cross. Single-child links are compressed (chains don't
+  // spike), and *dréw-'s children get extra length so its wide branch to δρῦς
+  // lands on a smooth diagonal rather than a flat elbow.
+  const rnd = mulberry32(0x7eed);
+  const yRaw = new Map<string, number>();
+  (function place(node: HierarchyPointNode<EtymNode>, y: number) {
+    yRaw.set(node.data.id, y);
+    const ch = node.children;
+    if (!ch || !ch.length) return;
+    const px = node.x;
+    const base = dy * (ch.length === 1 ? 0.55 : 1) * (node.data.id === "stem-drew" ? 1.7 : 1);
+    const byDist = [...ch].sort((a, b) => Math.abs(a.x - px) - Math.abs(b.x - px));
+    const lens = byDist.map(() => base * (0.6 + 0.55 * rnd()));
+    lens.sort((a, b) => b - a); // longest → nearest sibling (monotonic ⇒ no weave)
+    byDist.forEach((c, i) => place(c, y - lens[i]));
+  })(positioned, 0);
+  const minY = Math.min(...yRaw.values());
+  const spanY = Math.max(...yRaw.values()) - minY;
 
   const byId = new Map<string, LaidNode>();
   const nodes: LaidNode[] = pointNodes.map((n) => {
@@ -92,7 +102,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
       id: n.data.id,
       data: n.data,
       x: n.x - minX,
-      y: (maxDepth - n.depth) * dy - (offsetById.get(n.data.id) ?? 0),
+      y: (yRaw.get(n.data.id) ?? 0) - minY,
       depth: n.depth,
       color: senseColor(n.data),
       lineage: n.ancestors().map((a) => a.data.id),
@@ -114,7 +124,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     };
   });
 
-  return { nodes, links, byId, width: maxX - minX, height: maxDepth * dy + dy };
+  return { nodes, links, byId, width: maxX - minX, height: spanY + dy };
 }
 
 /** Smooth branch curve from a parent (bottom) to a child (top). ONE consistent
