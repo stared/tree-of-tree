@@ -62,26 +62,28 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const minX = Math.min(...xs);
   const maxX = Math.max(...xs);
 
-  // Vertical stagger: d3.tree() puts every node of a given depth on ONE line,
-  // which wastes vertical space and makes same-depth labels collide. We push
-  // each node UP by a fraction of dy, cycling through a pattern across the
-  // breadth-sorted nodes of its depth. Neighbours end at different heights, so
-  // their (rotated) labels no longer overlap — and branches get varied lengths,
-  // which reads as a more organic tree. Pushing only UP keeps every child above
-  // its parent (offset < dy always). The pattern is chosen so EVERY consecutive
-  // pair differs a lot (min gap 0.38·dy), so two adjacent same-depth siblings
-  // never land at nearly the same height where their up-right labels would stack.
-  const STAGGER = [0, 0.62, 0.24, 0.86, 0.44];
+  // Vertical stagger: d3.tree() puts every node of a depth on ONE line, so a
+  // parent's children sit at the same height and their (rotated) labels collide.
+  // We push children UP by a fraction of dy, in a "tent" per parent: children
+  // NEAR the parent's x rise highest, those FARTHER OUT sit lower. This (a)
+  // gives adjacent siblings different heights so their labels don't stack, and
+  // (b) guarantees no link crossings — a farther sibling, sitting lower, sweeps
+  // UNDER a nearer one rather than over it, so same-side branches never weave.
+  // Pushing only up (< dy) keeps every child above its parent.
   const offsetById = new Map<string, number>();
-  const byDepth = new Map<number, HierarchyPointNode<EtymNode>[]>();
+  const kids = new Map<string, { nodes: HierarchyPointNode<EtymNode>[]; px: number }>();
   for (const n of pointNodes) {
-    const arr = byDepth.get(n.depth) ?? [];
-    arr.push(n);
-    byDepth.set(n.depth, arr);
+    if (!n.parent) continue;
+    const g = kids.get(n.parent.data.id) ?? { nodes: [], px: n.parent.x };
+    g.nodes.push(n);
+    kids.set(n.parent.data.id, g);
   }
-  for (const arr of byDepth.values()) {
-    arr.sort((a, b) => a.x - b.x);
-    arr.forEach((n, i) => offsetById.set(n.data.id, STAGGER[i % STAGGER.length] * dy));
+  for (const { nodes: arr, px } of kids.values()) {
+    arr.sort((a, b) => Math.abs(a.x - px) - Math.abs(b.x - px)); // nearest the parent first
+    arr.forEach((n, i) => {
+      const frac = arr.length === 1 ? 0.5 : 1 - i / (arr.length - 1); // near → high, far → low
+      offsetById.set(n.data.id, frac * 0.72 * dy);
+    });
   }
 
   const byId = new Map<string, LaidNode>();
@@ -115,7 +117,13 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   return { nodes, links, byId, width: maxX - minX, height: maxDepth * dy + dy };
 }
 
-/** Smooth vertical S-curve between a parent (bottom) and child (top). */
+/** Smooth branch curve from a parent (bottom) to a child (top). ONE consistent
+ * shape for every link — only its two endpoints differ. It FANS from the parent
+ * (the first control point points along the parent→child chord, so each child
+ * leaves the node at its own angle, like real branches) and arrives VERTICAL at
+ * the child (second control point straight below it). Because siblings fan out
+ * along distinct directions instead of sharing a vertical trunk + flat shoulder,
+ * they neither weave across nor overlap one another. */
 export function linkPath(link: LaidLink): string {
   const { source: s, target: t } = link;
   const my = (s.y + t.y) / 2;
