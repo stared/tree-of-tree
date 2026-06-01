@@ -269,18 +269,24 @@ a {
 
 .tree-controls {
   /* FIXED to the viewport (not the tree), so it never slides as the tree moves
-     or opens to full width. It is pinned to the story slot's top edge. */
+     or opens to full width. Spans the FULL width so it always stays on one line
+     (over the tree pane it would wrap below ~1200px): Reset + the Story/Explore
+     toggle sit left, the legend is pushed to the right edge. The empty top of
+     the narrative column means the left controls never cover its text. */
   position: fixed;
   top: 14px;
-  left: calc(42vw + 14px);
+  left: 18px;
   right: 18px;
   z-index: 4;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 10px 12px;
   pointer-events: none; /* let drags pass through the gaps; children re-enable */
   animation: labelIn 0.6s ease both; /* fade in (it only mounts once settled) */
+}
+.tree-legend {
+  margin-left: auto; /* pin the legend to the right, away from Reset/toggle */
 }
 .tree-controls > * {
   pointer-events: auto;
