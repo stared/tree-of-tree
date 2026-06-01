@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
+import { MobileStory } from "./components/MobileStory";
 import { nodeById, senseColor, TREE } from "./data/etymology";
 import { COLOPHON, HERO, STEPS } from "./content/load";
 
@@ -26,6 +27,19 @@ export function App() {
   const stageRef = useRef<HTMLDivElement>(null);
   const lastIdx = STEPS.length; // the "Beyond PIE tree" card sits after the steps
   const totalChapters = STEPS.length + 1; // steps + the "Beyond" closing chapter
+
+  // Mobile gets a completely different, simpler layout (one scrolling column,
+  // no sticky tree / modes / zoom) — the scrollytelling choreography fights a
+  // small screen. We switch on the SAME 920px breakpoint the CSS uses.
+  const [mobile, setMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 920px)").matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 920px)");
+    const onChange = () => setMobile(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   // scrollytelling: mark the step nearest the middle of the viewport as active
   useEffect(() => {
@@ -109,6 +123,8 @@ export function App() {
       exploreRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
+
+  if (mobile) return <MobileStory />;
 
   return (
     <div className="page">

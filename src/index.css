@@ -580,66 +580,205 @@ a {
 }
 
 /* ──────────────────────── responsive ──────────────────────── */
+/* ──────────────────── mobile: the inline-stacked story ────────────────────
+   Below 920px the scrollytelling is replaced (in App.tsx) by <MobileStory>: one
+   plain scrolling column, no sticky tree / modes / zoom / legend. Each chapter
+   is text then its own branch; the whole tree bookends it. So the desktop
+   stage/step rules don't apply here — these style the .m-* DOM instead. */
 @media (max-width: 920px) {
   body {
     font-size: 17px;
   }
-  /* No phase choreography on mobile: the tree is a sticky banner the text
-     scrolls under. It sits after the hero in source order. */
-  .tree-stage,
-  .tree-stage[data-phase] {
-    position: sticky !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 52vh !important;
-    pointer-events: auto !important;
-    transition: none !important;
+  .m-story {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .m-hero {
+    padding: 13vh 0 6vh;
+    text-align: center;
+  }
+  .m-hero h1 {
+    font-size: clamp(40px, 13vw, 64px);
+    line-height: 1;
+    margin: 0.25em 0 0.4em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .m-hero h1 i {
+    color: #5e9c4f;
+    font-style: italic;
+  }
+
+  .m-chapter {
+    padding: 5vh 0 1vh;
+    border-top: 1px solid var(--rule);
+  }
+  .m-chapter.m-overview {
+    border-top: none;
+    padding: 2vh 0;
+  }
+  .m-num {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  .m-chapter h2 {
+    font-size: clamp(24px, 6.5vw, 30px);
+    line-height: 1.12;
+    margin: 0.25em 0 0.5em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .m-chapter > p {
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0 0 0.5em;
+  }
+
+  /* the branch SVG scales to the column width; viewBox sets its height ratio */
+  .m-tree-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 1vh 0 2vh;
+    overflow: visible;
+  }
+  .m-overview .m-tree-svg {
+    opacity: 0.92;
+  }
+
+  .m-footer {
+    border-top: 1px solid var(--rule);
+    padding: 3vh 0 5vh;
+    text-align: center;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  .m-footer a {
+    color: var(--ink-soft);
     border-bottom: 1px solid var(--rule);
-    /* Safari's sticky doesn't reliably paint above the later-in-DOM narrative
-       the way fixed does, so the prose bled up through the banner. Force an
-       isolated stacking context above the text and pin the opaque fill + clip
-       so the text cleanly scrolls UNDER a solid banner. */
-    z-index: 20 !important;
-    isolation: isolate;
-    overflow: hidden;
-    background: var(--paper) !important;
   }
-  .act {
-    pointer-events: auto;
+
+  /* ── source popover, anchored at the tapped node (option 3) ── */
+  .m-pop-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
   }
-  .act-intro {
-    height: auto;
+  .m-popover {
+    position: fixed;
+    z-index: 41;
+    width: min(300px, calc(100vw - 24px));
+    max-height: 62vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--ink);
+    border-radius: 12px;
+    padding: 14px 16px 16px;
+    box-shadow: 0 10px 34px rgba(40, 33, 22, 0.22);
   }
-  .hero {
-    height: auto;
-    min-height: 56vh;
-    padding: 12vh 20px 6vh;
-    background: none;
-  }
-  .narrative {
-    width: auto;
-  }
-  .step {
-    min-height: 78vh;
-  }
-  .act-explore {
-    display: none;
-  }
-  .tree-controls {
+  .m-pop-caret {
     position: absolute;
-    left: 14px;
-    right: 14px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    transform: translateX(-8px);
   }
-  /* the sense legend can't fit on one line at phone width — let it wrap
-     instead of clipping its last chips off the right edge. */
-  .tree-legend {
+  .m-popover.below .m-pop-caret {
+    top: -8px;
+    border-bottom: 8px solid var(--ink);
+    border-top: none;
+  }
+  .m-popover.above .m-pop-caret {
+    bottom: -8px;
+    border-top: 8px solid var(--rule);
+  }
+  .m-pop-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    border: none;
+    background: none;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .m-pop-form {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+  }
+  .m-pop-translit {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .m-pop-lang {
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .m-pop-gloss {
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 0.5em 0;
+  }
+  .m-pop-sense {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .m-pop-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .m-pop-disputed {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0.6em 0 0;
+  }
+  .m-pop-note {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0.7em 0 0;
+  }
+  .m-pop-refs {
+    display: flex;
     flex-wrap: wrap;
-    gap: 6px 10px;
-    max-width: 100%;
+    gap: 5px 12px;
+    margin-top: 0.8em;
   }
-  .detail {
-    width: min(300px, calc(100% - 24px));
+  .m-pop-refs-title {
+    flex: 0 0 100%;
+    font-family: var(--sans);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  .m-pop-refs a {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--rule);
   }
 }
 
