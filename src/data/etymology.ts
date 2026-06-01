@@ -76,7 +76,7 @@ export const TREE: EtymNode = {
   id: "deru",
   form: "*deru-, *dóru-",
   lang: "Proto-Indo-European",
-  gloss: "tree, wood — and, by metaphor, firm, solid",
+  gloss: "tree, wood, firm, solid",
   kind: "root",
   note:
     "The handbooks split on which sense is older: Pokorny derives 'firm' from 'tree/oak' (to be 'oak-strong'); Watkins reverses it ('be firm' → 'tree'); EIEC calls the link unresolved; NIL/LIV tentatively split off a verb *der- 'to fix, make firm'. This tree follows the majority view — one family — and branches by the noun's three ablaut stems.",
