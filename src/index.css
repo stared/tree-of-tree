@@ -596,6 +596,14 @@ a {
     pointer-events: auto !important;
     transition: none !important;
     border-bottom: 1px solid var(--rule);
+    /* Safari's sticky doesn't reliably paint above the later-in-DOM narrative
+       the way fixed does, so the prose bled up through the banner. Force an
+       isolated stacking context above the text and pin the opaque fill + clip
+       so the text cleanly scrolls UNDER a solid banner. */
+    z-index: 20 !important;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--paper) !important;
   }
   .act {
     pointer-events: auto;
@@ -622,6 +630,13 @@ a {
     position: absolute;
     left: 14px;
     right: 14px;
+  }
+  /* the sense legend can't fit on one line at phone width — let it wrap
+     instead of clipping its last chips off the right edge. */
+  .tree-legend {
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    max-width: 100%;
   }
   .detail {
     width: min(300px, calc(100% - 24px));
