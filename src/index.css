@@ -613,10 +613,8 @@ a {
 
   .m-chapter {
     padding: 5vh 0 1vh;
-    border-top: 1px solid var(--rule);
   }
   .m-chapter.m-overview {
-    border-top: none;
     padding: 2vh 0;
   }
   .m-num {
