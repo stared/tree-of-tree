@@ -5,15 +5,25 @@
 
 import { useMemo, useState } from "react";
 import { COLOPHON, HERO, STEPS } from "../content/load";
-import { nodeById, TREE } from "../data/etymology";
-import { subtreeForFocus } from "../lib/subtree";
+import { nodeById, senseColor, TREE } from "../data/etymology";
+import { buildLayout } from "../lib/layout";
 import { MobileTree } from "./MobileTree";
 import { MobilePopover } from "./MobilePopover";
+import { EtymologyTree } from "./EtymologyTree";
+import { DetailPanel } from "./DetailPanel";
 
 export function MobileStory() {
   const index = useMemo(() => nodeById(TREE), []);
+  // one shared full-tree layout; every chapter is a cropped window into it
+  const layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
   const [selected, setSelected] = useState<{ id: string; rect: DOMRect } | null>(null);
+  // the closing "explore" tree has its own selection (a docked detail panel,
+  // since its nodes move as you zoom/pan — an anchored popover wouldn't track)
+  const [exploreId, setExploreId] = useState<string | null>(null);
+  const exploreNode = exploreId ? index.get(exploreId) ?? null : null;
   const total = STEPS.length + 1;
+  // a chapter with no explicit focus (the opening "old root") centres on the root
+  const focusOf = (focus: string[]) => (focus.length ? focus : [TREE.id]);
 
   const onSelect = (id: string, el: SVGGElement) =>
     setSelected((cur) => (cur?.id === id ? null : { id, rect: el.getBoundingClientRect() }));
@@ -30,7 +40,7 @@ export function MobileStory() {
 
       {/* orientation: the whole tree once, up top */}
       <section className="m-chapter m-overview">
-        <MobileTree root={TREE} overview selectedId={selected?.id ?? null} onSelect={onSelect} />
+        <MobileTree layout={layout} focusIds={[]} overview selectedId={selected?.id ?? null} onSelect={onSelect} />
       </section>
 
       {STEPS.map((s, i) => (
@@ -41,7 +51,8 @@ export function MobileStory() {
           <h2>{s.title}</h2>
           <p dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
           <MobileTree
-            root={subtreeForFocus(TREE, s.focus)}
+            layout={layout}
+            focusIds={focusOf(s.focus)}
             selectedId={selected?.id ?? null}
             onSelect={onSelect}
           />
@@ -57,9 +68,28 @@ export function MobileStory() {
         <p dangerouslySetInnerHTML={{ __html: COLOPHON.bodyHtml }} />
       </section>
 
-      {/* recap: the whole tree once more, to close */}
-      <section className="m-chapter m-overview">
-        <MobileTree root={TREE} overview selectedId={selected?.id ?? null} onSelect={onSelect} />
+      {/* close by handing over the whole tree to explore — zoom, pan, tap */}
+      <section className="m-chapter m-explore">
+        <div className="m-num">Explore</div>
+        <h2>Roam the whole tree</h2>
+        <p>Pinch to zoom and drag to pan; tap any word for its sources.</p>
+        <div className="m-explore-stage">
+          <EtymologyTree
+            focusIds={[]}
+            selectedId={exploreId}
+            onSelect={setExploreId}
+            interactive
+            showLabels
+            chrome={false}
+            exploreSelected
+            onToggleExplore={() => {}}
+          />
+          <DetailPanel
+            node={exploreNode}
+            accent={exploreNode ? senseColor(exploreNode) : "#999"}
+            onClose={() => setExploreId(null)}
+          />
+        </div>
       </section>
 
       <footer className="m-footer">

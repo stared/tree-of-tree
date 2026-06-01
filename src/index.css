@@ -596,7 +596,7 @@ a {
   }
 
   .m-hero {
-    padding: 13vh 0 6vh;
+    padding: 9vh 0 5vh;
     text-align: center;
   }
   .m-hero h1 {
@@ -638,16 +638,29 @@ a {
     margin: 0 0 0.5em;
   }
 
-  /* the branch SVG scales to the column width; viewBox sets its height ratio */
+  /* a cropped window into the whole tree; clip what falls outside the frame so
+     neighbouring branches bleed to the edge but never spill onto the next
+     chapter. viewBox aspect sets the height. */
   .m-tree-svg {
     display: block;
     width: 100%;
     height: auto;
     margin: 1vh 0 2vh;
-    overflow: visible;
+    overflow: hidden;
   }
   .m-overview .m-tree-svg {
     opacity: 0.92;
+  }
+
+  /* the closing explorable tree: a full-bleed, interactive stage (pinch/pan) */
+  .m-explore-stage {
+    position: relative;
+    height: 78vh;
+    margin: 2vh -20px 0;
+    border-top: 1px solid var(--rule);
+    overflow: hidden;
+    background: var(--paper);
+    touch-action: none; /* let d3-zoom own pinch/pan instead of page scroll */
   }
 
   .m-footer {
