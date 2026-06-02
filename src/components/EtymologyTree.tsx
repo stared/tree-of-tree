@@ -371,7 +371,7 @@ export function EtymologyTree({
                         className="label root-label"
                         textAnchor="middle"
                         y={26}
-                        transform={`scale(${labelScale})`}
+                        transform={`translate(${n.labelDx},${n.labelDy}) scale(${labelScale})`}
                       >
                         <tspan className="form" x={0}>
                           {n.data.form}
@@ -386,7 +386,7 @@ export function EtymologyTree({
                     ) : (
                       <text
                         className="label"
-                        transform={`scale(${labelScale}) rotate(-32)`}
+                        transform={`translate(${n.labelDx},${n.labelDy}) scale(${labelScale}) rotate(-32)`}
                         textAnchor="start"
                         x={radius(n) + 5}
                         y={2}

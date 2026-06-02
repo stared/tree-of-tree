@@ -151,6 +151,7 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
                     className="label root-label"
                     textAnchor="middle"
                     y={26}
+                    transform={`translate(${n.labelDx},${n.labelDy})`}
                     style={{ pointerEvents: "auto" }}
                   >
                     <tspan className="form" x={0}>
@@ -163,7 +164,7 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
                 ) : (
                   <text
                     className="label"
-                    transform="rotate(-30)"
+                    transform={`translate(${n.labelDx},${n.labelDy}) rotate(-30)`}
                     textAnchor="start"
                     x={radius(n) + 5}
                     y={2}
