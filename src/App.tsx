@@ -3,7 +3,7 @@ import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
 import { MobileStory } from "./components/MobileStory";
 import { nodeById, senseColor, TREE } from "./data/etymology";
-import { COLOPHON, HERO, STEPS } from "./content/load";
+import { CLOSING, HERO, STEPS } from "./content/load";
 
 // Three discrete phases the tree moves through as you scroll. The tree is ONE
 // fixed element; its rectangle is set by CSS per `data-phase`, so WITHIN a phase
@@ -19,14 +19,15 @@ export function App() {
   const index = useMemo(() => nodeById(TREE), []);
   const [activeStep, setActiveStep] = useState(0);
   const [phase, setPhase] = useState<Phase>("intro");
+  // explore (full-width, free-roam) is now a DELIBERATE choice — you click the
+  // invitation at the end of the story, never scroll into it by accident.
+  const [exploring, setExploring] = useState(false);
   const [legendOn, setLegendOn] = useState(false); // legend fades in only once the tree has settled
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
-  const exploreRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const lastIdx = STEPS.length; // the "Beyond PIE tree" card sits after the steps
-  const totalChapters = STEPS.length + 1; // steps + the "Beyond" closing chapter
+  const totalChapters = STEPS.length + CLOSING.length; // steps + closing chapters
 
   // Mobile gets a completely different, simpler layout (one scrolling column,
   // no sticky tree / modes / zoom) — the scrollytelling choreography fights a
@@ -66,11 +67,11 @@ export function App() {
     const INTRO = [0, 0, 1, 1]; // full screen — the backdrop
     const STORY = [0.42, 0, 0.58, 1]; // right pane, for the narrative
     const EXPLORE = [0, 0, 1, 0.85]; // full width, with a small note strip below
+    const GLIDE = "left .6s ease, top .6s ease, width .6s ease, height .6s ease";
     function update() {
       const stage = stageRef.current;
       const story = storyRef.current?.getBoundingClientRect();
-      const explore = exploreRef.current?.getBoundingClientRect();
-      if (!stage || !story || !explore) return;
+      if (!stage || !story) return;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       if (vw <= 920) {
@@ -79,18 +80,31 @@ export function App() {
         setLegendOn((v) => (v ? v : true));
         return;
       }
+      // `animate` lets the rect glide between slots; we turn it OFF only while the
+      // intro→story slide is actively tracking scroll (it must follow frame-for-
+      // frame). Settled, it stays on so toggling Explore eases in/out smoothly.
+      const apply = (r: number[], animate: boolean) => {
+        stage.style.position = "fixed";
+        stage.style.transition = animate ? GLIDE : "none";
+        stage.style.left = `${(r[0] * vw).toFixed(1)}px`;
+        stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
+        stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
+        stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
+      };
+      // Explore is driven by state, not scroll: opened by the end-of-story
+      // invitation (or the Explore toggle), so it never ambushes the reader.
+      if (exploring) {
+        apply(EXPLORE, true);
+        setPhase((p) => (p === "explore" ? p : "explore"));
+        setLegendOn((v) => (v ? v : true));
+        return;
+      }
       const MZ = vh; // each move spans ~one screen of scroll
       const a = clamp((MZ - story.top) / MZ); // intro → story (slide right)
-      const b = clamp((MZ - explore.top) / MZ); // story → explore (open to full width)
-      const r = b > 0 ? lerp(STORY, EXPLORE, b) : lerp(INTRO, STORY, a);
-      stage.style.position = "fixed";
-      stage.style.left = `${(r[0] * vw).toFixed(1)}px`;
-      stage.style.top = `${(r[1] * vh).toFixed(1)}px`;
-      stage.style.width = `${(r[2] * vw).toFixed(1)}px`;
-      stage.style.height = `${(r[3] * vh).toFixed(1)}px`;
-      // labels fade in as the slide finishes; the legend waits until fully
-      // settled so it never slides; the tree frees to roam once full-width.
-      const next: Phase = b >= 0.95 ? "explore" : a >= 0.85 ? "story" : "intro";
+      const sliding = a > 0.002 && a < 0.998; // mid-slide: track scroll, no glide
+      apply(lerp(INTRO, STORY, a), !sliding);
+      // labels fade in as the slide finishes; the legend waits until fully settled.
+      const next: Phase = a >= 0.85 ? "story" : "intro";
       setPhase((p) => (p === next ? p : next));
       setLegendOn((v) => {
         const on = a >= 0.995;
@@ -108,26 +122,31 @@ export function App() {
       window.removeEventListener("resize", onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [exploring]);
 
   const selectedNode = selectedId ? index.get(selectedId) ?? null : null;
   const selectedAccent = selectedNode ? senseColor(selectedNode) : "#999";
 
-  // The full-view toggle: engaged automatically once you scroll to the end;
-  // clicking it when engaged scrolls back to the last point (the way out, so you
-  // never have to fight the zoom-wheel to leave).
+  // Remember which chapter we left so leaving explore returns to exactly there
+  // (not always the last one) — no fighting the zoom-wheel to get back.
+  const enteredFromRef = useRef(0);
+  function enterExplore() {
+    enteredFromRef.current = activeStep;
+    setExploring(true);
+  }
   function toggleExplore() {
-    if (phase === "explore") {
-      stepRefs.current[lastIdx]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (exploring) {
+      setExploring(false);
+      stepRefs.current[enteredFromRef.current]?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else {
-      exploreRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      enterExplore();
     }
   }
 
   if (mobile) return <MobileStory />;
 
   return (
-    <div className="page">
+    <div className={`page${exploring ? " exploring" : ""}`}>
       <section className="act act-intro">
         <header className="hero">
           <div className="hero-kicker">{HERO.kicker}</div>
@@ -178,28 +197,44 @@ export function App() {
             </div>
           ))}
 
-          {/* closing chapter — the words beyond this family; a normal step card */}
-          <div
-            className={`step${activeStep === lastIdx ? " active" : ""}`}
-            data-idx={lastIdx}
-            ref={(el) => {
-              stepRefs.current[lastIdx] = el;
-            }}
-          >
-            <div className="step-card">
-              <div className="step-num">
-                {totalChapters} / {totalChapters}
+          {/* closing chapters — beyond the family, then the ending notes; each a
+              normal step card, continuing the numbering after the steps */}
+          {CLOSING.map((c, j) => {
+            const idx = STEPS.length + j;
+            return (
+              <div
+                key={`closing-${j}`}
+                className={`step${activeStep === idx ? " active" : ""}`}
+                data-idx={idx}
+                ref={(el) => {
+                  stepRefs.current[idx] = el;
+                }}
+              >
+                <div className="step-card">
+                  <div className="step-num">
+                    {idx + 1} / {totalChapters}
+                  </div>
+                  <h2>{c.title}</h2>
+                  <p dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
+                  {/* the invitation to roam sits under the last closing chapter:
+                      opening the full tree is a deliberate click, never a scroll
+                      surprise. It fades out with the story when exploring. */}
+                  {j === CLOSING.length - 1 && (
+                    <div className="explore-invite">
+                      <button className="explore-cta" onClick={enterExplore}>
+                        Explore the whole tree →
+                      </button>
+                      <p className="explore-cta-note">Zoom, pan, and click any word to see its sources.</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              <h2>{COLOPHON.title}</h2>
-              <p dangerouslySetInnerHTML={{ __html: COLOPHON.bodyHtml }} />
-            </div>
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* slide past the last chapter and the tree opens to full width to roam */}
-      <section className="act act-explore" ref={exploreRef} aria-hidden="true" />
-      {phase === "explore" && (
+      {exploring && (
         <div className="explore-note">Now explore on your own. Click any word to see its sources.</div>
       )}
 

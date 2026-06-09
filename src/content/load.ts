@@ -99,7 +99,7 @@ const heroModules = import.meta.glob("./hero.md", {
   eager: true,
 }) as Record<string, string>;
 
-const colophonModules = import.meta.glob("./colophon.md", {
+const closingModules = import.meta.glob("./ending-*.md", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -126,11 +126,15 @@ export const HERO: Hero = {
   bodyHtml: stripOuterP(renderBlock(heroRaw.body)),
 };
 
-const colophonRaw = parseFrontmatter(
-  singleRaw(colophonModules, "colophon.md"),
-  "colophon.md",
-);
-export const COLOPHON: Colophon = {
-  title: String(colophonRaw.data.title ?? ""),
-  bodyHtml: stripOuterP(renderBlock(colophonRaw.body)), // one paragraph, like a step
-};
+// The story closes with one or more short chapters (Beyond PIE tree, Ending
+// notes), authored as `ending-N-*.md` and ordered by filename — same card
+// shape as a step, just without a tree focus.
+export const CLOSING: Colophon[] = Object.entries(closingModules)
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([path, raw]) => {
+    const { data, body } = parseFrontmatter(raw, path);
+    return {
+      title: String(data.title ?? ""),
+      bodyHtml: stripOuterP(renderBlock(body)),
+    };
+  });

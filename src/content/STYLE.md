@@ -9,8 +9,9 @@ into `<b>`/`<i>` so the existing CSS in `index.css` keeps working unchanged.
 - `hero.md` — top of the page (kicker, h1, dek).
 - `steps/NN-key.md` — one file per scrollytelling step, ordered by the `NN`
   prefix. The `key` must match the filename body.
-- `colophon.md` — footer ("About this tree" + byline). The **last** paragraph is
-  rendered as the byline (small, ruled off).
+- `ending-N-key.md` — the chapters that close the story (Beyond PIE tree,
+  Ending notes), ordered by the `N` prefix. Each is a normal card with a
+  `title` and body, continuing the chapter numbering after the steps.
 
 ## Frontmatter
 
@@ -47,5 +48,5 @@ Hard rules:
 - No quote marks around glosses — italics carry the meaning load.
 - Each step body is **one paragraph**. The loader strips the outer `<p>` so the
   existing `<p>` in the step card stays the wrapper.
-- Colophon body may be multi-paragraph; the **last** `<p>` is auto-classed
-  `.byline`.
+- Closing chapters may be multi-paragraph (the outer `<p>` is only stripped when
+  the body is a single paragraph, as with steps).

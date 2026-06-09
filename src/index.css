@@ -112,8 +112,39 @@ a {
 .act-intro {
   height: 100vh;
 }
-.act-explore {
-  height: 120vh; /* scroll room for the tree to open to full width, then roam */
+/* the invitation to roam, sitting under the last closing chapter — a clear
+   call-to-action so opening the full tree is a deliberate click, not a scroll. */
+.explore-invite {
+  margin-top: 1.6em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  pointer-events: auto;
+}
+.explore-cta {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 9px;
+  padding: 13px 22px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.explore-cta:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+.explore-cta-note {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
 }
 
 /* the small invitation under the full-width tree in the explore phase */
@@ -174,6 +205,19 @@ a {
 .tree-stage[data-phase="story"],
 .tree-stage[data-phase="explore"] {
   pointer-events: auto;
+}
+
+/* Entering explore, the story isn't covered over — it FADES away and the tree
+   opens into the freed space. The acts stay mounted (so the page height never
+   changes and nothing scrolls underneath); only their opacity animates. */
+.act-story,
+.act-invite {
+  transition: opacity 0.45s ease;
+}
+.page.exploring .act-story,
+.page.exploring .act-invite {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* labels ease in softly as they appear (a step's focus, or zooming in) */
