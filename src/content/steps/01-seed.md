@@ -1,6 +1,6 @@
 ---
 key: seed
-focus: []
+focus: [deru]
 title: The old root
 ---
 

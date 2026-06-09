@@ -3,7 +3,7 @@ import { EtymologyTree } from "./components/EtymologyTree";
 import { DetailPanel } from "./components/DetailPanel";
 import { MobileStory } from "./components/MobileStory";
 import { nodeById, senseColor, TREE } from "./data/etymology";
-import { CLOSING, HERO, STEPS } from "./content/load";
+import { HERO, STEPS } from "./content/load";
 
 // Three discrete phases the tree moves through as you scroll. The tree is ONE
 // fixed element; its rectangle is set by CSS per `data-phase`, so WITHIN a phase
@@ -27,7 +27,7 @@ export function App() {
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
   const storyRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const totalChapters = STEPS.length + CLOSING.length; // steps + closing chapters
+  const totalChapters = STEPS.length;
 
   // Mobile gets a completely different, simpler layout (one scrolling column,
   // no sticky tree / modes / zoom) — the scrollytelling choreography fights a
@@ -192,47 +192,19 @@ export function App() {
                   {String(i + 1).padStart(2, "0")} / {totalChapters}
                 </div>
                 <h2>{s.title}</h2>
-                <p dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
+                {/* a div, not a <p>, so multi-paragraph bodies keep their breaks */}
+                <div className="step-body" dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
+                {/* opening the full tree is a deliberate click, never a scroll surprise */}
+                {i === STEPS.length - 1 && (
+                  <div className="explore-invite">
+                    <button className="explore-cta" onClick={enterExplore}>
+                      Explore the whole tree →
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ))}
-
-          {/* closing chapters — beyond the family, then the ending notes; each a
-              normal step card, continuing the numbering after the steps */}
-          {CLOSING.map((c, j) => {
-            const idx = STEPS.length + j;
-            return (
-              <div
-                key={`closing-${j}`}
-                className={`step${activeStep === idx ? " active" : ""}`}
-                data-idx={idx}
-                ref={(el) => {
-                  stepRefs.current[idx] = el;
-                }}
-              >
-                <div className="step-card">
-                  <div className="step-num">
-                    {idx + 1} / {totalChapters}
-                  </div>
-                  <h2>{c.title}</h2>
-                  {/* a div, not a <p>: closing chapters can be multi-paragraph
-                      (the loader leaves their <p> tags in), which must not nest
-                      inside a <p> or the paragraph breaks collapse. */}
-                  <div className="step-body" dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
-                  {/* the invitation to roam sits under the last closing chapter:
-                      opening the full tree is a deliberate click, never a scroll
-                      surprise. It fades out with the story when exploring. */}
-                  {j === CLOSING.length - 1 && (
-                    <div className="explore-invite">
-                      <button className="explore-cta" onClick={enterExplore}>
-                        Explore the whole tree →
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
         </div>
       </section>
 

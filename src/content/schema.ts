@@ -28,12 +28,6 @@ export interface Hero {
   bodyHtml: string;
 }
 
-export interface Colophon {
-  title: string;
-  /** full multi-paragraph HTML; last <p> already carries class="byline" */
-  bodyHtml: string;
-}
-
 export function validateStep(step: Step, origin: string): void {
   if (!step.key) throw new Error(`[content] ${origin}: missing 'key'`);
   if (!step.title) throw new Error(`[content] ${origin}: missing 'title'`);

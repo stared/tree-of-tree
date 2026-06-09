@@ -4,7 +4,7 @@
 // Tapping any word opens a source popover anchored at it.
 
 import { useMemo, useState } from "react";
-import { CLOSING, HERO, STEPS } from "../content/load";
+import { HERO, STEPS } from "../content/load";
 import { nodeById, senseColor, TREE } from "../data/etymology";
 import { buildLayout } from "../lib/layout";
 import { MobileTree } from "./MobileTree";
@@ -21,9 +21,7 @@ export function MobileStory() {
   // since its nodes move as you zoom/pan — an anchored popover wouldn't track)
   const [exploreId, setExploreId] = useState<string | null>(null);
   const exploreNode = exploreId ? index.get(exploreId) ?? null : null;
-  const total = STEPS.length + CLOSING.length;
-  // a chapter with no explicit focus (the opening "old root") centres on the root
-  const focusOf = (focus: string[]) => (focus.length ? focus : [TREE.id]);
+  const total = STEPS.length;
 
   const onSelect = (id: string, el: SVGGElement) =>
     setSelected((cur) => (cur?.id === id ? null : { id, rect: el.getBoundingClientRect() }));
@@ -49,24 +47,15 @@ export function MobileStory() {
             {String(i + 1).padStart(2, "0")} / {total}
           </div>
           <h2>{s.title}</h2>
-          <p dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
-          <MobileTree
-            layout={layout}
-            focusIds={focusOf(s.focus)}
-            selectedId={selected?.id ?? null}
-            onSelect={onSelect}
-          />
-        </section>
-      ))}
-
-      {/* closing chapters — beyond the family, then the ending notes */}
-      {CLOSING.map((c, j) => (
-        <section className="m-chapter" key={`closing-${j}`}>
-          <div className="m-num">
-            {STEPS.length + j + 1} / {total}
-          </div>
-          <h2>{c.title}</h2>
-          <div className="step-body" dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
+          <div className="step-body" dangerouslySetInnerHTML={{ __html: s.bodyHtml }} />
+          {s.focus.length > 0 && (
+            <MobileTree
+              layout={layout}
+              focusIds={s.focus}
+              selectedId={selected?.id ?? null}
+              onSelect={onSelect}
+            />
+          )}
         </section>
       ))}
 

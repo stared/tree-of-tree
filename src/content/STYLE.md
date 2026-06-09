@@ -8,10 +8,9 @@ into `<b>`/`<i>` so the existing CSS in `index.css` keeps working unchanged.
 
 - `hero.md` — top of the page (kicker, h1, dek).
 - `steps/NN-key.md` — one file per scrollytelling step, ordered by the `NN`
-  prefix. The `key` must match the filename body.
-- `ending-N-key.md` — the chapters that close the story (Beyond PIE tree,
-  Ending notes), ordered by the `N` prefix. Each is a normal card with a
-  `title` and body, continuing the chapter numbering after the steps.
+  prefix. The `key` must match the filename body. The closing chapters (Beyond
+  PIE tree, Ending notes) are just steps with `focus: []` — no tree highlight,
+  text-only on mobile, and they may run to several paragraphs.
 
 ## Frontmatter
 
@@ -46,7 +45,5 @@ Hard rules:
 - No raw `<b>`, `<i>`, `<strong>`, `<em>` in markdown — use `**` / `*`.
 - No `(parens)` around a transliteration — always `[brackets]`.
 - No quote marks around glosses — italics carry the meaning load.
-- Each step body is **one paragraph**. The loader strips the outer `<p>` so the
-  existing `<p>` in the step card stays the wrapper.
-- Closing chapters may be multi-paragraph (the outer `<p>` is only stripped when
-  the body is a single paragraph, as with steps).
+- Story steps are **one paragraph**; the closing `focus: []` chapters may run to
+  several. The body renders in a `<div>`, so paragraph breaks are preserved.

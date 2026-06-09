@@ -4,12 +4,7 @@
 // <b>/<i> so existing CSS selectors keep working.
 
 import { marked } from "marked";
-import {
-  validateStep,
-  type Colophon,
-  type Hero,
-  type Step,
-} from "./schema";
+import { validateStep, type Hero, type Step } from "./schema";
 
 // ─── frontmatter (intentionally tiny — we only use strings + one array) ───
 
@@ -68,7 +63,7 @@ function renderInline(md: string): string {
   return replaceTags(marked.parseInline(md.trim(), { async: false }) as string);
 }
 
-/** strip a single outer `<p>...</p>` (steps and hero dek are single-paragraph) */
+/** strip the outer `<p>` from a single-paragraph body; leave multi-paragraph as-is */
 function stripOuterP(html: string): string {
   const m = /^<p>([\s\S]*)<\/p>\s*$/.exec(html.trim());
   return m ? m[1] : html;
@@ -99,12 +94,6 @@ const heroModules = import.meta.glob("./hero.md", {
   eager: true,
 }) as Record<string, string>;
 
-const closingModules = import.meta.glob("./ending-*.md", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
-
 export const STEPS: Step[] = Object.entries(stepModules)
   .sort(([a], [b]) => a.localeCompare(b))
   .map(([path, raw]) => {
@@ -125,16 +114,3 @@ export const HERO: Hero = {
   titleHtml: renderInline(String(heroRaw.data.title ?? "")),
   bodyHtml: stripOuterP(renderBlock(heroRaw.body)),
 };
-
-// The story closes with one or more short chapters (Beyond PIE tree, Ending
-// notes), authored as `ending-N-*.md` and ordered by filename — same card
-// shape as a step, just without a tree focus.
-export const CLOSING: Colophon[] = Object.entries(closingModules)
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([path, raw]) => {
-    const { data, body } = parseFrontmatter(raw, path);
-    return {
-      title: String(data.title ?? ""),
-      bodyHtml: stripOuterP(renderBlock(body)),
-    };
-  });

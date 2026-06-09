@@ -1,4 +1,6 @@
 ---
+key: notes
+focus: []
 title: Ending notes
 ---
 
