@@ -66,7 +66,7 @@ export function MobileStory() {
             {STEPS.length + j + 1} / {total}
           </div>
           <h2>{c.title}</h2>
-          <p dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
+          <div className="step-body" dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
         </section>
       ))}
 

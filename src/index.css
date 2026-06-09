@@ -115,11 +115,9 @@ a {
 /* the invitation to roam, sitting under the last closing chapter — a clear
    call-to-action so opening the full tree is a deliberate click, not a scroll. */
 .explore-invite {
-  margin-top: 1.6em;
+  margin-top: 1.8em;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+  justify-content: center;
   pointer-events: auto;
 }
 .explore-cta {
@@ -138,13 +136,6 @@ a {
 .explore-cta:hover {
   background: var(--accent);
   transform: translateY(-1px);
-}
-.explore-cta-note {
-  margin: 0;
-  font-family: var(--sans);
-  font-size: 14px;
-  letter-spacing: 0.02em;
-  color: var(--ink-faint);
 }
 
 /* the small invitation under the full-width tree in the explore phase */
@@ -281,6 +272,23 @@ a {
   line-height: 1.5;
 }
 .step b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* closing chapters render in a <div> (they can be multi-paragraph); match the
+   step paragraph look but KEEP the blank line between paragraphs. */
+.step .step-body {
+  color: var(--ink-soft);
+  font-size: 19px;
+}
+.step-body p {
+  margin: 0 0 0.7em;
+}
+.step-body p:last-child {
+  margin-bottom: 0;
+}
+.step-body b {
   color: var(--ink);
   font-weight: 600;
 }
@@ -684,6 +692,16 @@ a {
     color: var(--ink-soft);
     line-height: 1.55;
     margin: 0 0 0.5em;
+  }
+  .m-chapter .step-body {
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .m-chapter .step-body p {
+    margin: 0 0 0.5em;
+  }
+  .m-chapter .step-body p:last-child {
+    margin-bottom: 0;
   }
 
   /* a cropped window into the whole tree; clip what falls outside the frame so

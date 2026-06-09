@@ -215,7 +215,10 @@ export function App() {
                     {idx + 1} / {totalChapters}
                   </div>
                   <h2>{c.title}</h2>
-                  <p dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
+                  {/* a div, not a <p>: closing chapters can be multi-paragraph
+                      (the loader leaves their <p> tags in), which must not nest
+                      inside a <p> or the paragraph breaks collapse. */}
+                  <div className="step-body" dangerouslySetInnerHTML={{ __html: c.bodyHtml }} />
                   {/* the invitation to roam sits under the last closing chapter:
                       opening the full tree is a deliberate click, never a scroll
                       surprise. It fades out with the story when exploring. */}
@@ -224,7 +227,6 @@ export function App() {
                       <button className="explore-cta" onClick={enterExplore}>
                         Explore the whole tree →
                       </button>
-                      <p className="explore-cta-note">Zoom, pan, and click any word to see its sources.</p>
                     </div>
                   )}
                 </div>
