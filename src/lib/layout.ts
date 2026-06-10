@@ -71,37 +71,31 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const pointNodes: HierarchyPointNode<EtymNode>[] = positioned.descendants();
 
   // ─── vertical placement ───
-  // Walk top-down: each child sits a "branch length" above its parent. Within a
-  // parent the lengths form a STEEP RAKE — the sibling nearest the parent (in x)
-  // is much taller, the farthest much shorter, spread over a wide range. That
-  // makes adjacent siblings land at clearly DIFFERENT heights, so their labels
-  // (kept full and all in one direction) are vertically offset and don't pile
-  // up — the cure for the dense fans (*treuwaz, *dóru). Because length is a
+  // Walk top-down: each child sits a "branch length" above its parent, and the
+  // length GROWS with the branch's horizontal reach — a branch that goes far
+  // sideways also climbs high, so every fan opens into a DOME (the crown of a
+  // real tree) instead of a flat skirt of tentacles. Because length is a
   // monotonic function of distance-from-parent, same-side branches still nest,
-  // so NO links cross. The rake widens with the fan (more children ⇒ taller),
-  // single-child links stay compressed (chains don't spike), and *dréw-'s
-  // children get extra length so its wide branch to δρῦς stays a smooth diagonal.
+  // so NO links cross; sublinear growth (sqrt-ish) keeps the very wide root
+  // fan from spiking. Single-child links stay compressed (chains don't spike).
   const rnd = mulberry32(0x7eed);
-  const jit = () => (rnd() - 0.5) * 0.08 * dy; // tiny organic wobble (< half a rake step, so order holds)
+  const jit = () => (rnd() - 0.5) * 0.08 * dy; // tiny organic wobble (≪ the reach steps, so order holds)
   const yRaw = new Map<string, number>();
   (function place(node: HierarchyPointNode<EtymNode>, y: number) {
     yRaw.set(node.data.id, y);
     const ch = node.children;
     if (!ch || !ch.length) return;
-    const boost = node.data.id === "stem-drew" ? 1.7 : 1;
     if (ch.length === 1) {
-      place(ch[0], y - (dy * 0.6 * boost + jit())); // compressed chain
+      place(ch[0], y - (dy * 0.6 + jit())); // compressed chain
       return;
     }
     const px = node.x;
-    const byDist = [...ch].sort((a, b) => Math.abs(a.x - px) - Math.abs(b.x - px));
-    const n = ch.length;
-    const SHORT = 0.55; // farthest sibling (shortest)
-    const STEP = Math.min(0.24, 1.55 / (n - 1)); // height gap per distance-rank
-    byDist.forEach((c, i) => {
-      const f = SHORT + STEP * (n - 1 - i); // i=0 nearest (tallest) … i=n-1 farthest (shortest)
-      place(c, y - (dy * boost * f + jit()));
-    });
+    const BASE = 0.55; // a child right above its parent
+    const GAIN = 0.62; // how fast reach buys height
+    for (const c of ch) {
+      const f = Math.min(2.0, BASE + GAIN * Math.pow(Math.abs(c.x - px) / dy, 0.7));
+      place(c, y - (dy * f + jit()));
+    }
   })(positioned, 0);
   // ─── de-collision: a one-time, seeded repulsion ───
   // Overlapping labels push their NODES apart — the dot and its label always
@@ -120,8 +114,9 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     if (n.parent) (sibs.get(n.parent.data.id) ?? sibs.set(n.parent.data.id, []).get(n.parent.data.id)!).push(n.data.id);
   for (const [, arr] of sibs) arr.sort((a, b) => baseX.get(a)! - baseX.get(b)!);
   const CPU = 6.4; // layout units per character (≈ the gloss line's native width)
-  const MARG = 6; // breathing margin around each label box
-  const CAP = 132; // most a label may stray from its dot (prevents seaweed)
+  const MARG = 8; // breathing margin around each label box
+  const CAP = 90; // most a node may stray from its slot (prevents seaweed AND
+  //                 keeps it out of its cousins' band, where links would cross)
   const lbox = (id: string) => {
     const d = dat.get(id)!;
     const o = off.get(id)!;
@@ -215,16 +210,122 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     };
   });
 
+  // ─── crossing repair: the last few units of honesty ───
+  // The placement rules above eliminate crossings almost everywhere, but two
+  // local accidents survive them: near-colinear siblings (two links leaving one
+  // node at nearly the same angle, so the arrival bend of the short one clips
+  // the long one) and a link grazing a COUSIN's node. Both are proximity
+  // problems, so resolve them directly: sample every drawn curve, find real
+  // intersections, and nudge the lighter link's child node away from the other
+  // curve until no two links cross. Deterministic, a few passes, tiny moves.
+  const sample = (l: LaidLink): [number, number][] => {
+    const { source: s, target: t } = l;
+    const my = (s.y + t.y) / 2; // the same soft S that linkPath draws
+    const pts: [number, number][] = [];
+    for (let i = 0; i <= 40; i++) {
+      const u = i / 40;
+      const v = 1 - u;
+      pts.push([
+        v * v * v * s.x + 3 * v * v * u * s.x + 3 * v * u * u * t.x + u * u * u * t.x,
+        v * v * v * s.y + 3 * v * v * u * my + 3 * v * u * u * my + u * u * u * t.y,
+      ]);
+    }
+    return pts;
+  };
+  const cross = (a: [number, number], b: [number, number], c: [number, number], d: [number, number]) => {
+    const r = [b[0] - a[0], b[1] - a[1]];
+    const s2 = [d[0] - c[0], d[1] - c[1]];
+    const den = r[0] * s2[1] - r[1] * s2[0];
+    if (Math.abs(den) < 1e-12) return null;
+    const t = ((c[0] - a[0]) * s2[1] - (c[1] - a[1]) * s2[0]) / den;
+    const u = ((c[0] - a[0]) * r[1] - (c[1] - a[1]) * r[0]) / den;
+    return t >= 0 && t <= 1 && u >= 0 && u <= 1 ? ([a[0] + t * r[0], a[1] + t * r[1]] as [number, number]) : null;
+  };
+  for (let pass = 0; pass < 8; pass++) {
+    const flat = links.map((l) => sample(l));
+    // bounding boxes let us skip the vast majority of pairs untested
+    const box = flat.map((pts) => {
+      const b = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const p of pts) {
+        if (p[0] < b[0]) b[0] = p[0];
+        if (p[1] < b[1]) b[1] = p[1];
+        if (p[0] > b[2]) b[2] = p[0];
+        if (p[1] > b[3]) b[3] = p[1];
+      }
+      return b;
+    });
+    let moved = false;
+    for (let i = 0; i < links.length; i++) {
+      for (let j = i + 1; j < links.length; j++) {
+        if (box[i][2] < box[j][0] || box[j][2] < box[i][0] || box[i][3] < box[j][1] || box[j][3] < box[i][1])
+          continue;
+        const A = links[i];
+        const B = links[j];
+        // links MEET at shared nodes (sibling fans, parent→child chains) by
+        // design — forgive hits near those junctions, never elsewhere
+        const joints: LaidNode[] = [A.source, A.target].filter(
+          (n) => n === B.source || n === B.target,
+        );
+        let hit: [number, number] | null = null;
+        for (let a = 0; a < flat[i].length - 1 && !hit; a++)
+          for (let b = 0; b < flat[j].length - 1 && !hit; b++) {
+            const h = cross(flat[i][a], flat[i][a + 1], flat[j][b], flat[j][b + 1]);
+            if (h && !joints.some((njt) => Math.hypot(h[0] - njt.x, h[1] - njt.y) < 15)) hit = h;
+          }
+        if (!hit) continue;
+        const [light, heavyPts] =
+          A.target.subtreeSize <= B.target.subtreeSize ? [A.target, flat[j]] : [B.target, flat[i]];
+        if (A.source === B.source) {
+          // siblings crossing = near-colinear chords. The effective move is
+          // PERPENDICULAR: take the child nearest the hit and slide it away
+          // from its sibling's curve, sideways to that curve's direction.
+          const da = Math.hypot(A.target.x - hit[0], A.target.y - hit[1]);
+          const db = Math.hypot(B.target.x - hit[0], B.target.y - hit[1]);
+          const [n, oth] = da <= db ? [A.target, B.target] : [B.target, A.target];
+          const o = A.source;
+          const dirx = oth.x - o.x;
+          const diry = oth.y - o.y;
+          const dl = Math.hypot(dirx, diry) || 1;
+          let px2 = -diry / dl;
+          let py2 = dirx / dl;
+          // point the perpendicular toward the node's side of the sibling chord
+          if ((n.x - hit[0]) * px2 + (n.y - hit[1]) * py2 < 0) {
+            px2 = -px2;
+            py2 = -py2;
+          }
+          n.x += px2 * 14;
+          n.y += py2 * 14;
+        } else {
+          // cousins: translate the lighter child away from the heavier curve
+          let best = Infinity;
+          let bx = 0;
+          let by = 0;
+          for (const p of heavyPts) {
+            const d2 = (light.x - p[0]) ** 2 + (light.y - p[1]) ** 2;
+            if (d2 < best) {
+              best = d2;
+              bx = p[0];
+              by = p[1];
+            }
+          }
+          const dn = Math.hypot(light.x - bx, light.y - by) || 1;
+          light.x += ((light.x - bx) / dn) * 13;
+          light.y += ((light.y - by) / dn) * 13;
+        }
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+
   return { nodes, links, byId, width: maxX - minX, height: spanY + dy };
 }
 
-/** Smooth branch curve from a parent (bottom) to a child (top). ONE consistent
- * shape for every link — only its two endpoints differ. It FANS from the parent
- * (the first control point points along the parent→child chord, so each child
- * leaves the node at its own angle, like real branches) and arrives VERTICAL at
- * the child (second control point straight below it). Because siblings fan out
- * along distinct directions instead of sharing a vertical trunk + flat shoulder,
- * they neither weave across nor overlap one another. */
+/** Smooth branch curve from a parent (bottom) to a child (top): leaves the
+ * parent VERTICALLY, shoulders over at mid-height, arrives VERTICALLY at the
+ * child — the soft, flowing S that reads as living wood. Where two of these
+ * curves would cross, the fix is moving the NODES (the repair pass above),
+ * never straightening the wood. */
 export function linkPath(link: LaidLink): string {
   const { source: s, target: t } = link;
   const my = (s.y + t.y) / 2;
