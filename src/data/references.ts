@@ -91,6 +91,7 @@ export const REFERENCES: Record<number, string> = {
   83: "https://en.wiktionary.org/wiki/%D8%AF%D8%A7%D8%B1%D9%88",
   87: "https://www.etymonline.com/word/tryst",
   88: "https://en.wiktionary.org/wiki/tryst",
+  89: "https://en.wiktionary.org/wiki/treow%C3%BE",
 };
 
 // Map a host to a readable source name. Hosts not listed fall back to the bare
