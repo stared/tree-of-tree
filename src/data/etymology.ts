@@ -139,51 +139,6 @@ export const TREE: EtymNode = {
       quote: "“dáru- n. Holz … Idg. *dóru, *dréu̯-s, *dru°.” (Mayrhofer, EWAia I 721)",
       refs: [80, 72, 76],
       children: [
-        { id: "hit-taru", form: "𒋫𒊒", translit: "taru", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested IE — a ~4,000-year-old clay-tablet word.", quote: "“PAnat. *doru- … PIE *dóru-.” (Kloekhorst, EDHIL 849)", refs: [76, 1] },
-
-        {
-          id: "txb-or",
-          form: "or",
-          lang: "Tocharian B",
-          gloss: "wood",
-          kind: "attested",
-          sense: "tree",
-          note: "From the Tarim Basin (western China). *d- was lost via the oblique stem (*dreu-s > *reu).",
-          quote: "“PTch *or … connected … to PIE *dóru ‘tree, wood’.” (Adams, DTB)",
-          refs: [77, 1],
-          children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [77, 1] }],
-        },
-
-        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
-
-        {
-          id: "sa-daru",
-          form: "दारु",
-          translit: "dāru",
-          lang: "Sanskrit",
-          gloss: "wood, timber",
-          kind: "attested",
-          sense: "tree",
-          quote: "“dáru- n. Holz (RV+) … Idg. *dóru, *dréu̯-s.” (Mayrhofer, EWAia I 721)",
-          refs: [72, 73, 51],
-          children: [
-            { id: "sa-daruna", form: "दारुण", translit: "dāruṇa", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "Mayrhofer: derived FROM dāru 'wood' (hardness of wood) — not evidence of an independent 'firm' root-meaning.", quote: "“dārúṇa- ist Ableitung von d° ‘Holz’ und kein Beleg für *fest.” (Mayrhofer, EWAia I 721)", refs: [72, 73, 54] },
-            {
-              id: "sa-devadaru",
-              form: "देवदारु",
-              translit: "devadāru",
-              lang: "Sanskrit",
-              gloss: "divine tree",
-              kind: "attested",
-              sense: "tree",
-              refs: [55, 56],
-              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", important: true, refs: [55, 56] }],
-            },
-          ],
-        },
-
-        { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [76, 1] },
-
         {
           id: "op-daru",
           form: "𐎭𐎠𐎽𐎢𐎺",
@@ -223,6 +178,8 @@ export const TREE: EtymNode = {
           ],
         },
 
+        { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [76, 1] },
+
         {
           id: "gk-doru",
           form: "δόρυ",
@@ -234,6 +191,49 @@ export const TREE: EtymNode = {
           note: "The 'wood → spear' narrowing (the spear is its shaft). Borrowed into English only as the hoplite term doru — not the boat, nor the fish 'John Dory', both unrelated.",
           quote: "“δόρυ [n.] ‘wood, tree (trunk), spear’ … <IE *doru ‘tree, wood’>.” (Beekes, EDG 349)",
           refs: [69, 40],
+        },
+
+        {
+          id: "txb-or",
+          form: "or",
+          lang: "Tocharian B",
+          gloss: "wood",
+          kind: "attested",
+          sense: "tree",
+          note: "From the Tarim Basin (western China). *d- was lost via the oblique stem (*dreu-s > *reu).",
+          quote: "“PTch *or … connected … to PIE *dóru ‘tree, wood’.” (Adams, DTB)",
+          refs: [77, 1],
+          children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [77, 1] }],
+        },
+
+        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
+
+        { id: "hit-taru", form: "𒋫𒊒", translit: "taru", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested IE — a ~4,000-year-old clay-tablet word.", quote: "“PAnat. *doru- … PIE *dóru-.” (Kloekhorst, EDHIL 849)", refs: [76, 1] },
+
+        {
+          id: "sa-daru",
+          form: "दारु",
+          translit: "dāru",
+          lang: "Sanskrit",
+          gloss: "wood, timber",
+          kind: "attested",
+          sense: "tree",
+          quote: "“dáru- n. Holz (RV+) … Idg. *dóru, *dréu̯-s.” (Mayrhofer, EWAia I 721)",
+          refs: [72, 73, 51],
+          children: [
+            { id: "sa-daruna", form: "दारुण", translit: "dāruṇa", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "Mayrhofer: derived FROM dāru 'wood' (hardness of wood) — not evidence of an independent 'firm' root-meaning.", quote: "“dārúṇa- ist Ableitung von d° ‘Holz’ und kein Beleg für *fest.” (Mayrhofer, EWAia I 721)", refs: [72, 73, 54] },
+            {
+              id: "sa-devadaru",
+              form: "देवदारु",
+              translit: "devadāru",
+              lang: "Sanskrit",
+              gloss: "divine tree",
+              kind: "attested",
+              sense: "tree",
+              refs: [55, 56],
+              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", important: true, refs: [55, 56] }],
+            },
+          ],
         },
 
         {
@@ -295,54 +295,9 @@ export const TREE: EtymNode = {
           quote: "“*trewwaz … Based on *trewan [‘tree’].” (Orel, Handbook 410)",
           refs: [5, 67, 68, 74],
           children: [
-            {
-              id: "oe-triewe",
-              form: "trēowe",
-              lang: "Old English",
-              gloss: "faithful, steady",
-              kind: "attested",
-              sense: "faith",
-              refs: [5],
-              children: [
-                { id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", important: true, refs: [5] },
-                {
-                  id: "oe-treowth",
-                  form: "trēowþ",
-                  lang: "Old English",
-                  gloss: "faith, fidelity; a pledge",
-                  kind: "attested",
-                  sense: "faith",
-                  note: "The 'faithful' adjective + the abstract suffix -þ (a formation already Proto-Germanic, *triwwiþō) — truth is literally 'true-ness'.",
-                  quote: "“From Proto-Germanic *triwwiþō … by surface analysis, trēowe + -þ.” (Wiktionary)",
-                  refs: [7, 89],
-                  children: [
-                    { id: "truth", form: "truth", lang: "English", gloss: "what is true; veracity", kind: "modern", sense: "faith", refs: [7] },
-                    {
-                      id: "troth",
-                      form: "troth",
-                      lang: "English",
-                      gloss: "a solemn pledge",
-                      kind: "modern",
-                      sense: "faith",
-                      refs: [8],
-                      children: [{ id: "betroth", form: "betroth", lang: "English", gloss: "to promise in marriage", kind: "modern", sense: "faith", refs: [9] }],
-                    },
-                  ],
-                },
-              ],
-            },
-
             { id: "trow", form: "trow", lang: "English (archaic)", gloss: "to believe, trust", kind: "modern", sense: "faith", refs: [10] },
 
             { id: "truce", form: "truce", lang: "English", gloss: "an agreed halt to fighting", kind: "modern", sense: "faith", note: "Originally a plural — 'pledges'.", refs: [22] },
-
-            { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Unrelated to trig = trigonometry.", refs: [14] },
-
-            { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; loyalty", kind: "modern", sense: "faith", refs: [5] },
-
-            { id: "de-treu", form: "treu", lang: "German", gloss: "faithful, loyal", kind: "modern", sense: "faith", refs: [23, 5] },
-
-            { id: "got-triggws", form: "triggws", lang: "Gothic", gloss: "faithful, true", kind: "attested", sense: "faith", refs: [5, 6] },
 
             {
               id: "pgmc-trausta",
@@ -394,6 +349,51 @@ export const TREE: EtymNode = {
                 { id: "nl-troost", form: "troost", lang: "Dutch", gloss: "comfort", kind: "modern", sense: "faith", refs: [12] },
               ],
             },
+
+            { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Unrelated to trig = trigonometry.", refs: [14] },
+
+            {
+              id: "oe-triewe",
+              form: "trēowe",
+              lang: "Old English",
+              gloss: "faithful, steady",
+              kind: "attested",
+              sense: "faith",
+              refs: [5],
+              children: [
+                { id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", important: true, refs: [5] },
+                {
+                  id: "oe-treowth",
+                  form: "trēowþ",
+                  lang: "Old English",
+                  gloss: "faith, fidelity; a pledge",
+                  kind: "attested",
+                  sense: "faith",
+                  note: "The 'faithful' adjective + the abstract suffix -þ (a formation already Proto-Germanic, *triwwiþō) — truth is literally 'true-ness'.",
+                  quote: "“From Proto-Germanic *triwwiþō … by surface analysis, trēowe + -þ.” (Wiktionary)",
+                  refs: [7, 89],
+                  children: [
+                    { id: "truth", form: "truth", lang: "English", gloss: "what is true; veracity", kind: "modern", sense: "faith", refs: [7] },
+                    {
+                      id: "troth",
+                      form: "troth",
+                      lang: "English",
+                      gloss: "a solemn pledge",
+                      kind: "modern",
+                      sense: "faith",
+                      refs: [8],
+                      children: [{ id: "betroth", form: "betroth", lang: "English", gloss: "to promise in marriage", kind: "modern", sense: "faith", refs: [9] }],
+                    },
+                  ],
+                },
+              ],
+            },
+
+            { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; loyalty", kind: "modern", sense: "faith", refs: [5] },
+
+            { id: "de-treu", form: "treu", lang: "German", gloss: "faithful, loyal", kind: "modern", sense: "faith", refs: [23, 5] },
+
+            { id: "got-triggws", form: "triggws", lang: "Gothic", gloss: "faithful, true", kind: "attested", sense: "faith", refs: [5, 6] },
           ],
         },
 

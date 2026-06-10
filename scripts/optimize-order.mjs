@@ -65,7 +65,8 @@ const L = allLeaves.length;
 
 // ── chapters in narrative order (focus leaf-sets); whole-tree framings centred ─
 const stepDir = "src/content/steps";
-const steps = readdirSync(stepDir).filter((f) => f.endsWith(".md")).sort().map((f) => {
+const stepFiles = readdirSync(stepDir).filter((f) => f.endsWith(".md")).sort();
+const steps = stepFiles.map((f) => {
   const m = /focus:\s*\[([^\]]*)\]/.exec(readFileSync(`${stepDir}/${f}`, "utf8"));
   return m ? m[1].split(",").map((s) => s.trim()).filter(Boolean) : [];
 });
@@ -134,7 +135,7 @@ for (const [k, v] of best) state.set(k, v);
 
 // ── report ───────────────────────────────────────────────────────────────────
 const idx = leafIndex();
-const labels = ["seed", "tree", "slavic", "oak", "druid", "dryad", "tar", "objects", "thicket", "faith", "latin", "dendro", "far", "colophon"];
+const labels = [...stepFiles.map((f) => f.replace(/^\d+-/, "").replace(/\.md$/, "")), "explore"];
 const pos = chapters.map((leaves) => leaves.reduce((a, l) => a + idx.get(l), 0) / leaves.length);
 console.log("L(eaves) =", L, " baseline Σd² =", baseObj.toFixed(1), " optimized Σd² =", bestObj.toFixed(1));
 console.log("camera path (leaf-index):");
