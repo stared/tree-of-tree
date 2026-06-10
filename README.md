@@ -54,8 +54,12 @@ jQuery-style DOM mutation).
 src/
   data/etymology.ts    the typed etymology tree (root → branches → words)
   data/references.ts   id → source URL, with a URL→label formatter
+  content/             the narrative as Markdown (hero + one file per step)
   lib/layout.ts        d3-hierarchy → positioned nodes & links (bottom-up)
   components/EtymologyTree.tsx   the zoomable SVG tree
   components/DetailPanel.tsx     per-word detail + sources
+  components/MobileStory.tsx     the mobile column (+ MobileTree, MobilePopover)
   App.tsx              the explorable-explanation narrative + scrollytelling
+scripts/
+  optimize-order.mjs   reorder tree children for a smooth story camera sweep
 ```

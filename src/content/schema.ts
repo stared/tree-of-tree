@@ -16,7 +16,7 @@ export interface Step {
   key: string;
   focus: string[];
   title: string;
-  /** rendered inline HTML (no outer <p>) — drop straight into the step's <p> */
+  /** rendered body HTML — a single paragraph is unwrapped; multi-paragraph keeps its <p>s */
   bodyHtml: string;
 }
 

@@ -60,10 +60,6 @@ export function EtymologyTree({
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [hoverId, setHoverId] = useState<string | null>(null);
 
-  // Disputed branches are always shown (dashed); the legend explains the dashing.
-  const visibleNodes = layout.nodes;
-  const visibleLinks = layout.links;
-
   // "Reset view" lifts the narrative dimming so the WHOLE tree is lit again.
   // Scrolling to another section re-arms the focus (effect below).
   const [showAll, setShowAll] = useState(false);
@@ -145,9 +141,9 @@ export function EtymologyTree({
     // whole stem. (The dimming in `activeIds` does include ancestors, so the
     // lit region is a little larger than the framed one; intentional.)
     const pool = ids
-      ? visibleNodes.filter((n) => ids.includes(n.id) || ids.some((f) => n.lineage.includes(f)))
-      : visibleNodes;
-    const target = pool.length ? pool : visibleNodes;
+      ? layout.nodes.filter((n) => ids.includes(n.id) || ids.some((f) => n.lineage.includes(f)))
+      : layout.nodes;
+    const target = pool.length ? pool : layout.nodes;
     if (!target.length) return;
 
     const xs = target.map((n) => n.x);
@@ -214,7 +210,7 @@ export function EtymologyTree({
   const labelShown = useMemo(() => {
     const shown = new Set<string>();
     if (!showLabels) return shown; // bare intro backdrop — no words at all
-    for (const n of visibleNodes) {
+    for (const n of layout.nodes) {
       if (activeIds && !activeIds.has(n.id)) continue; // dimmed by the current focus
       const sx = n.x * transform.k + transform.x;
       const sy = n.y * transform.k + transform.y;
@@ -231,7 +227,7 @@ export function EtymologyTree({
         shown.add(n.id);
     }
     return shown;
-  }, [visibleNodes, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, showAllLabels, showLabels]);
+  }, [layout, activeIds, transform, size.w, size.h, selectedId, hoverId, hoverLineage, showAllLabels, showLabels]);
 
   // organic branch thickness: more wood flows through a link with a bigger subtree.
   // floor is generous so even a lone twig stays clearly attached (no "orphan" look).
@@ -304,7 +300,7 @@ export function EtymologyTree({
         <g transform={`translate(${transform.x},${transform.y}) scale(${transform.k})`}>
           {/* links */}
           <g fill="none">
-            {visibleLinks.map((l) => {
+            {layout.links.map((l) => {
               const onHoverPath =
                 hoverLineage?.has(l.target.id) && hoverLineage?.has(l.source.id);
               const dim = isDim(l.target.id);
@@ -328,7 +324,7 @@ export function EtymologyTree({
 
           {/* nodes */}
           <g>
-            {visibleNodes.map((n) => {
+            {layout.nodes.map((n) => {
               const dim = isDim(n.id);
               const selected = n.id === selectedId;
               const traced = hoverLineage?.has(n.id);

@@ -61,7 +61,7 @@ export function MobileStory() {
 
       {/* close by handing over the whole tree to explore — zoom, pan, tap */}
       <section className="m-chapter m-explore">
-        <p>Zoom to explore, click on a word to see the sources.</p>
+        <p>Zoom to explore, tap a word to see its sources.</p>
         <div className="m-explore-stage">
           <EtymologyTree
             focusIds={[]}
