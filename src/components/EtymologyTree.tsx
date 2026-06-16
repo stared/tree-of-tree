@@ -47,7 +47,7 @@ export function EtymologyTree({
   exploreSelected,
   onToggleExplore,
 }: Props) {
-  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
+  const layout: Layout = useMemo(() => buildLayout(TREE, { dx: 36, dy: 188 }), []);
   const interactiveRef = useRef(interactive);
   useEffect(() => {
     interactiveRef.current = interactive;

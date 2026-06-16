@@ -15,7 +15,7 @@ import { DetailPanel } from "./DetailPanel";
 export function MobileStory() {
   const index = useMemo(() => nodeById(TREE), []);
   // one shared full-tree layout; every chapter is a cropped window into it
-  const layout = useMemo(() => buildLayout(TREE, { dx: 34, dy: 188 }), []);
+  const layout = useMemo(() => buildLayout(TREE, { dx: 36, dy: 188 }), []);
   const [selected, setSelected] = useState<{ id: string; rect: DOMRect } | null>(null);
   // the closing "explore" tree has its own selection (a docked detail panel,
   // since its nodes move as you zoom/pan — an anchored popover wouldn't track)

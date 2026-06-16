@@ -139,6 +139,10 @@ export const TREE: EtymNode = {
       quote: "“dáru- n. Holz … Idg. *dóru, *dréu̯-s, *dru°.” (Mayrhofer, EWAia I 721)",
       refs: [80, 72, 76],
       children: [
+        // a stub leaf on the fan's outer-left edge: mid-fan its label lay on
+        // the Old Persian trunk
+        { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [76, 1] },
+
         {
           id: "op-daru",
           form: "𐎭𐎠𐎽𐎢𐎺",
@@ -178,7 +182,6 @@ export const TREE: EtymNode = {
           ],
         },
 
-        { id: "luw-taru", form: "𒋫𒀀𒊒", translit: "tāru", lang: "Luwian", gloss: "tree, wood", kind: "attested", sense: "tree", refs: [76, 1] },
 
         {
           id: "gk-doru",
@@ -206,35 +209,7 @@ export const TREE: EtymNode = {
           children: [{ id: "txb-arwa", form: "ārwa", lang: "Tocharian B", gloss: "firewood", kind: "attested", sense: "object", note: "The plural of or.", refs: [77, 1] }],
         },
 
-        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
-
         { id: "hit-taru", form: "𒋫𒊒", translit: "taru", lang: "Hittite", gloss: "tree, wood", kind: "attested", sense: "tree", note: "Anatolian is the oldest attested IE — a ~4,000-year-old clay-tablet word.", quote: "“PAnat. *doru- … PIE *dóru-.” (Kloekhorst, EDHIL 849)", refs: [76, 1] },
-
-        {
-          id: "sa-daru",
-          form: "दारु",
-          translit: "dāru",
-          lang: "Sanskrit",
-          gloss: "wood, timber",
-          kind: "attested",
-          sense: "tree",
-          quote: "“dáru- n. Holz (RV+) … Idg. *dóru, *dréu̯-s.” (Mayrhofer, EWAia I 721)",
-          refs: [72, 73, 51],
-          children: [
-            { id: "sa-daruna", form: "दारुण", translit: "dāruṇa", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "Mayrhofer: derived FROM dāru 'wood' (hardness of wood) — not evidence of an independent 'firm' root-meaning.", quote: "“dārúṇa- ist Ableitung von d° ‘Holz’ und kein Beleg für *fest.” (Mayrhofer, EWAia I 721)", refs: [72, 73, 54] },
-            {
-              id: "sa-devadaru",
-              form: "देवदारु",
-              translit: "devadāru",
-              lang: "Sanskrit",
-              gloss: "divine tree",
-              kind: "attested",
-              sense: "tree",
-              refs: [55, 56],
-              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", important: true, refs: [55, 56] }],
-            },
-          ],
-        },
 
         {
           id: "pc-daru",
@@ -270,6 +245,37 @@ export const TREE: EtymNode = {
             },
           ],
         },
+
+        {
+          id: "sa-daru",
+          form: "दारु",
+          translit: "dāru",
+          lang: "Sanskrit",
+          gloss: "wood, timber",
+          kind: "attested",
+          sense: "tree",
+          quote: "“dáru- n. Holz (RV+) … Idg. *dóru, *dréu̯-s.” (Mayrhofer, EWAia I 721)",
+          refs: [72, 73, 51],
+          children: [
+            // the tall devadāru→deodar trunk first (left); dāruṇa's stub on
+            // the right — mid-fan its gloss is cut by the plumb trunk
+            {
+              id: "sa-devadaru",
+              form: "देवदारु",
+              translit: "devadāru",
+              lang: "Sanskrit",
+              gloss: "divine tree",
+              kind: "attested",
+              sense: "tree",
+              refs: [55, 56],
+              children: [{ id: "deodar", form: "deodar", lang: "English", gloss: "the Himalayan cedar", kind: "modern", sense: "tree", important: true, refs: [55, 56] }],
+            },
+            { id: "sa-daruna", form: "दारुण", translit: "dāruṇa", lang: "Sanskrit", gloss: "hard, harsh, cruel", kind: "attested", sense: "firm", note: "Mayrhofer: derived FROM dāru 'wood' (hardness of wood) — not evidence of an independent 'firm' root-meaning.", quote: "“dārúṇa- ist Ableitung von d° ‘Holz’ und kein Beleg für *fest.” (Mayrhofer, EWAia I 721)", refs: [72, 73, 54] },
+          ],
+        },
+        // last (rightmost) so its long gloss reads into the open gap between
+        // limbs — anywhere inside the fan a sibling's curve cuts through it
+        { id: "hy-torg", form: "տորգ", translit: "torg", lang: "Old Armenian", gloss: "wooden frame; web, loom", kind: "attested", sense: "object", quote: "“*doru-i(h₂)- … would yield Arm. torg.” (Martirosyan, EDAIL 606)", refs: [75, 1] },
       ],
     },
 
@@ -295,9 +301,13 @@ export const TREE: EtymNode = {
           quote: "“*trewwaz … Based on *trewan [‘tree’].” (Orel, Handbook 410)",
           refs: [5, 67, 68, 74],
           children: [
-            { id: "trow", form: "trow", lang: "English (archaic)", gloss: "to believe, trust", kind: "modern", sense: "faith", refs: [10] },
-
+            // truce outermost: its long gloss gets the taller, freer slot;
+            // trow's short label tucks inside without touching truce's stem
             { id: "truce", form: "truce", lang: "English", gloss: "an agreed halt to fighting", kind: "modern", sense: "faith", note: "Originally a plural — 'pledges'.", refs: [22] },
+
+            // on the left flank: among the right-side siblings its label kept
+            // landing on trēowe's or treu's text line
+            { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; loyalty", kind: "modern", sense: "faith", refs: [5] },
 
             {
               id: "pgmc-trausta",
@@ -350,8 +360,6 @@ export const TREE: EtymNode = {
               ],
             },
 
-            { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Unrelated to trig = trigonometry.", refs: [14] },
-
             {
               id: "oe-triewe",
               form: "trēowe",
@@ -361,7 +369,8 @@ export const TREE: EtymNode = {
               sense: "faith",
               refs: [5],
               children: [
-                { id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", important: true, refs: [5] },
+                // trēowþ first (left) so its rising curve shoulders AWAY from
+                // true's up-right gloss — visual, not chronological, order
                 {
                   id: "oe-treowth",
                   form: "trēowþ",
@@ -386,14 +395,21 @@ export const TREE: EtymNode = {
                     },
                   ],
                 },
+                { id: "true", form: "true", lang: "English", gloss: "in accordance with fact; faithful", kind: "modern", sense: "faith", important: true, refs: [5] },
               ],
             },
 
-            { id: "nl-trouw", form: "trouw", lang: "Dutch", gloss: "faithful; loyalty", kind: "modern", sense: "faith", refs: [5] },
-
+            // treu directly beside trēowe: the placement stagger only guards
+            // ADJACENT siblings, and these two otherwise land on one text line
             { id: "de-treu", form: "treu", lang: "German", gloss: "faithful, loyal", kind: "modern", sense: "faith", refs: [23, 5] },
 
+            // stub leaves on the fan's outer edge — wedged mid-fan their
+            // glosses thread between the trausta/triewe trunk bundles
+            { id: "trow", form: "trow", lang: "English (archaic)", gloss: "to believe, trust", kind: "modern", sense: "faith", refs: [10] },
+
             { id: "got-triggws", form: "triggws", lang: "Gothic", gloss: "faithful, true", kind: "attested", sense: "faith", refs: [5, 6] },
+
+            { id: "trig", form: "trig", lang: "English (dialectal)", gloss: "neat, firm, sound", kind: "modern", sense: "firm", note: "Unrelated to trig = trigonometry.", refs: [14] },
           ],
         },
 
