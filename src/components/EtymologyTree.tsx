@@ -239,39 +239,42 @@ export function EtymologyTree({
     <div className={`tree-wrap${interactive ? "" : " tree-wrap-locked"}`} ref={wrapRef}>
       {chrome && (
       <div className="tree-controls">
-        <button
-          onClick={() => {
-            onSelect(null); // clear the clicked-node detail
-            setShowAll(true); // lift the narrative dimming — light the whole tree
-            fitTo(null); // and frame all of it
-          }}
-        >
-          ⤢ Reset view
-        </button>
-        {/* Story / Explore — a segmented toggle; the lit half tracks where you
-            are, and clicking the other half moves you into that mode. */}
-        <span className="mode-toggle" role="group" aria-label="View mode">
-          <button
-            className={exploreSelected ? "" : "selected"}
-            aria-pressed={!exploreSelected}
-            onClick={() => {
-              if (exploreSelected) onToggleExplore();
-            }}
-            title="Read the story"
-          >
-            Story
-          </button>
-          <button
-            className={exploreSelected ? "selected" : ""}
-            aria-pressed={exploreSelected}
-            onClick={() => {
-              if (!exploreSelected) onToggleExplore();
-            }}
-            title="Explore the whole tree"
-          >
-            Explore
-          </button>
-        </span>
+        {/* Reset + the Story/Explore toggle are interactive controls that only
+            make sense once you're roaming, so they show ONLY in explore. During
+            the story they'd sit (fixed) over the scrolling narrative text — a
+            collision — and you reach explore via the end-of-story invite anyway. */}
+        {exploreSelected && (
+          <>
+            <button
+              onClick={() => {
+                onSelect(null); // clear the clicked-node detail
+                setShowAll(true); // lift the narrative dimming — light the whole tree
+                fitTo(null); // and frame all of it
+              }}
+            >
+              ⤢ Reset view
+            </button>
+            {/* Story / Explore — a segmented toggle; the lit half tracks where you
+                are, and clicking the other half moves you into that mode. */}
+            <span className="mode-toggle" role="group" aria-label="View mode">
+              <button
+                className=""
+                aria-pressed={false}
+                onClick={onToggleExplore}
+                title="Read the story"
+              >
+                Story
+              </button>
+              <button
+                className="selected"
+                aria-pressed
+                title="Explore the whole tree"
+              >
+                Explore
+              </button>
+            </span>
+          </>
+        )}
 
         {/* sense legend, same line — colour = meaning; dashed = scholars disagree */}
         <span className="tree-legend">
