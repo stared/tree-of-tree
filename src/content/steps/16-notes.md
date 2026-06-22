@@ -4,6 +4,9 @@ focus: []
 title: Ending notes
 ---
 
-This project was inspired by Miroslav Šedivý, a Czechoslovak polyglot I met at PiterPy 2018, who sparked a curiosity that "zdrowy" (healthy) is from "drewno/drzewo" (wood/tree). Then it was resparked, when I saw [Odd Pride's short on the tree of life](https://www.facebook.com/share/v/1AkXtkPgrS/) just a few weeks ago.
+I am grateful to Miroslav Šedivý, a Czechoslovak polyglot I met at PiterPy 2018, who sparked a curiosity that "zdrowy" (healthy) is from "drewno/drzewo" (wood/tree). A few weeks ago I saw [Odd Pride's short on the tree of life](https://www.facebook.com/share/v/1AkXtkPgrS/), which prompted me to make [an explorable explanation](https://p.migdal.pl/blog/2024/05/science-games-explorable-explanations/), a medium close to my heart.
 
-I turned that into a form close to my heart, [an explorable explanation](https://p.migdal.pl/blog/2024/05/science-games-explorable-explanations/). [Code is here](https://github.com/stared/tree-of-tree).
+Which other word etymologies would you like to explore?
+
+By Piotr Migdał, 2026. [Code is here](https://github.com/stared/tree-of-tree).
+Click on words to see sources.
