@@ -11,8 +11,8 @@ import { HERO, STEPS } from "./content/load";
 // glide to the next slot. Same size throughout — only its place changes.
 //   intro   — full screen, no labels, locked: a calm backdrop for the title
 //   story   — right pane, labelled: text steps scroll on the left
-//   explore — slide further and the tree takes the full width (small note below),
-//             fully interactive to roam
+//   explore — slide further and the tree takes the full viewport (a note pill
+//             floats on top), fully interactive to roam
 type Phase = "intro" | "story" | "explore";
 
 export function App() {
@@ -66,7 +66,7 @@ export function App() {
     const lerp = (A: number[], B: number[], t: number) => A.map((v, i) => v + (B[i] - v) * t);
     const INTRO = [0, 0, 1, 1]; // full screen — the backdrop
     const STORY = [0.42, 0, 0.58, 1]; // right pane, for the narrative
-    const EXPLORE = [0, 0, 1, 0.85]; // full width, with a small note strip below
+    const EXPLORE = [0, 0, 1, 1]; // full viewport — the note now floats as a pill on top
     const GLIDE = "left .6s ease, top .6s ease, width .6s ease, height .6s ease";
     function update() {
       const stage = stageRef.current;
@@ -209,7 +209,7 @@ export function App() {
       </section>
 
       {exploring && (
-        <div className="explore-note">Now explore on your own. Click any word to see its sources.</div>
+        <div className="explore-note">Click any word to see its sources.</div>
       )}
 
       <footer className="authorbar">

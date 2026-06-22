@@ -139,36 +139,44 @@ a {
 }
 
 /* the small invitation under the full-width tree in the explore phase */
+/* a contained caption pill, styled like the legend, so it sits ON the diagram
+   as an obvious bit of UI rather than bare text bleeding over the branches */
 .explore-note {
   position: fixed;
-  bottom: 6vh;
-  left: 0;
-  right: 0;
+  bottom: 16px;
+  left: 18px;
   z-index: 3;
   pointer-events: none;
-  text-align: center;
+  white-space: nowrap;
+  padding: 6px 13px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
   font-family: var(--sans);
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  color: var(--ink-faint);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
   animation: labelIn 0.6s ease both;
 }
 
-/* persistent author credit, pinned to the bottom, fading softly over the tree */
+/* persistent author credit — same pill as every other floating control,
+   parked in the bottom-right corner. */
 .authorbar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 16px;
+  right: 18px;
   z-index: 3;
-  pointer-events: none;
-  text-align: right;
-  padding: 14px 28px 12px;
+  pointer-events: auto;
+  padding: 6px 13px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 12px;
   letter-spacing: 0.02em;
-  color: var(--ink-faint);
-  background: linear-gradient(to top, var(--paper) 35%, transparent);
+  color: var(--ink-soft);
 }
 .authorbar a {
   pointer-events: auto;
@@ -317,7 +325,7 @@ a {
      toggle sit left, the legend is pushed to the right edge. The empty top of
      the narrative column means the left controls never cover its text. */
   position: fixed;
-  top: 14px;
+  top: 16px;
   left: 18px;
   right: 18px;
   z-index: 4;
@@ -334,37 +342,46 @@ a {
 .tree-controls > * {
   pointer-events: auto;
 }
+/* every control is the same pill as the legend: translucent panel, hairline
+   border, blur, rounded all the way. */
 .tree-controls button {
   font-family: var(--sans);
-  font-size: 12.5px;
-  background: var(--panel);
+  font-size: 12px;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
   border: 1px solid var(--rule);
-  border-radius: 7px;
-  padding: 6px 11px;
-  color: var(--ink);
+  border-radius: 999px;
+  padding: 6px 13px;
+  color: var(--ink-soft);
   cursor: pointer;
+  backdrop-filter: blur(2px);
 }
 .tree-controls button:hover {
   border-color: var(--ink-faint);
+  color: var(--ink);
 }
 .tree-controls button.selected {
   background: var(--ink);
   border-color: var(--ink);
   color: var(--paper);
 }
-/* Story / Explore — two buttons joined into one segmented control */
+/* Story / Explore — two segments inside ONE pill (the segments are bare; only
+   the active one fills in). */
 .tree-controls .mode-toggle {
   display: inline-flex;
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
 }
 .tree-controls .mode-toggle button {
-  border-radius: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  backdrop-filter: none;
 }
-.tree-controls .mode-toggle button:first-child {
-  border-radius: 7px 0 0 7px;
-}
-.tree-controls .mode-toggle button:last-child {
-  border-radius: 0 7px 7px 0;
-  border-left: 0;
+.tree-controls .mode-toggle button.selected {
+  background: var(--ink);
+  color: var(--paper);
 }
 /* sense legend — sits inline on the same top control line; no caption.
    colour = meaning; the dashed swatch = a link scholars dispute. */
