@@ -4,4 +4,4 @@ focus: [gk-dendron]
 title: The tangled déndron
 ---
 
-Greek's ordinary word for a tree, **δένδρον [déndron]**, looks like a reduplicated **\*der-drew-om** — but the doubling is highly unusual, so the link stays uncertain. On it we built **dendrite**, **rhododendron** *rose-tree*, **philodendron** *tree-loving*, and **dendrochronology**.
+Greek's everyday word for a tree, **δένδρον [déndron]**, looks like the root **\*dóru-** doubled: **\*der-drew-om**. That kind of reduplication is common in PIE verbs but rare in nouns, so the link stays debated. From it grow **dendrite**, the *rose-tree* **rhododendron**, the *tree-loving* **philodendron**, and **dendrochronology**, dating wood by its rings.
