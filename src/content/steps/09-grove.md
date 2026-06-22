@@ -4,4 +4,4 @@ focus: [gk-drymos, sa-druma, pgmc-trumaz]
 title: A dense thicket
 ---
 
-The zero-grade **\*dru-** also built **\*drumo-** *a dense stand of trees*: Greek **δρυμός [drymós]** *oak forest*, Sanskrit **druma** *tree*. Germanic took the *dense, firm* sense to **\*trumaz** → Old English **trum** *strong*, and — more shakily — **trim**.
+Trees packed close make a thicket — that's **\*drumo-**, still a forest in Greek **δρυμός [drymós]** and a tree in Sanskrit **druma**, but turned *firm, strong* in Germanic **\*trumaz**, Old English **trum**, and, more shakily, **trim**.
