@@ -1,7 +1,9 @@
 ---
 key: druid
 focus: [pc-druwits]
-title: Druids
+title: Druids, the tree sages
 ---
 
-A **druid** is, at root, a **dru-wid** — a *knower*. The second element, **\*weid-** *to know*, is the same root behind **wit**, **wisdom**, and Polish **wiedza** *knowledge*. The first element is the open question: from **\*deru-** *the tree* it makes an *oak-sage* or *tree-sage*; from the root's strength-sense, a *great, firm sage*. Pliny preferred the oak — but either way the druid stays inside the **\*deru-** / **\*drew-** family.
+The word **druid**, coming from a Celtic **druwid** has two interesting roots. One we already know, the other **\*weid-** means to know - see **wit**, **widsom** or Polish **wiedza** (knowledge), a **wiedźma** (a witch).
+
+So, we have an oak-sagem tree-knower, or a mighty sage.

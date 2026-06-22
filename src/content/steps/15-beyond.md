@@ -1,7 +1,7 @@
 ---
 key: beyond
 focus: []
-title: Beyond PIE tree
+title: Not all PIE trees are related
 ---
 
-A few words you might expect here stay out. German **Baum** and English **beam** come from a different Proto-Germanic word, **\*baumaz**; Spanish **árbol**, through Latin **arbor**, sits on a separate root altogether, PIE **\*h₃erdʰ-** _upright, tall_, the same source as **arduus** — the Romance tree is named for its shape, not its substance.
+Not all trees grow from the same root – sse German **Baum** or English **beam**. Spanish **árbol**, while having some similarity (**dr**  and **rb**) grow grow from a separate root, **\*h₃erdʰ-** _upright, tall_.
