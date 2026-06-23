@@ -1,0 +1,189 @@
+/* Static poster page — palette + label styles copied from the site so the
+   exported PNG matches the explorable it links to. Self-contained. */
+:root {
+  --paper: #f6f1e7;
+  --paper-2: #efe8d8;
+  --ink: #2b2620;
+  --ink-soft: #6f6557;
+  --ink-faint: #9b9082;
+  --rule: #ddd3bf;
+  --accent: #4a3b2a;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Charter", Georgia, "Times New Roman", serif;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  background: #cfc6b2;
+}
+
+/* Fixed-width 4:3-ish landscape canvas — the screenshot tool captures this box. */
+.poster {
+  width: 1800px;
+  margin: 0 auto;
+  background: radial-gradient(120% 80% at 50% 8%, var(--paper) 0%, var(--paper) 58%, var(--paper-2) 100%);
+  color: var(--ink);
+  font-family: var(--serif);
+  padding: 44px 56px 34px;
+  box-sizing: border-box;
+}
+
+/* ── top bar: title left, legend right (fills the sky over the canopy) ── */
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+}
+.brand {
+  max-width: 920px;
+}
+.brand h1 {
+  font-size: 60px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+.it {
+  font-style: italic;
+}
+.dek {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0;
+  max-width: 880px;
+}
+.dek b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.legend {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-soft);
+  padding-top: 6px;
+}
+.lg-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px 16px;
+  max-width: 560px;
+}
+.lg-row.keys {
+  color: var(--ink-faint);
+  border-top: 1px solid var(--rule);
+  padding-top: 9px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.chip i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: none;
+}
+.chip i.ring {
+  background: #fffdf8;
+  border: 1.6px dashed var(--ink-faint);
+  box-sizing: border-box;
+}
+.chip i.dash {
+  width: 22px;
+  height: 0;
+  border-radius: 0;
+  border-top: 2.4px dashed var(--ink-faint);
+}
+.chip i.big {
+  width: 10px;
+  height: 10px;
+  background: var(--ink);
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+/* ── the tree ── */
+.poster-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: -6px 0 0;
+}
+.link.disputed {
+  stroke-dasharray: 5 5;
+}
+
+.node .label {
+  font-family: var(--serif);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3.4px;
+}
+.node .form {
+  font-weight: 600;
+  font-size: 14px;
+  fill: var(--ink);
+}
+.node .gloss {
+  font-family: var(--sans);
+  font-style: italic;
+  font-size: 11px;
+  fill: var(--ink-soft);
+}
+.node .translit {
+  font-family: var(--sans);
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+.node-reconstructed .form {
+  font-style: italic;
+  fill: var(--ink-soft);
+}
+.node-modern .form {
+  fill: #1f1a14;
+}
+/* headline words — bigger, darker, with a gloss whisper underneath */
+.node.imp .form {
+  font-size: 20px;
+  fill: var(--ink);
+}
+.node.imp .gloss {
+  font-size: 11.5px;
+}
+/* the root, in the soil */
+.node-root .root-label .form {
+  font-size: 30px;
+  fill: var(--accent);
+}
+.node-root .root-label .gloss {
+  font-size: 15px;
+  font-style: italic;
+}
+
+/* ── credit ── */
+.credit {
+  font-family: var(--sans);
+  text-align: center;
+  font-size: 16px;
+  color: var(--ink-soft);
+  margin-top: -4px;
+}
+.credit .link {
+  color: var(--accent);
+  font-weight: 700;
+}
+.credit .src {
+  color: var(--ink-faint);
+  font-size: 12.5px;
+}
