@@ -394,12 +394,13 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     // so their links shoot straight up through the truth branch sitting above
     // *traustą. Pull them back down to short twigs beside their parent. These are
     // PINNED below so the crossing-repair leaves them exactly here.
-    "de-trost": [-38, 188],
-    "nl-troost": [-149, 325],
+    "de-trost": [-30, -80],
+    "nl-troost": [-150, 85],
     // trim's gloss reached up-right into the big "trough" label — slide it left.
     "trim": [-95, 15],
-    // Derry's long gloss ran through the big "deodar" — drop it down-left.
-    "derry": [-150, 70],
+    // Derry sits naturally right on top of deodar; lift it UP (above its parent
+    // doire, smooth vertical link) so its long gloss clears the big deodar label.
+    "derry": [-48, -35],
   };
   // hand-placed nodes the crossing-repair must NOT shove around (else it cascades).
   const pinned = new Set(Object.keys(NUDGE));

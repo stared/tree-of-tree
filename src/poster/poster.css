@@ -114,7 +114,7 @@ body {
 /* regular attested/modern words */
 .node .form {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 18px;
   fill: var(--ink);
 }
 /* transliteration of non-Latin words — small bracketed romanisation */
@@ -130,11 +130,12 @@ body {
   font-size: 11px;
   fill: var(--ink-soft);
 }
-/* the *deru- scaffolding — reconstructed proto-forms, deliberately smaller so the
-   real words read first and the crown has room */
+/* reconstructed proto-forms (the *deru- scaffolding): italic + grey + a dashed
+   ring already set them apart, so they keep the SAME size as the real words —
+   shrinking them below normal read as a bug, and there is space for them. */
 .node-reconstructed .form {
   font-style: italic;
-  font-size: 12px;
+  font-size: 18px;
   fill: var(--ink-soft);
 }
 .node-modern .form {
@@ -142,7 +143,7 @@ body {
 }
 /* selected / headline words — 2× the regular words */
 .node.imp .form {
-  font-size: 30px;
+  font-size: 36px;
 }
 .node.imp .gloss {
   font-size: 12px;
