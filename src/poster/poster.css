@@ -21,6 +21,7 @@ body {
 /* Fixed-width canvas — the screenshot tool captures this box. Minimal padding;
    the tree (tight-fit viewBox) owns the frame. */
 .poster {
+  position: relative;
   width: 1800px;
   margin: 0 auto;
   background: radial-gradient(120% 80% at 50% 12%, var(--paper) 0%, var(--paper) 62%, var(--paper-2) 100%);
@@ -30,13 +31,6 @@ body {
   box-sizing: border-box;
 }
 
-/* ── top bar: title left, one-line legend right ── */
-.topbar {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 40px;
-}
 .brand {
   font-size: 60px;
   font-weight: 600;
@@ -48,21 +42,23 @@ body {
   font-style: italic;
 }
 
-/* one combined legend line — no captions, no wrap */
+/* legend — a compact vertical key in the empty lower-right wedge, a little
+   above the root */
 .legend {
+  position: absolute;
+  right: 44px;
+  bottom: 74px;
   display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 17px;
+  flex-direction: column;
+  gap: 9px;
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 17px;
   color: var(--ink-soft);
-  white-space: nowrap;
 }
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
 }
 .chip .dot {
   width: 14px;
@@ -115,42 +111,65 @@ body {
   stroke: var(--paper);
   stroke-width: 3.6px;
 }
+/* regular attested/modern words */
 .node .form {
   font-weight: 600;
-  font-size: 18px;
+  font-size: 15px;
   fill: var(--ink);
 }
+/* transliteration of non-Latin words — small bracketed romanisation */
 .node .meta {
   font-family: var(--sans);
+  font-size: 10px;
+  fill: var(--ink-faint);
+}
+/* the word's meaning — small italic, under the form */
+.node .gloss {
+  font-family: var(--sans);
   font-style: italic;
-  font-size: 12px;
+  font-size: 11px;
   fill: var(--ink-soft);
 }
+/* the *deru- scaffolding — reconstructed proto-forms, deliberately smaller so the
+   real words read first and the crown has room */
 .node-reconstructed .form {
   font-style: italic;
+  font-size: 12px;
   fill: var(--ink-soft);
 }
 .node-modern .form {
   fill: #1f1a14;
 }
+/* selected / headline words — 2× the regular words */
 .node.imp .form {
-  font-size: 25px;
+  font-size: 30px;
 }
+.node.imp .gloss {
+  font-size: 12px;
+}
+/* the root, in the soil — its MEANING is the thesis of the whole image, so it is
+   set large (≈2× a leaf word), right under the two ablaut citation forms */
 .node-root .root-label .form {
   font-size: 32px;
   fill: var(--accent);
 }
+.node-root .root-label .rootgloss {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 29px;
+  fill: var(--ink);
+}
 
-/* ── credit: ONE font size ── */
+/* ── footnote: ONE size, same as the tagline ── */
 .credit {
   font-family: var(--sans);
   text-align: center;
-  font-size: 13px;
-  color: var(--ink-faint);
-  margin-top: 6px;
+  font-size: 20px;
+  color: var(--ink-soft);
+  margin-top: 4px;
 }
 .credit b {
-  color: var(--ink-soft);
+  color: var(--ink);
   font-weight: 700;
 }
 .credit .link {

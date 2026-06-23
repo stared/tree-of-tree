@@ -9,15 +9,18 @@
 // the crossing-free, no-fly layout is tuned for; inflating it scatters labels
 // (and, by widening the viewBox, silently shrinks everything again).
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { buildLayout, linkPath, type LaidNode } from "./layout";
+import { buildLayout, findCrossings, linkPath, type LaidNode } from "./layout";
 import { SENSES, TREE, type SenseId } from "../data/etymology";
 import "./poster.css";
 
 // ── tuning (this view only — the live app is untouched) ─────────────────────
 const DX = 36; // breadth between leaves — native (keeps the layout crossing-free)
 const DY = 188; // generation gap — native
-const CPU = 9; // label-width budget per char — tracks the bigger forms-only labels
-const IMPORTANT_SCALE = 1.3; // headline words a touch bigger — gentle, so nothing flies
+const CPU = 8.5; // label-width budget per char
+// Headline words are rendered 2× in CSS but get NO extra layout reservation: their
+// boxes are already reserved wide for their (long) glosses, so the big short form
+// fits inside that — keeping the layout at its proven-clean native positions.
+const IMPORTANT_SCALE = 1;
 const GREEN = SENSES.tree.color; // the word "tree" is green in the diagram → so in the title
 
 function radius(node: LaidNode): number {
@@ -45,6 +48,11 @@ export function Poster() {
   // Tight-fit the viewBox to the ACTUAL drawn content (nodes + every label),
   // measured after fonts load — no guessed padding, so zero wasted margin and
   // the tree fills the frame as large as it can. This is the real "bigger" lever.
+  // expose ground-truth crossings + node coords for the screenshot script (verification)
+  const g = globalThis as { __crossings?: unknown; __nodes?: unknown };
+  g.__crossings = findCrossings(layout.links);
+  g.__nodes = layout.nodes.map((n) => ({ id: n.id, x: Math.round(n.x), y: Math.round(n.y) }));
+
   const gRef = useRef<SVGGElement>(null);
   const [viewBox, setViewBox] = useState("0 0 1600 1000");
   useLayoutEffect(() => {
@@ -61,30 +69,9 @@ export function Poster() {
 
   return (
     <div className="poster">
-      <div className="topbar">
-        <h1 className="brand">
-          The Tree of <span className="it" style={{ color: GREEN }}>tree</span>
-        </h1>
-        {/* one combined legend line — meaning colours + the two form cues, no
-            category captions, no wrapping */}
-        <div className="legend">
-          {(Object.keys(SENSES) as SenseId[]).map((s) => (
-            <span className="chip" key={s}>
-              <i className="dot" style={{ background: SENSES[s].color }} />
-              {SENSES[s].short}
-            </span>
-          ))}
-          <span className="chip">
-            <i className="dot ring" />
-            reconstructed
-          </span>
-          <span className="chip">
-            <i className="dash" />
-            disputed
-          </span>
-        </div>
-      </div>
-
+      <h1 className="brand">
+        The Tree of <span className="it" style={{ color: GREEN }}>tree</span>
+      </h1>
       {/* tagline — one line, the site's own wording */}
       <p className="dek">
         Did you know that <b>truth, druid, dryad, tar</b> and <b>dendrite</b> all grew from the same
@@ -125,6 +112,10 @@ export function Poster() {
               // root + every starred proto-form share ONE reconstructed cue (dashed
               // outline); attested + modern words stay solid.
               const starred = isRoot || reconstructed;
+              // show the meaning for headline words + foreign (non-English) cognates;
+              // plain English outcomes and the proto-form scaffolding stay bare.
+              const showG = n.data.kind === "attested" || n.data.kind === "modern";
+              const firstDy = imp ? 21 : 11; // clear the (bigger) headline form
               return (
                 <g
                   key={n.id}
@@ -144,7 +135,7 @@ export function Poster() {
                       <tspan className="form" x={0}>
                         {n.data.form}
                       </tspan>
-                      <tspan className="meta" x={0} dy={20}>
+                      <tspan className="rootgloss" x={0} dy={36}>
                         {n.data.gloss}
                       </tspan>
                     </text>
@@ -154,8 +145,13 @@ export function Poster() {
                         {n.data.form}
                       </tspan>
                       {n.data.translit && (
-                        <tspan className="meta" x={r + 5} dy={13}>
+                        <tspan className="meta" x={r + 5} dy={firstDy}>
                           [{n.data.translit}]
+                        </tspan>
+                      )}
+                      {showG && (
+                        <tspan className="gloss" x={r + 5} dy={n.data.translit ? 12 : firstDy}>
+                          {n.data.gloss}
                         </tspan>
                       )}
                     </text>
@@ -167,10 +163,28 @@ export function Poster() {
         </g>
       </svg>
 
+      {/* legend — moved into the empty lower-right wedge, a little above the root */}
+      <div className="legend">
+        {(Object.keys(SENSES) as SenseId[]).map((s) => (
+          <span className="chip" key={s}>
+            <i className="dot" style={{ background: SENSES[s].color }} />
+            {SENSES[s].short}
+          </span>
+        ))}
+        <span className="chip">
+          <i className="dot ring" />
+          reconstructed
+        </span>
+        <span className="chip">
+          <i className="dash" />
+          disputed
+        </span>
+      </div>
+
       <div className="credit">
-        by <b>Piotr Migdał</b> · explore the interactive version at{" "}
-        <b className="link">p.migdal.pl/tree-of-tree</b> · sources: Online Etymology Dictionary,
-        Wiktionary, Watkins, de Vaan, Kroonen, Beekes, Derksen, Mayrhofer, Kloekhorst, Pokorny, EIEC
+        by <b>Piotr Migdał</b> · 2026 · <b className="link">p.migdal.pl/tree-of-tree</b> · sources:
+        Etymonline, Wiktionary, Watkins, de Vaan, Kroonen, Beekes, Derksen, Mayrhofer, Kloekhorst,
+        Pokorny, EIEC
       </div>
     </div>
   );

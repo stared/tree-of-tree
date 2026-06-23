@@ -90,12 +90,9 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // shallow limbs stretch: a 2-generation limb would otherwise die low while
   // the deep chains tower — scale each root limb's hops so every limb's tips
   // approach the same canopy band (a real crown fills its sky).
-  // Poster: stretch the short outer limbs HARDER than the live app (cap 2.2 vs
-  // 1.6, exp 0.5 vs 0.35) so they climb into the empty upper-corner sky instead
-  // of dying low — a fuller crown, less wasted space.
   const limbM = new Map<string, number>();
   for (const c of positioned.children ?? [])
-    limbM.set(c.data.id, Math.min(2.2, Math.pow(positioned.height / (c.height + 1), 0.5)));
+    limbM.set(c.data.id, Math.min(1.6, Math.pow(positioned.height / (c.height + 1), 0.35)));
   const yRaw = new Map<string, number>();
   (function place(node: HierarchyPointNode<EtymNode>, y: number, m: number) {
     yRaw.set(node.data.id, y);
@@ -181,12 +178,21 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const NLY = Math.cos(RAD);
   const linkIds = positioned.links().map((l) => [l.source.data.id, l.target.data.id] as [string, string]);
   const impF = (d: EtymNode) => (d.important ? importantScale : 1);
-  // The poster shows forms (+ transliteration) only — NO per-word glosses — so the
-  // de-collision budgets just the form/translit width, not the much longer gloss.
-  // That keeps labels narrow → the tree stays compact → it renders bigger.
+  // Which nodes show a meaning (gloss): the headline words, and every attested/
+  // modern NON-English word (the foreign cognates a reader can't decode). Plain
+  // English outcome words stay forms-only so the tree stays compact. Reconstructed
+  // scaffolding never shows a gloss. (A headline word's gloss is drawn small, so
+  // its label width is set by the big FORM, not the gloss — hence glossW=0 there.)
+  // ONLY modern standard English is "English" here — Old English (and archaic/
+  // dialectal) are different languages a reader can't decode, so they keep their
+  // gloss. (The old /English/ regex wrongly swallowed "Old English".)
+  // every real (attested/modern) word shows its meaning; only the reconstructed
+  // proto-form scaffolding stays bare.
+  const showsGloss = (d: EtymNode) => d.kind === "attested" || d.kind === "modern";
+  const glossBudget = (d: EtymNode) => (showsGloss(d) ? (d.gloss?.length ?? 0) * 0.78 : 0);
   const labelW = (id: string) => {
     const d = dat.get(id)!;
-    return Math.max(d.form.length, d.translit?.length ?? 0) * CPU * impF(d);
+    return Math.max(d.form.length, glossBudget(d), d.translit?.length ?? 0) * CPU * impF(d);
   };
   // scratch buffers for the link-vs-label pass (hot loop — no allocations)
   const NS = 12; // curve samples per link
@@ -204,8 +210,9 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     const o = off.get(id)!;
     const x = baseX.get(id)! + o.dx;
     const y = baseY.get(id)! + o.dy;
-    const w = Math.max(d.form.length, d.translit?.length ?? 0) * CPU * impF(d);
-    const stack = (d.translit ? 2 : 1) * 14 * impF(d);
+    const w = Math.max(d.form.length, glossBudget(d), d.translit?.length ?? 0) * CPU * impF(d);
+    const lines = 1 + (d.translit ? 1 : 0) + (showsGloss(d) ? 1 : 0);
+    const stack = lines * 14 * impF(d);
     return { l: x - 6 - MARG, r: x + 8 + w * 0.87 + MARG, t: y - (w * 0.5 + stack) - MARG, b: y + 8 + MARG };
   };
   for (let it = 0; it < 1000; it++) {
@@ -382,7 +389,20 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // hand-placed grace notes: a couple of glosses the forces leave kissing a
   // curve (each balanced against its own constraints). Moved by eye, verified
   // by screenshot; the crossing-repair pass below still runs after these.
-  const NUDGE: Record<string, [number, number]> = {};
+  const NUDGE: Record<string, [number, number]> = {
+    // Trost/troost (leaves of *traustą) get lifted into the canopy by the dome,
+    // so their links shoot straight up through the truth branch sitting above
+    // *traustą. Pull them back down to short twigs beside their parent. These are
+    // PINNED below so the crossing-repair leaves them exactly here.
+    "de-trost": [-38, 188],
+    "nl-troost": [-149, 325],
+    // trim's gloss reached up-right into the big "trough" label — slide it left.
+    "trim": [-95, 15],
+    // Derry's long gloss ran through the big "deodar" — drop it down-left.
+    "derry": [-150, 70],
+  };
+  // hand-placed nodes the crossing-repair must NOT shove around (else it cascades).
+  const pinned = new Set(Object.keys(NUDGE));
   for (const [id, [ndx, ndy]] of Object.entries(NUDGE)) {
     const o = off.get(id);
     if (o) {
@@ -479,7 +499,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // pairs bail out after a few rectangle tests instead of 96×96 segment tests
   const CH = 8;
   const SEG = 96 / CH;
-  for (let pass = 0; pass < 24; pass++) {
+  for (let pass = 0; pass < 26; pass++) {
     const flat = links.map((l) => sample(l));
     const chunks = flat.map((pts) => {
       const cs: number[][] = [];
@@ -547,7 +567,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
             px2 = -px2;
             py2 = -py2;
           }
-          moveWithChain(n, px2 * 14, py2 * 14);
+          if (!pinned.has(n.id)) moveWithChain(n, px2 * 14, py2 * 14);
         } else {
           // cousins: translate the lighter child away from the heavier curve
           let best = Infinity;
@@ -562,7 +582,8 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
             }
           }
           const dn = Math.hypot(light.x - bx, light.y - by) || 1;
-          moveWithChain(light, ((light.x - bx) / dn) * 13, ((light.y - by) / dn) * 13);
+          if (!pinned.has(light.id))
+            moveWithChain(light, ((light.x - bx) / dn) * 13, ((light.y - by) / dn) * 13);
         }
         moved = true;
       }
@@ -571,6 +592,57 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   }
 
   return { nodes, links, byId, width: maxX - minX, height: spanY + dy };
+}
+
+/** Ground-truth crossing detector for the poster: samples every drawn curve and
+ *  reports any pair of links that actually intersect away from a shared node.
+ *  Used to verify the render programmatically instead of eyeballing crops. */
+export function findCrossings(links: LaidLink[]): Array<[string, string, number, number]> {
+  const sample = (l: LaidLink): [number, number][] => {
+    const { source: s, target: t } = l;
+    const my = (s.y + t.y) / 2;
+    const pts: [number, number][] = [];
+    for (let i = 0; i <= 96; i++) {
+      const u = i / 96;
+      const v = 1 - u;
+      pts.push([
+        v * v * v * s.x + 3 * v * v * u * s.x + 3 * v * u * u * t.x + u * u * u * t.x,
+        v * v * v * s.y + 3 * v * v * u * my + 3 * v * u * u * my + u * u * u * t.y,
+      ]);
+    }
+    return pts;
+  };
+  const seg = (
+    a: [number, number],
+    b: [number, number],
+    c: [number, number],
+    d: [number, number],
+  ): [number, number] | null => {
+    const r = [b[0] - a[0], b[1] - a[1]];
+    const s2 = [d[0] - c[0], d[1] - c[1]];
+    const den = r[0] * s2[1] - r[1] * s2[0];
+    if (Math.abs(den) < 1e-12) return null;
+    const t = ((c[0] - a[0]) * s2[1] - (c[1] - a[1]) * s2[0]) / den;
+    const u = ((c[0] - a[0]) * r[1] - (c[1] - a[1]) * r[0]) / den;
+    return t >= 0 && t <= 1 && u >= 0 && u <= 1 ? [a[0] + t * r[0], a[1] + t * r[1]] : null;
+  };
+  const flat = links.map(sample);
+  const out: Array<[string, string, number, number]> = [];
+  for (let i = 0; i < links.length; i++) {
+    for (let j = i + 1; j < links.length; j++) {
+      const A = links[i];
+      const B = links[j];
+      const joints = [A.source, A.target].filter((n) => n === B.source || n === B.target);
+      let hit: [number, number] | null = null;
+      for (let a = 0; a < 96 && !hit; a++)
+        for (let b = 0; b < 96 && !hit; b++) {
+          const h = seg(flat[i][a], flat[i][a + 1], flat[j][b], flat[j][b + 1]);
+          if (h && !joints.some((n) => Math.hypot(h[0] - n.x, h[1] - n.y) < 16)) hit = h;
+        }
+      if (hit) out.push([A.id, B.id, Math.round(hit[0]), Math.round(hit[1])]);
+    }
+  }
+  return out;
 }
 
 /** Smooth branch curve from a parent (bottom) to a child (top): leaves the
