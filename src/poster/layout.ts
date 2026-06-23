@@ -90,9 +90,12 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // shallow limbs stretch: a 2-generation limb would otherwise die low while
   // the deep chains tower — scale each root limb's hops so every limb's tips
   // approach the same canopy band (a real crown fills its sky).
+  // Poster: stretch the short outer limbs HARDER than the live app (cap 2.2 vs
+  // 1.6, exp 0.5 vs 0.35) so they climb into the empty upper-corner sky instead
+  // of dying low — a fuller crown, less wasted space.
   const limbM = new Map<string, number>();
   for (const c of positioned.children ?? [])
-    limbM.set(c.data.id, Math.min(1.6, Math.pow(positioned.height / (c.height + 1), 0.35)));
+    limbM.set(c.data.id, Math.min(2.2, Math.pow(positioned.height / (c.height + 1), 0.5)));
   const yRaw = new Map<string, number>();
   (function place(node: HierarchyPointNode<EtymNode>, y: number, m: number) {
     yRaw.set(node.data.id, y);
@@ -178,9 +181,12 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const NLY = Math.cos(RAD);
   const linkIds = positioned.links().map((l) => [l.source.data.id, l.target.data.id] as [string, string]);
   const impF = (d: EtymNode) => (d.important ? importantScale : 1);
+  // The poster shows forms (+ transliteration) only — NO per-word glosses — so the
+  // de-collision budgets just the form/translit width, not the much longer gloss.
+  // That keeps labels narrow → the tree stays compact → it renders bigger.
   const labelW = (id: string) => {
     const d = dat.get(id)!;
-    return Math.max(d.form.length, (d.gloss?.length ?? 0) * 0.78) * CPU * impF(d);
+    return Math.max(d.form.length, d.translit?.length ?? 0) * CPU * impF(d);
   };
   // scratch buffers for the link-vs-label pass (hot loop — no allocations)
   const NS = 12; // curve samples per link
@@ -198,8 +204,8 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     const o = off.get(id)!;
     const x = baseX.get(id)! + o.dx;
     const y = baseY.get(id)! + o.dy;
-    const w = Math.max(d.form.length, (d.gloss?.length ?? 0) * 0.78) * CPU * impF(d);
-    const stack = (d.translit ? 3 : 2) * 14 * impF(d);
+    const w = Math.max(d.form.length, d.translit?.length ?? 0) * CPU * impF(d);
+    const stack = (d.translit ? 2 : 1) * 14 * impF(d);
     return { l: x - 6 - MARG, r: x + 8 + w * 0.87 + MARG, t: y - (w * 0.5 + stack) - MARG, b: y + 8 + MARG };
   };
   for (let it = 0; it < 1000; it++) {

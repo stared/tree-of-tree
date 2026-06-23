@@ -18,99 +18,83 @@ body {
   background: #cfc6b2;
 }
 
-/* Fixed-width 4:3-ish landscape canvas — the screenshot tool captures this box. */
+/* Fixed-width canvas — the screenshot tool captures this box. Minimal padding;
+   the tree (tight-fit viewBox) owns the frame. */
 .poster {
   width: 1800px;
   margin: 0 auto;
-  background: radial-gradient(120% 80% at 50% 8%, var(--paper) 0%, var(--paper) 58%, var(--paper-2) 100%);
+  background: radial-gradient(120% 80% at 50% 12%, var(--paper) 0%, var(--paper) 62%, var(--paper-2) 100%);
   color: var(--ink);
   font-family: var(--serif);
-  padding: 44px 56px 34px;
+  padding: 22px 16px 16px;
   box-sizing: border-box;
 }
 
-/* ── top bar: title left, legend right (fills the sky over the canopy) ── */
+/* ── top bar: title left, one-line legend right ── */
 .topbar {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 48px;
+  gap: 40px;
 }
 .brand {
-  max-width: 920px;
-}
-.brand h1 {
   font-size: 60px;
   font-weight: 600;
-  margin: 0 0 10px;
+  margin: 0;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .it {
   font-style: italic;
 }
-.dek {
-  font-size: 19px;
-  line-height: 1.5;
-  color: var(--ink-soft);
-  margin: 0;
-  max-width: 880px;
-}
-.dek b {
-  color: var(--ink);
-  font-weight: 600;
-}
 
+/* one combined legend line — no captions, no wrap */
 .legend {
-  flex: none;
   display: flex;
-  flex-direction: column;
-  gap: 9px;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 17px;
   font-family: var(--sans);
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ink-soft);
-  padding-top: 6px;
-}
-.lg-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 7px 16px;
-  max-width: 560px;
-}
-.lg-row.keys {
-  color: var(--ink-faint);
-  border-top: 1px solid var(--rule);
-  padding-top: 9px;
+  white-space: nowrap;
 }
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  gap: 7px;
 }
-.chip i {
+.chip .dot {
   width: 14px;
   height: 14px;
   border-radius: 50%;
   display: inline-block;
   flex: none;
 }
-.chip i.ring {
+.chip .dot.ring {
   background: #fffdf8;
   border: 1.6px dashed var(--ink-faint);
   box-sizing: border-box;
 }
-.chip i.dash {
+.chip .dash {
   width: 22px;
   height: 0;
-  border-radius: 0;
-  border-top: 2.4px dashed var(--ink-faint);
+  border-top: 2.2px dashed var(--ink-faint);
+  display: inline-block;
+  flex: none;
 }
-.chip i.big {
-  width: 10px;
-  height: 10px;
-  background: var(--ink);
-  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--ink) 22%, transparent);
+
+/* tagline — one line */
+.dek {
+  font-size: 20px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  margin: 8px 0 0;
+  white-space: nowrap;
+}
+.dek b {
+  color: var(--ink);
+  font-weight: 600;
 }
 
 /* ── the tree ── */
@@ -118,32 +102,28 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  margin: -6px 0 0;
+  margin: 2px 0 0;
 }
 .link.disputed {
   stroke-dasharray: 5 5;
 }
 
+/* labels — THREE form tiers (regular / headline / root) + ONE meta size. */
 .node .label {
   font-family: var(--serif);
   paint-order: stroke;
   stroke: var(--paper);
-  stroke-width: 3.4px;
+  stroke-width: 3.6px;
 }
 .node .form {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 18px;
   fill: var(--ink);
 }
-.node .gloss {
+.node .meta {
   font-family: var(--sans);
   font-style: italic;
-  font-size: 11px;
-  fill: var(--ink-soft);
-}
-.node .translit {
-  font-family: var(--sans);
-  font-size: 10px;
+  font-size: 12px;
   fill: var(--ink-soft);
 }
 .node-reconstructed .form {
@@ -153,37 +133,26 @@ body {
 .node-modern .form {
   fill: #1f1a14;
 }
-/* headline words — bigger, darker, with a gloss whisper underneath */
 .node.imp .form {
-  font-size: 20px;
-  fill: var(--ink);
+  font-size: 25px;
 }
-.node.imp .gloss {
-  font-size: 11.5px;
-}
-/* the root, in the soil */
 .node-root .root-label .form {
-  font-size: 30px;
+  font-size: 32px;
   fill: var(--accent);
 }
-.node-root .root-label .gloss {
-  font-size: 15px;
-  font-style: italic;
-}
 
-/* ── credit ── */
+/* ── credit: ONE font size ── */
 .credit {
   font-family: var(--sans);
   text-align: center;
-  font-size: 16px;
+  font-size: 13px;
+  color: var(--ink-faint);
+  margin-top: 6px;
+}
+.credit b {
   color: var(--ink-soft);
-  margin-top: -4px;
+  font-weight: 700;
 }
 .credit .link {
   color: var(--accent);
-  font-weight: 700;
-}
-.credit .src {
-  color: var(--ink-faint);
-  font-size: 12.5px;
 }

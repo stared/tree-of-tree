@@ -5,3 +5,6 @@ dist-ssr
 .DS_Store
 .vite
 *.tsbuildinfo
+
+# Generated poster export (large binary — regenerate with scripts/shoot-poster.mjs)
+tree-of-tree-poster.png
