@@ -130,13 +130,13 @@ body {
   font-size: 11px;
   fill: var(--ink-soft);
 }
-/* reconstructed proto-forms (the *deru- scaffolding): italic + grey + a dashed
-   ring already set them apart, so they keep the SAME size as the real words —
-   shrinking them below normal read as a bug, and there is space for them. */
+/* reconstructed proto-forms (the *deru- scaffolding): same size AND same dark
+   weight as the real words — italic + the * prefix + a dashed node ring already
+   mark them as reconstructed, whereas grey made them read smaller/lighter. */
 .node-reconstructed .form {
   font-style: italic;
   font-size: 18px;
-  fill: var(--ink-soft);
+  fill: var(--ink);
 }
 .node-modern .form {
   fill: #1f1a14;

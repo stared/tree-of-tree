@@ -401,6 +401,12 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     // Derry sits naturally right on top of deodar; lift it UP (above its parent
     // doire, smooth vertical link) so its long gloss clears the big deodar label.
     "derry": [-48, -35],
+    // ārwa lands right beside δόρυ, so its label sits on top of δόρυ's long
+    // "wood; a spear-shaft, spear" gloss. Lift it straight up off the gloss.
+    "txb-arwa": [6, -52],
+    // здоро́вий sits in the path of the BIG headline "zdrowy" form (which sweeps
+    // up-right through it). Push it up-and-right, clear above zdrowy's reach.
+    "uk-zdorovyj": [56, -46],
   };
   // hand-placed nodes the crossing-repair must NOT shove around (else it cascades).
   const pinned = new Set(Object.keys(NUDGE));
