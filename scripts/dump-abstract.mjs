@@ -1,0 +1,12 @@
+import puppeteer from "puppeteer-core";
+import { writeFileSync } from "fs";
+const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const URL = process.env.POSTER_URL ?? "http://localhost:5174/poster.html";
+const b = await puppeteer.launch({ executablePath: CHROME, headless: "new" });
+const p = await b.newPage();
+await p.goto(URL, { waitUntil: "networkidle0" });
+await p.evaluateHandle("document.fonts.ready");
+const a = await p.evaluate(() => globalThis.__abstract ?? []);
+await b.close();
+writeFileSync("/tmp/abstract.json", JSON.stringify(a, null, 0));
+console.log("wrote", a.length, "abstract nodes (tidy seed)");

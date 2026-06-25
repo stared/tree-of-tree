@@ -42,17 +42,17 @@ body {
   font-style: italic;
 }
 
-/* legend — a compact vertical key in the empty lower-right wedge, a little
-   above the root */
+/* legend — a compact vertical key in the empty UPPER-right corner (below the
+   tagline), filling space the tree doesn't reach and clear of any labels */
 .legend {
   position: absolute;
-  right: 44px;
-  bottom: 74px;
+  right: 48px;
+  top: 86px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   font-family: var(--sans);
-  font-size: 17px;
+  font-size: 18px;
   color: var(--ink-soft);
 }
 .chip {
@@ -111,23 +111,23 @@ body {
   stroke: var(--paper);
   stroke-width: 3.6px;
 }
-/* regular attested/modern words */
+/* regular attested/modern words — 27px (was 18 → +50%, fills the slack space) */
 .node .form {
   font-weight: 600;
-  font-size: 18px;
+  font-size: 27px;
   fill: var(--ink);
 }
 /* transliteration of non-Latin words — small bracketed romanisation */
 .node .meta {
   font-family: var(--sans);
-  font-size: 10px;
+  font-size: 12px;
   fill: var(--ink-faint);
 }
 /* the word's meaning — small italic, under the form */
 .node .gloss {
   font-family: var(--sans);
   font-style: italic;
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--ink-soft);
 }
 /* reconstructed proto-forms (the *deru- scaffolding): same size AND same dark
@@ -135,7 +135,7 @@ body {
    mark them as reconstructed, whereas grey made them read smaller/lighter. */
 .node-reconstructed .form {
   font-style: italic;
-  font-size: 18px;
+  font-size: 27px;
   fill: var(--ink);
 }
 .node-modern .form {
@@ -165,7 +165,7 @@ body {
 .credit {
   font-family: var(--sans);
   text-align: center;
-  font-size: 20px;
+  font-size: 17px;
   color: var(--ink-soft);
   margin-top: 4px;
 }

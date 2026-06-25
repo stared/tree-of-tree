@@ -50,6 +50,15 @@ export interface LayoutOptions {
   cpu?: number;
   /** width/stack multiplier for the few `important` labels the poster enlarges. */
   importantScale?: number;
+  /** EXPERIMENTAL: after the tidy layout, run a force-directed relaxation
+   *  (node + label repulsion, edge springs, angle-straightening, edge–edge
+   *  repulsion) to even out the placement and fill the empty bottom. Pass an
+   *  object to override individual force constants. */
+  force?: boolean | Record<string, number | boolean>;
+  /** MANUAL layout: explicit id → [x, y] positions for every node (the
+   *  hand-tunable source of truth). When given, the solver is skipped entirely
+   *  and these positions are used verbatim. */
+  positions?: Record<string, [number, number]>;
 }
 
 /** small seeded PRNG (mulberry32) — irregular but deterministic branch lengths */
@@ -67,6 +76,34 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   const dx = opts.dx ?? 26;
   const dy = opts.dy ?? 150;
   const importantScale = opts.importantScale ?? 1;
+  // EXPERIMENTAL force-directed relaxation params (null = off → hand-nudged tidy)
+  const FP = opts.force
+    ? {
+        rest: dy * 0.5, // ideal parent→child distance (fan edges)
+        chainrest: dy * 0.3, // shorter rest for single-child chains (compress trunk)
+        mingap: dy * 0.34, // child must clear its parent by ≥ this (bottom-up)
+        krep: 30000, // node–node repulsion
+        klabel: 0.5, // label-box separation
+        kspring: 0.05, // edge spring stiffness
+        kangle: 0.09, // straighten toward continuation of incoming direction
+        kedge: 1800, // edge–edge repulsion (midpoints)
+        kgrav: 0, // compaction: pull every node toward the centroid (denser = bigger font)
+        kdens: 0, // UNIFORMITY: push each label down the Gaussian density gradient
+        //              (toward emptier space) → fills voids evenly. Annealed.
+        densSigma: 70, // Gaussian radius of the density field
+        ydamp: 1, // <1 damps the density force's vertical spread → content widens (→ landscape)
+        sibgap: dx, // min x-gap enforced between ordered siblings (planarity)
+        planar: 0, // 1 = enforce sibling-order + lane (opt-in planarity guard)
+        repairPasses: 26, // crossing-repair iterations afterwards
+        repairStep: 13, // px moved per repair pass
+        nudge: 0, // 1 = apply the hand de-tangle pins (config-specific)
+        xbias: 1, // >1 spreads horizontally more than vertically (→ landscape)
+        iters: 800,
+        temp0: 70, // initial per-step move cap (cooled each iter)
+        repair: true, // run the crossing-repair pass afterwards
+        ...(typeof opts.force === "object" ? opts.force : {}),
+      }
+    : null;
 
   const h = hierarchy<EtymNode>(root);
 
@@ -409,14 +446,16 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     "uk-zdorovyj": [56, -46],
   };
   // hand-placed nodes the crossing-repair must NOT shove around (else it cascades).
-  const pinned = new Set(Object.keys(NUDGE));
-  for (const [id, [ndx, ndy]] of Object.entries(NUDGE)) {
-    const o = off.get(id);
-    if (o) {
-      o.dx += ndx;
-      o.dy += ndy;
+  // (Skipped entirely under force-mode — physics re-places everything.)
+  const pinned = new Set(FP ? [] : Object.keys(NUDGE));
+  if (!FP)
+    for (const [id, [ndx, ndy]] of Object.entries(NUDGE)) {
+      const o = off.get(id);
+      if (o) {
+        o.dx += ndx;
+        o.dy += ndy;
+      }
     }
-  }
 
   // final positions (nodes carry their labels); recompute the extents
   const finalX = (id: string) => baseX.get(id)! + off.get(id)!.dx;
@@ -458,6 +497,312 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
     };
   });
 
+  // ─── MANUAL positions override: use the hand-tuned JSON verbatim ─────────
+  // Skips the whole solver. Links already reference these node objects, so
+  // overriding x/y here repositions the edges too. Re-origin to (0,0).
+  if (opts.positions) {
+    for (const n of nodes) {
+      const p = opts.positions[n.id];
+      if (p) {
+        n.x = p[0];
+        n.y = p[1];
+      }
+    }
+    let mnx = Infinity,
+      mny = Infinity,
+      mxx = -Infinity,
+      mxy = -Infinity;
+    for (const n of nodes) {
+      mnx = Math.min(mnx, n.x);
+      mny = Math.min(mny, n.y);
+      mxx = Math.max(mxx, n.x);
+      mxy = Math.max(mxy, n.y);
+    }
+    for (const n of nodes) {
+      n.x -= mnx;
+      n.y -= mny;
+    }
+    return { nodes, links, byId, width: mxx - mnx, height: mxy - mny };
+  }
+
+  // ─── EXPERIMENTAL force-directed relaxation ─────────────────────────────
+  // Seed from the tidy layout, then let physics even it out:
+  //   • every node repels every other (spreads the canopy, fills the frame)
+  //   • each label is a BOX that repels other labels (text, not just dots)
+  //   • parent→child edges are springs at one common rest length (even gaps)
+  //   • a straightening force pulls each child toward the continuation of its
+  //     parent's incoming direction (penalises sharp turns / big angles)
+  //   • edges repel edges via their midpoints (fans splay, don't bundle)
+  // A hard monotonic projection keeps every child ABOVE its parent each step,
+  // so the tree stays bottom-up and readable however the forces shove it.
+  if (FP) {
+    const N = nodes.length;
+    const ix = new Map(nodes.map((n, i) => [n.id, i]));
+    const X = nodes.map((n) => n.x);
+    const Y = nodes.map((n) => n.y);
+    const parentIx = new Int32Array(N).fill(-1);
+    const childCount = new Int32Array(N);
+    const edges: [number, number][] = [];
+    for (const l of links) {
+      const a = ix.get(l.source.id)!;
+      const b = ix.get(l.target.id)!;
+      parentIx[b] = a;
+      childCount[a]++;
+      edges.push([a, b]);
+    }
+    const rootIx = nodes.findIndex((n) => n.data.kind === "root");
+    const depthOrder = nodes.map((_, i) => i).sort((a, b) => nodes[a].depth - nodes[b].depth);
+
+    // label half-footprint (force-aware: important words render ~2× in CSS)
+    const lw = new Float64Array(N); // along-text width
+    const lh = new Float64Array(N); // stack height below the baseline
+    for (let i = 0; i < N; i++) {
+      const d = nodes[i].data;
+      const imp = d.important ? 2 : 1; // headline words render ~2× in CSS
+      const formW = d.form.length * CPU * imp;
+      const glossW = showsGloss(d) ? (d.gloss?.length ?? 0) * CPU * 0.7 : 0;
+      const trW = (d.translit?.length ?? 0) * CPU * 0.7;
+      lw[i] = Math.max(formW, glossW, trW);
+      const lines = 1 + (d.translit ? 1 : 0) + (showsGloss(d) ? 1 : 0);
+      lh[i] = lines * 14 + (d.important ? 14 : 0);
+    }
+    const boxL = (i: number) => X[i] - 8;
+    const boxR = (i: number) => X[i] + 10 + lw[i] * 0.86;
+    const boxT = (i: number) => Y[i] - (lw[i] * 0.5 + lh[i]);
+    const boxB = (i: number) => Y[i] + 10;
+
+    // planarity scaffolding: freeze the seed left→right sibling order + each
+    // child's side of its parent, so compaction can't swap branches into crossings
+    const seedX = X.slice();
+    const kidsByParent = new Map<number, number[]>();
+    for (const [a, b] of edges) (kidsByParent.get(a) ?? kidsByParent.set(a, []).get(a)!).push(b);
+    for (const [, arr] of kidsByParent) arr.sort((u, v) => seedX[u] - seedX[v]);
+    const sideOf = new Float64Array(N);
+    for (let i = 0; i < N; i++) {
+      const p = parentIx[i];
+      sideOf[i] = p >= 0 ? Math.sign(seedX[i] - seedX[p]) : 0;
+    }
+    const SIBGAP = FP.sibgap as number;
+
+    const fx = new Float64Array(N);
+    const fy = new Float64Array(N);
+    const xb = FP.xbias as number; // anisotropy: widen the spread (landscape)
+    let temp = FP.temp0 as number;
+    for (let it = 0; it < (FP.iters as number); it++) {
+      fx.fill(0);
+      fy.fill(0);
+      // 0. DENSITY-FIELD uniformity (the key force): push each label down the
+      //    gradient of the summed Gaussian density of all others → toward emptier
+      //    space. Fills voids EVENLY (unlike pairwise repulsion, which clumps +
+      //    voids). Annealed so it spreads early, then label-repulsion cleans up.
+      //    ydamp<1 weakens its vertical spread so content widens toward landscape.
+      const kd = FP.kdens as number;
+      if (kd !== 0) {
+        const anneal = Math.max(0.12, 1 - it / (FP.iters as number));
+        const ds2 = 2 * (FP.densSigma as number) ** 2;
+        const sc = anneal * kd * (2 / ds2) * (FP.densSigma as number);
+        const yd = FP.ydamp as number;
+        for (let i = 0; i < N; i++) {
+          let gx = 0,
+            gy = 0;
+          for (let j = 0; j < N; j++) {
+            if (i === j) continue;
+            const dx2 = X[i] - X[j];
+            const dy2 = Y[i] - Y[j];
+            const g = ((lw[j] * lh[j]) / 4000) * Math.exp(-(dx2 * dx2 + dy2 * dy2) / ds2);
+            gx += g * dx2;
+            gy += g * dy2;
+          }
+          fx[i] += gx * sc;
+          fy[i] += gy * sc * yd;
+        }
+      }
+      // 1. node–node repulsion (all pairs)
+      for (let i = 0; i < N; i++) {
+        for (let j = i + 1; j < N; j++) {
+          let dx2 = X[i] - X[j];
+          let dy2 = Y[i] - Y[j];
+          let d2 = dx2 * dx2 + dy2 * dy2;
+          if (d2 < 1) {
+            d2 = 1;
+            dx2 = 1;
+            dy2 = 0;
+          }
+          const d = Math.sqrt(d2);
+          const f = (FP.krep as number) / d2;
+          const ux = (dx2 / d) * f * xb;
+          const uy = (dy2 / d) * f;
+          fx[i] += ux;
+          fy[i] += uy;
+          fx[j] -= ux;
+          fy[j] -= uy;
+        }
+      }
+      // 2. label-box repulsion (overlapping label rectangles push apart)
+      for (let i = 0; i < N; i++) {
+        const Al = boxL(i),
+          Ar = boxR(i),
+          At = boxT(i),
+          Ab = boxB(i);
+        for (let j = i + 1; j < N; j++) {
+          const ox = Math.min(Ar, boxR(j)) - Math.max(Al, boxL(j));
+          if (ox <= 0) continue;
+          const oy = Math.min(Ab, boxB(j)) - Math.max(At, boxT(j));
+          if (oy <= 0) continue;
+          let vx = (Al + Ar - boxL(j) - boxR(j)) / 2;
+          let vy = (At + Ab - boxT(j) - boxB(j)) / 2;
+          if (Math.abs(vy) < 4) vy = vx > 0 ? 4 : -4;
+          if (vx === 0 && vy === 0) vx = 1;
+          const m = Math.hypot(vx, vy) || 1;
+          const pen = Math.min(ox, oy) * (FP.klabel as number);
+          fx[i] += (vx / m) * pen;
+          fy[i] += (vy / m) * pen;
+          fx[j] -= (vx / m) * pen;
+          fy[j] -= (vy / m) * pen;
+        }
+      }
+      // 3. edge springs + 4. angle straightening
+      for (const [a, b] of edges) {
+        let vx = X[b] - X[a];
+        let vy = Y[b] - Y[a];
+        const d = Math.hypot(vx, vy) || 1;
+        const rest = childCount[a] === 1 ? (FP.chainrest as number) : (FP.rest as number);
+        const sf = (FP.kspring as number) * (d - rest);
+        const ux = vx / d;
+        const uy = vy / d;
+        fx[b] -= ux * sf;
+        fy[b] -= uy * sf;
+        fx[a] += ux * sf;
+        fy[a] += uy * sf;
+        // incoming direction at the parent (root: straight up)
+        const gp = parentIx[a];
+        let inx: number, iny: number;
+        if (gp >= 0) {
+          inx = X[a] - X[gp];
+          iny = Y[a] - Y[gp];
+          const im = Math.hypot(inx, iny) || 1;
+          inx /= im;
+          iny /= im;
+        } else {
+          inx = 0;
+          iny = -1;
+        }
+        const tx = X[a] + inx * d; // where b sits if it continues straight
+        const ty = Y[a] + iny * d;
+        fx[b] += (tx - X[b]) * (FP.kangle as number);
+        fy[b] += (ty - Y[b]) * (FP.kangle as number);
+      }
+      // 5. edge–edge repulsion (midpoints, non-adjacent only)
+      for (let i = 0; i < edges.length; i++) {
+        const [a1, b1] = edges[i];
+        const mx1 = (X[a1] + X[b1]) / 2;
+        const my1 = (Y[a1] + Y[b1]) / 2;
+        for (let j = i + 1; j < edges.length; j++) {
+          const [a2, b2] = edges[j];
+          if (a1 === a2 || a1 === b2 || b1 === a2 || b1 === b2) continue;
+          let dx2 = mx1 - (X[a2] + X[b2]) / 2;
+          let dy2 = my1 - (Y[a2] + Y[b2]) / 2;
+          let d2 = dx2 * dx2 + dy2 * dy2;
+          if (d2 < 1) {
+            d2 = 1;
+            dx2 = 1;
+            dy2 = 0;
+          }
+          const d = Math.sqrt(d2);
+          const f = (FP.kedge as number) / d2;
+          const ux = (dx2 / d) * f * xb;
+          const uy = (dy2 / d) * f;
+          fx[a1] += ux;
+          fy[a1] += uy;
+          fx[b1] += ux;
+          fy[b1] += uy;
+          fx[a2] -= ux;
+          fy[a2] -= uy;
+          fx[b2] -= ux;
+          fy[b2] -= uy;
+        }
+      }
+      // 6. compaction: gravity toward the centroid keeps the layout tight, so
+      //    the fit-to-frame scale (and thus the on-screen font) stays large.
+      const kg = FP.kgrav as number;
+      if (kg !== 0) {
+        let gx = 0,
+          gy = 0;
+        for (let i = 0; i < N; i++) {
+          gx += X[i];
+          gy += Y[i];
+        }
+        gx /= N;
+        gy /= N;
+        for (let i = 0; i < N; i++) {
+          fx[i] += (gx - X[i]) * kg;
+          fy[i] += (gy - Y[i]) * kg;
+        }
+      }
+      // integrate (root frozen), capped by the cooling temperature
+      for (let i = 0; i < N; i++) {
+        if (i === rootIx) continue;
+        let mvx = fx[i] * 0.5;
+        let mvy = fy[i] * 0.5;
+        mvx = Math.max(-temp, Math.min(temp, mvx));
+        mvy = Math.max(-temp, Math.min(temp, mvy));
+        X[i] += mvx;
+        Y[i] += mvy;
+      }
+      // hard monotonic projection: every child sits ABOVE its parent
+      for (const i of depthOrder) {
+        const p = parentIx[i];
+        if (p < 0) continue;
+        if (Y[i] > Y[p] - (FP.mingap as number)) Y[i] = Y[p] - (FP.mingap as number);
+      }
+      // planarity projection (opt-in): keep each child on its original side of
+      // the parent's lane + hold sibling order with a gap. Centre it on the
+      // parent so it doesn't ratchet the whole layout sideways.
+      if (FP.planar) {
+        for (const [p, arr] of kidsByParent) {
+          if (p >= 0)
+            for (const c of arr) {
+              if (sideOf[c] > 0 && X[c] < X[p] + 12) X[c] = X[p] + 12;
+              else if (sideOf[c] < 0 && X[c] > X[p] - 12) X[c] = X[p] - 12;
+            }
+          for (let k = 1; k < arr.length; k++)
+            if (X[arr[k]] < X[arr[k - 1]] + SIBGAP) {
+              const push = (X[arr[k - 1]] + SIBGAP - X[arr[k]]) / 2;
+              X[arr[k]] += push;
+              X[arr[k - 1]] -= push;
+            }
+        }
+      }
+      temp = Math.max(6, temp * 0.996);
+    }
+    // write back + re-origin
+    let mnX = Infinity,
+      mnY = Infinity;
+    for (let i = 0; i < N; i++) {
+      if (X[i] < mnX) mnX = X[i];
+      if (Y[i] < mnY) mnY = Y[i];
+    }
+    for (let i = 0; i < N; i++) {
+      nodes[i].x = X[i] - mnX;
+      nodes[i].y = Y[i] - mnY;
+    }
+    // targeted de-tangle for the locked default config: two leaves whose edges
+    // clip a neighbouring trunk branch (compaction interleaved sibling sectors).
+    // Pinned so the crossing-repair leaves them exactly here. Deterministic, so
+    // these are as stable as the tidy layout's hand nudges.
+    const FORCE_NUDGE: Record<string, [number, number]> = FP.nudge
+      ? { "got-triu": [-292, 5], "uk-zdorovyj": [-310, -108] }
+      : {};
+    for (const [id, [ndx, ndy]] of Object.entries(FORCE_NUDGE)) {
+      const nd = byId.get(id);
+      if (nd) {
+        nd.x += ndx;
+        nd.y += ndy;
+        pinned.add(id);
+      }
+    }
+  }
+
   // ─── crossing repair: the last few units of honesty ───
   // The placement rules above eliminate crossings almost everywhere, but two
   // local accidents survive them: near-colinear siblings (two links leaving one
@@ -493,6 +838,20 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
       cur = kids && kids.length === 1 ? kids[0] : undefined;
     }
   };
+  // force-mode tangles are whole subtrees overlapping, so translate the ENTIRE
+  // subtree as a rigid body (not just the single-child chain) — separates the
+  // two tangled branches without tearing either one apart internally.
+  const moveSubtree = (n: LaidNode, mx: number, my2: number) => {
+    const stack = [n];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      cur.x += mx;
+      cur.y += my2;
+      const kids = childrenOf.get(cur.id);
+      if (kids) for (const k of kids) stack.push(k);
+    }
+  };
+  const mover = FP ? moveSubtree : moveWithChain;
   const cross = (a: [number, number], b: [number, number], c: [number, number], d: [number, number]) => {
     const r = [b[0] - a[0], b[1] - a[1]];
     const s2 = [d[0] - c[0], d[1] - c[1]];
@@ -506,7 +865,9 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
   // pairs bail out after a few rectangle tests instead of 96×96 segment tests
   const CH = 8;
   const SEG = 96 / CH;
-  for (let pass = 0; pass < 26; pass++) {
+  const REPAIR_PASSES = FP && !FP.repair ? 0 : FP ? (FP.repairPasses as number) : 26;
+  const REPAIR_STEP = FP ? (FP.repairStep as number) : 13;
+  for (let pass = 0; pass < REPAIR_PASSES; pass++) {
     const flat = links.map((l) => sample(l));
     const chunks = flat.map((pts) => {
       const cs: number[][] = [];
@@ -574,7 +935,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
             px2 = -px2;
             py2 = -py2;
           }
-          if (!pinned.has(n.id)) moveWithChain(n, px2 * 14, py2 * 14);
+          if (!pinned.has(n.id)) mover(n, px2 * (REPAIR_STEP + 1), py2 * (REPAIR_STEP + 1));
         } else {
           // cousins: translate the lighter child away from the heavier curve
           let best = Infinity;
@@ -590,7 +951,7 @@ export function buildLayout(root: EtymNode, opts: LayoutOptions = {}): Layout {
           }
           const dn = Math.hypot(light.x - bx, light.y - by) || 1;
           if (!pinned.has(light.id))
-            moveWithChain(light, ((light.x - bx) / dn) * 13, ((light.y - by) / dn) * 13);
+            mover(light, ((light.x - bx) / dn) * REPAIR_STEP, ((light.y - by) / dn) * REPAIR_STEP);
         }
         moved = true;
       }
