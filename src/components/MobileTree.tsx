@@ -15,14 +15,19 @@ interface Props {
   onSelect: (id: string, el: SVGGElement) => void;
 }
 
-// The camera's WIDTH is fixed (in layout units) so the on-screen scale is
-// identical in every chapter; its HEIGHT fits the lit branch (plus room for
-// labels), so there's no dead vertical space. Neighbouring branches still fill
-// the width because the whole tree is drawn behind the crop.
-const VIEW_W = 470;
-const PAD_TOP = 90; // labels read up from the topmost nodes
-const BOTTOM_REACH = 78; // a stub of the incoming link, so the branch attaches
-//                          to the trunk without an empty whole generation below
+// The camera FRAMES the lit branch itself — its real width and height, plus
+// label-aware padding — rather than a fixed-width window. Labels read up and to
+// the RIGHT (−30°), so the box leans that way: more room on the right (the
+// words) and top (the rising stack) than on the left/bottom. A MIN_W floor
+// keeps a single thin chain from zooming in huge, so the scale stays roughly
+// consistent across chapters; wider branches simply render a touch smaller
+// rather than spilling off the edges. The whole tree is still drawn behind the
+// crop, so neighbouring branches bleed in (dimmed) at the edges.
+const PAD_L = 70;
+const PAD_R = 205; // labels read up-right — the words live here
+const PAD_TOP = 135; // a tall label stack rises off the topmost nodes
+const PAD_BOTTOM = 70; // a stub of the incoming link, so the branch attaches
+const MIN_W = 540; // narrowest frame — keeps thin chains at a sane scale
 
 function radius(n: LaidNode): number {
   if (n.data.kind === "root") return 8;
@@ -49,7 +54,8 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
   }, [overview, focusIds, layout]);
 
   // the viewBox: overview fits the whole tree; a chapter frames its lit branch —
-  // fixed WIDTH (constant scale), HEIGHT fitted to the branch (no dead space).
+  // the branch's real extent (both axes) plus label-aware padding, centred on
+  // the lit content so the focus words are always whole and centred.
   const viewBox = useMemo(() => {
     if (overview || !focusIds.length) {
       const xs = layout.nodes.map((n) => n.x);
@@ -62,8 +68,9 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
       return `${x0} ${y0} ${Math.max(...xs) - x0 + padX} ${Math.max(...ys) - y0 + padBottom}`;
     }
 
-    // the nodes that set the frame's vertical extent: the focus nodes and their
-    // descendants (NOT the parent — that left an empty generation at the bottom)
+    // the nodes that set the frame: the focus nodes and their descendants (NOT
+    // the parent — that left an empty generation at the bottom). The opening
+    // chapter is about the root itself, so it frames the root + the first fan.
     const rootFocus = focusIds.some((f) => layout.byId.get(f)?.depth === 0);
     const frame = rootFocus
       ? layout.nodes.filter((n) => n.depth <= 1) // opening chapter: root + first split
@@ -71,12 +78,22 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
           (n) => focusIds.includes(n.id) || focusIds.some((f) => n.lineage.includes(f)),
         );
 
-    const fxs = (focusIds.map((f) => layout.byId.get(f)).filter(Boolean) as LaidNode[]).map((n) => n.x);
-    const cx = (Math.min(...fxs) + Math.max(...fxs)) / 2;
+    const xs = frame.map((n) => n.x);
     const ys = frame.map((n) => n.y);
+    const x0 = Math.min(...xs) - PAD_L;
+    const x1 = Math.max(...xs) + PAD_R;
     const y0 = Math.min(...ys) - PAD_TOP;
-    const vbH = Math.max(...ys) + BOTTOM_REACH - y0;
-    return `${cx - VIEW_W / 2} ${y0} ${VIEW_W} ${vbH}`;
+    const y1 = Math.max(...ys) + PAD_BOTTOM;
+    const vbH = y1 - y0;
+    // floor the width so a thin chain keeps a sane scale; grow the box around
+    // its own centre (the dot column stays put, extra room spreads to the sides)
+    let vx = x0;
+    let vbW = x1 - x0;
+    if (vbW < MIN_W) {
+      vx = (x0 + x1) / 2 - MIN_W / 2;
+      vbW = MIN_W;
+    }
+    return `${vx} ${y0} ${vbW} ${vbH}`;
   }, [overview, focusIds, layout]);
 
   const labelOn = (n: LaidNode) => {
