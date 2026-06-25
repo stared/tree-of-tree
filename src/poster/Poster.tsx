@@ -289,8 +289,8 @@ export function Poster() {
 
       <div className="credit">
         by <b>Piotr Migdał</b> · 2026 · <b className="link">p.migdal.pl/tree-of-tree</b> for an
-        explorable explanation · sources: Etymonline, Wiktionary, Watkins, de Vaan, Kroonen, Beekes,
-        Derksen, Mayrhofer, Kloekhorst, Pokorny, EIEC
+        explorable explanation · sources: Wiktionary, Etymonline, Watkins, Kroonen, Beekes, de Vaan,
+        Mayrhofer, Kloekhorst, Derksen, Matasović, Adams, Martirosyan, Pokorny, EIEC
       </div>
     </div>
   );
