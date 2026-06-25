@@ -15,19 +15,17 @@ interface Props {
   onSelect: (id: string, el: SVGGElement) => void;
 }
 
-// The camera FRAMES the lit branch itself — its real width and height, plus
-// label-aware padding — rather than a fixed-width window. Labels read up and to
-// the RIGHT (−30°), so the box leans that way: more room on the right (the
-// words) and top (the rising stack) than on the left/bottom. A MIN_W floor
-// keeps a single thin chain from zooming in huge, so the scale stays roughly
-// consistent across chapters; wider branches simply render a touch smaller
-// rather than spilling off the edges. The whole tree is still drawn behind the
-// crop, so neighbouring branches bleed in (dimmed) at the edges.
-const PAD_L = 70;
-const PAD_R = 205; // labels read up-right — the words live here
-const PAD_TOP = 135; // a tall label stack rises off the topmost nodes
-const PAD_BOTTOM = 70; // a stub of the incoming link, so the branch attaches
-const MIN_W = 540; // narrowest frame — keeps thin chains at a sane scale
+// The camera FRAMES the lit branch's own extent — its real width and height
+// plus label-aware padding — and the viewBox aspect drives the SVG height
+// (width:100%, height:auto), so there's no letterboxing and no dead band.
+// Labels read up and to the RIGHT, so the box leans that way: lots of room on
+// the right (the words) and a stub below (the incoming trunk — "where it grows
+// from"). A MIN_W floor stops a thin chain from zooming in absurdly large.
+const PAD_L = 60;
+const PAD_R = 200; // labels read up-right — the words live here
+const PAD_TOP = 104; // room for the rising label stack, no more
+const PAD_BOTTOM = 104; // a stub of the incoming trunk, so the branch attaches
+const MIN_W = 520; // narrowest frame — keeps thin chains at a sane scale
 
 function radius(n: LaidNode): number {
   if (n.data.kind === "root") return 8;
@@ -54,8 +52,7 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
   }, [overview, focusIds, layout]);
 
   // the viewBox: overview fits the whole tree; a chapter frames its lit branch —
-  // the branch's real extent (both axes) plus label-aware padding, centred on
-  // the lit content so the focus words are always whole and centred.
+  // fixed WIDTH (constant scale), HEIGHT fitted to the branch (no dead space).
   const viewBox = useMemo(() => {
     if (overview || !focusIds.length) {
       const xs = layout.nodes.map((n) => n.x);
@@ -68,32 +65,48 @@ export function MobileTree({ layout, focusIds, overview, selectedId, onSelect }:
       return `${x0} ${y0} ${Math.max(...xs) - x0 + padX} ${Math.max(...ys) - y0 + padBottom}`;
     }
 
-    // the nodes that set the frame: the focus nodes and their descendants (NOT
-    // the parent — that left an empty generation at the bottom). The opening
-    // chapter is about the root itself, so it frames the root + the first fan.
-    const rootFocus = focusIds.some((f) => layout.byId.get(f)?.depth === 0);
-    const frame = rootFocus
-      ? layout.nodes.filter((n) => n.depth <= 1) // opening chapter: root + first split
-      : layout.nodes.filter(
-          (n) => focusIds.includes(n.id) || focusIds.some((f) => n.lineage.includes(f)),
-        );
+    // The opening chapter is about the ROOT itself: frame the root alone, large,
+    // with a hint of the first stems rising out of it and room below for its
+    // two-line label. (Everything descends from the root, so framing its subtree
+    // would be the whole tree — deliberately avoided.)
+    const rootNode = focusIds.map((f) => layout.byId.get(f)).find((n) => n?.depth === 0);
+    if (rootNode) {
+      const halfW = 285; // window half-width — the root dot dominates
+      const aboveStem = 165; // a hint of the first stems rising
+      const belowLabel = 135; // the root's label sits below the dot
+      return `${rootNode.x - halfW} ${rootNode.y - aboveStem} ${halfW * 2} ${aboveStem + belowLabel}`;
+    }
+
+    // every other chapter: frame the focus nodes and their descendants — the lit
+    // branch's real extent — plus the immediate lit STEM it grows from (the
+    // focus nodes' parent, lineage[1]), so that labelled stem (e.g. *dréw-,
+    // *dru-ko-) is shown whole rather than clipped off the bottom.
+    const stemIds = new Set<string>();
+    for (const f of focusIds) {
+      const fn = layout.byId.get(f);
+      const parent = fn && fn.lineage.length > 1 ? layout.byId.get(fn.lineage[1]) : null;
+      // only a NEARBY parent (a far one like the disputed *dūrus → root link would
+      // blow the crop open across the whole tree)
+      if (fn && parent && Math.hypot(parent.x - fn.x, parent.y - fn.y) < 340) stemIds.add(parent.id);
+    }
+    const frame = layout.nodes.filter(
+      (n) =>
+        focusIds.includes(n.id) || focusIds.some((f) => n.lineage.includes(f)) || stemIds.has(n.id),
+    );
 
     const xs = frame.map((n) => n.x);
     const ys = frame.map((n) => n.y);
-    const x0 = Math.min(...xs) - PAD_L;
-    const x1 = Math.max(...xs) + PAD_R;
     const y0 = Math.min(...ys) - PAD_TOP;
     const y1 = Math.max(...ys) + PAD_BOTTOM;
-    const vbH = y1 - y0;
-    // floor the width so a thin chain keeps a sane scale; grow the box around
-    // its own centre (the dot column stays put, extra room spreads to the sides)
-    let vx = x0;
-    let vbW = x1 - x0;
+    let x0 = Math.min(...xs) - PAD_L;
+    let vbW = Math.max(...xs) + PAD_R - x0;
+    // floor the width so a thin chain keeps a sane scale; grow the box around its
+    // own centre (the dot column stays put, extra room spreads to both sides)
     if (vbW < MIN_W) {
-      vx = (x0 + x1) / 2 - MIN_W / 2;
+      x0 = (x0 + (x0 + vbW)) / 2 - MIN_W / 2;
       vbW = MIN_W;
     }
-    return `${vx} ${y0} ${vbW} ${vbH}`;
+    return `${x0} ${y0} ${vbW} ${y1 - y0}`;
   }, [overview, focusIds, layout]);
 
   const labelOn = (n: LaidNode) => {

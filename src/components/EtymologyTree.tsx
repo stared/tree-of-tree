@@ -140,41 +140,55 @@ export function EtymologyTree({
     // root — so a step zooms into its branch rather than always showing the
     // whole stem. (The dimming in `activeIds` does include ancestors, so the
     // lit region is a little larger than the framed one; intentional.)
+    // Also frame the lit STEM each branch grows from — the focus nodes' immediate
+    // parent(s) (lineage[1]). Those ancestors are lit and LABELLED (e.g. *dréw-,
+    // *dru-ko-), so if we don't reserve space for them they get chopped off the
+    // bottom edge. One generation is enough to show "where it grows from".
+    const stemIds = new Set<string>();
+    if (ids) {
+      for (const f of ids) {
+        const fn = layout.byId.get(f);
+        const parent = fn && fn.lineage.length > 1 ? layout.byId.get(fn.lineage[1]) : null;
+        // only pull in a NEARBY parent: a far one (e.g. the disputed *dūrus → root
+        // link, which spans the whole tree) would zoom the branch into a corner.
+        if (fn && parent && Math.hypot(parent.x - fn.x, parent.y - fn.y) < 340) stemIds.add(parent.id);
+      }
+    }
     const pool = ids
-      ? layout.nodes.filter((n) => ids.includes(n.id) || ids.some((f) => n.lineage.includes(f)))
+      ? layout.nodes.filter(
+          (n) => ids.includes(n.id) || ids.some((f) => n.lineage.includes(f)) || stemIds.has(n.id),
+        )
       : layout.nodes;
     const target = pool.length ? pool : layout.nodes;
     if (!target.length) return;
 
     const xs = target.map((n) => n.x);
     const ys = target.map((n) => n.y);
-    // Labels read UP and to the RIGHT (−32°), so a branch's visual mass leans
-    // that way: pad more on the right (room for the label words) and top (room
-    // for the rising stack) than on the left/bottom. This pulls the dot column
-    // off the right edge and fills the otherwise-empty left.
-    const padL = 90;
-    const padR = 200;
-    const padTop = 150;
-    const padBottom = 90;
+    // Labels read UP and to the RIGHT, so the words live above-right of the dot
+    // column: reserve room there. Keep the TOP pad to just what the rising
+    // labels need — no big empty sky — and pad the BOTTOM a little more so a
+    // stub of the incoming trunk shows ("where it grows from") and the branch's
+    // base is never chopped.
+    const padL = 70;
+    const padR = 190;
+    const padTop = 96;
+    const padBottom = 104; // clears the stem node + its label below the frame edge
     const minX = Math.min(...xs) - padL;
     const maxX = Math.max(...xs) + padR;
     const minY = Math.min(...ys) - padTop;
     const maxY = Math.max(...ys) + padBottom;
     const bw = Math.max(maxX - minX, 50);
     const bh = Math.max(maxY - minY, 50);
-    const k = Math.min(size.w / bw, size.h / bh, 1.35);
-    const cx = (minX + maxX) / 2;
-    const cy = (minY + maxY) / 2;
-    // Horizontal: centre the (label-aware) box. Vertical: GROUND the branch —
-    // nudge it DOWN so its base sits near the bottom edge and the faint trunk
-    // exits the frame cleanly (a tree rising from soil), instead of floating
-    // with empty sky below and a trunk chopped in mid-air. A branch tall enough
-    // to fill the height grounds fully; a tiny one (lots of slack) only drifts
-    // down by a capped amount, so it never jams into the bottom corner.
-    const tx = size.w / 2 - k * cx;
-    const slack = Math.max(0, size.h - k * bh); // unused vertical space
-    const shift = Math.min(slack / 2, size.h * 0.12); // down-nudge, capped
-    const ty = size.h / 2 - k * cy + shift;
+    const k = Math.min(size.w / bw, size.h / bh, 1.5);
+    // Centre horizontally on the (label-aware) box. Vertically ANCHOR THE TOP:
+    // the canopy sits just below a thin top margin and any spare height falls to
+    // the BOTTOM as open soil/trunk — rather than an empty band above the branch
+    // with its base cut off below. `slack` is the unused height; we only spend a
+    // sliver of it on a top margin, never enough to push the base off-screen.
+    const slack = Math.max(0, size.h - k * bh);
+    const topShift = Math.min(size.h * 0.045, slack);
+    const tx = (size.w - k * bw) / 2 - k * minX;
+    const ty = topShift - k * minY;
     const t = zoomIdentity.translate(tx, ty).scale(k);
     const dur = animate && !prefersReducedMotion() ? 720 : 0;
     if (dur === 0) select(svg).call(zoomBehavior.transform, t);
