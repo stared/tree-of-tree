@@ -148,21 +148,34 @@ export function EtymologyTree({
 
     const xs = target.map((n) => n.x);
     const ys = target.map((n) => n.y);
-    const padX = 150;
-    const padY = 110;
-    const minX = Math.min(...xs) - padX;
-    const maxX = Math.max(...xs) + padX;
-    const minY = Math.min(...ys) - padY;
-    const maxY = Math.max(...ys) + padY;
+    // Labels read UP and to the RIGHT (−32°), so a branch's visual mass leans
+    // that way: pad more on the right (room for the label words) and top (room
+    // for the rising stack) than on the left/bottom. This pulls the dot column
+    // off the right edge and fills the otherwise-empty left.
+    const padL = 90;
+    const padR = 200;
+    const padTop = 150;
+    const padBottom = 90;
+    const minX = Math.min(...xs) - padL;
+    const maxX = Math.max(...xs) + padR;
+    const minY = Math.min(...ys) - padTop;
+    const maxY = Math.max(...ys) + padBottom;
     const bw = Math.max(maxX - minX, 50);
     const bh = Math.max(maxY - minY, 50);
-    const k = Math.min(size.w / bw, size.h / bh, 1.5);
+    const k = Math.min(size.w / bw, size.h / bh, 1.35);
     const cx = (minX + maxX) / 2;
     const cy = (minY + maxY) / 2;
-    const t = zoomIdentity
-      .translate(size.w / 2, size.h / 2)
-      .scale(k)
-      .translate(-cx, -cy);
+    // Horizontal: centre the (label-aware) box. Vertical: GROUND the branch —
+    // nudge it DOWN so its base sits near the bottom edge and the faint trunk
+    // exits the frame cleanly (a tree rising from soil), instead of floating
+    // with empty sky below and a trunk chopped in mid-air. A branch tall enough
+    // to fill the height grounds fully; a tiny one (lots of slack) only drifts
+    // down by a capped amount, so it never jams into the bottom corner.
+    const tx = size.w / 2 - k * cx;
+    const slack = Math.max(0, size.h - k * bh); // unused vertical space
+    const shift = Math.min(slack / 2, size.h * 0.12); // down-nudge, capped
+    const ty = size.h / 2 - k * cy + shift;
+    const t = zoomIdentity.translate(tx, ty).scale(k);
     const dur = animate && !prefersReducedMotion() ? 720 : 0;
     if (dur === 0) select(svg).call(zoomBehavior.transform, t);
     else select(svg).transition().duration(dur).call(zoomBehavior.transform, t);
