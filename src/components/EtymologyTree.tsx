@@ -186,7 +186,12 @@ export function EtymologyTree({
     // with its base cut off below. `slack` is the unused height; we only spend a
     // sliver of it on a top margin, never enough to push the base off-screen.
     const slack = Math.max(0, size.h - k * bh);
-    const topShift = Math.min(size.h * 0.045, slack);
+    // The whole-tree views (step 01's root focus, and the Explore "show all"
+    // reset) are the exception to top-anchoring: with nothing to ground at the
+    // bottom, centre the tree vertically so the spare height splits evenly
+    // rather than pooling as empty soil below.
+    const wholeTree = !ids || (ids.length === 1 && ids[0] === TREE.id);
+    const topShift = wholeTree ? slack / 2 : Math.min(size.h * 0.045, slack);
     const tx = (size.w - k * bw) / 2 - k * minX;
     const ty = topShift - k * minY;
     const t = zoomIdentity.translate(tx, ty).scale(k);
